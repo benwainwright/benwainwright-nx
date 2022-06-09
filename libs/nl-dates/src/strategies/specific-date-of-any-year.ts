@@ -31,19 +31,17 @@ export const specificDateOfAnyYear = (
     return undefined;
   }
 
-  const day = result.groups?.['day'];
-  const month = result.groups?.['month'];
+  // Groups will never be undefined - the regex cannot possibly match without groups
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const day = result.groups!['day'];
+
+  // Groups will never be undefined - the regex cannot possibly match without groups
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const month = result.groups!['month'];
+
   const year = result.groups?.['year'];
 
-  const parsedDay = day && getOrdinalIndex(day, wordNumbers, Number(day));
-
-  if (parsedDay === undefined || parsedDay === '') {
-    return undefined;
-  }
-
-  if (['every', 'each'].includes(month?.toLowerCase() ?? '')) {
-    return undefined;
-  }
+  const parsedDay = getOrdinalIndex(day, wordNumbers, Number(day));
 
   const parsedMonth = parseMonth(month, from);
 

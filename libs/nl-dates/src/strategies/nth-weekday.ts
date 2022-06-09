@@ -6,25 +6,7 @@ import { weekdaysPiped, weekDays } from '../ordinals/weekdays';
 import { getDaysInBetween } from '../utils/get-days-in-between';
 import { monthsPiped } from '../ordinals/months';
 import { ParseResult } from '../types/parse-result';
-
-const groupDaysByMonth = (dates: Date[]): Date[][] =>
-  dates.reduce<Date[][]>((accum, item, index) => {
-    if (index === 0) {
-      accum.push([item]);
-      return accum;
-    }
-
-    const lastArray = accum[accum.length - 1];
-    const lastDate = lastArray[lastArray.length - 1];
-
-    if (lastDate.getMonth() === item.getMonth()) {
-      lastArray.push(item);
-      return accum;
-    }
-
-    accum.push([item]);
-    return accum;
-  }, []);
+import { groupOrderedDatesByMonth } from '../utils/group-ordered-dates-by-month';
 
 export interface NumberedWeekdayResult
   extends ParseResult<'NumberedWeekdayOfMonth'> {
@@ -35,20 +17,19 @@ export interface NumberedWeekdayResult
 
 const last = (
   month: string | undefined,
-  which: string | undefined,
-  day: string | undefined,
+  day: string,
   from: Date,
   to: Date
 ): NumberedWeekdayResult | undefined => {
   const parsedMonth = parseMonth(month, from);
 
-  const weekDay = getOrdinalIndex(day ?? '', weekDays, now().getDay());
+  const weekDay = getOrdinalIndex(day, weekDays, now().getDay());
 
   const allWeekdays = getDaysInBetween(from, to).filter(
     (date) => date.getDay() === weekDay
   );
 
-  const daysGroupedByMonth = groupDaysByMonth(allWeekdays);
+  const daysGroupedByMonth = groupOrderedDatesByMonth(allWeekdays);
 
   const finalDays = daysGroupedByMonth
     .map((group) => group.slice().reverse())
@@ -67,8 +48,8 @@ const last = (
 
 const forwards = (
   month: string | undefined,
-  which: string | undefined,
-  day: string | undefined,
+  which: string,
+  day: string,
   from: Date,
   to: Date
 ): NumberedWeekdayResult | undefined => {
@@ -85,7 +66,7 @@ const forwards = (
     (date) => date.getDay() === weekDay
   );
 
-  const daysGroupedByMonth = groupDaysByMonth(allWeekdays);
+  const daysGroupedByMonth = groupOrderedDatesByMonth(allWeekdays);
 
   const finalDays = daysGroupedByMonth
     .map((group) => group.filter((date, index) => index + 1 === parsedWhich))
@@ -120,11 +101,17 @@ export const numberedWeekday = (
     return undefined;
   }
 
-  const which = numberedWeekdayResult.groups?.['which'];
-  const day = numberedWeekdayResult.groups?.['weekDay'];
+  // Groups will never be undefined - the regex cannot possibly match without groups
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const which = numberedWeekdayResult.groups!['which'];
+
+  // Groups will never be undefined - the regex cannot possibly match without groups
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const day = numberedWeekdayResult.groups!['weekDay'];
+
   const month = numberedWeekdayResult.groups?.['weekDay'];
 
   return which === 'last'
-    ? last(month, which, day, from, to)
+    ? last(month, day, from, to)
     : forwards(month, which, day, from, to);
 };

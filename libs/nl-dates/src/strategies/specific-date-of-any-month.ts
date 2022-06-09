@@ -25,13 +25,11 @@ export const specificDateOfAnyMonth = (
     return undefined;
   }
 
-  const day = result.groups?.['day'];
+  // Groups will never be undefined - the regex cannot possibly match without groups
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const day = result.groups!['day'];
 
-  const parsedDay = day && getOrdinalIndex(day, wordNumbers, Number(day));
-
-  if (parsedDay === undefined || parsedDay === '') {
-    return undefined;
-  }
+  const parsedDay = getOrdinalIndex(day, wordNumbers, Number(day));
 
   const dates = getDaysInBetween(from, to).filter((date) => {
     return date.getDate() === parsedDay;

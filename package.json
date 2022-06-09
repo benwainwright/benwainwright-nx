@@ -9,6 +9,7 @@
   },
   "private": true,
   "dependencies": {
+    "jest-date": "^1.1.4",
     "tslib": "^2.3.0"
   },
   "devDependencies": {

@@ -1,1 +1,2 @@
-export * from './lib/parse-nl-dates';
+export { parseDates } from './parse-dates';
+export { getNextValidDate } from './get-next-parsed-date';

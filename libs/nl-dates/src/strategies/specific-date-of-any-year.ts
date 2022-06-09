@@ -1,9 +1,9 @@
-import { ParseResult } from '../types/get-dates-type';
 import { getOrdinalIndex } from '../utils/get-ordinal-index';
 import { monthsPiped } from '../ordinals/months';
 import { daysPiped, wordNumbers } from '../ordinals/number-words';
 import { parseMonth } from '../utils/parse-month';
 import { getDaysInBetween } from '../utils/get-days-in-between';
+import { ParseResult } from '../types/parse-result';
 
 export interface SpecificDateResult extends ParseResult<'SpecificDateOfYear'> {
   day: number;

@@ -1,5 +1,5 @@
 import { daysPiped, wordNumbers } from '../ordinals/number-words';
-import { ParseResult } from '../types/get-dates-type';
+import { ParseResult } from '../types/parse-result';
 import { getDaysInBetween } from '../utils/get-days-in-between';
 import { getOrdinalIndex } from '../utils/get-ordinal-index';
 

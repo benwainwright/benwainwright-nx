@@ -1,35 +1,16 @@
-import { everyWeek, EveryWeekResult } from './strategies/every-week';
-import { ParseResult } from './types/get-dates-type';
+import { everyWeek } from './strategies/every-week';
 import { now } from './utils/now';
-import {
-  numberedWeekday,
-  NumberedWeekdayResult,
-} from './strategies/nth-weekday';
+import { numberedWeekday } from './strategies/nth-weekday';
 
-import {
-  specificDateOfAnyYear,
-  SpecificDateResult,
-} from './strategies/specific-date-of-any-year';
-import {
-  EveryMonthResult,
-  specificDateOfAnyMonth,
-} from './strategies/specific-date-of-any-month';
+import { specificDateOfAnyYear } from './strategies/specific-date-of-any-year';
+import { specificDateOfAnyMonth } from './strategies/specific-date-of-any-month';
+import { GetDatesResult } from './types/get-dates-result';
 
 interface GetDatesOptions {
   from?: Date;
   to: Date;
   max?: number;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface NoParseResult extends ParseResult<'None'> {}
-
-type GetDatesResult =
-  | EveryMonthResult
-  | SpecificDateResult
-  | NumberedWeekdayResult
-  | EveryWeekResult
-  | NoParseResult;
 
 const dates = (options?: GetDatesOptions): [Date, Date] => {
   const nextMonth = now();

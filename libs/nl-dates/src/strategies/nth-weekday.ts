@@ -1,4 +1,3 @@
-import { ParseResult } from '../types/get-dates-type';
 import { getOrdinalIndex } from '../utils/get-ordinal-index';
 import { now } from '../utils/now';
 import { nthWeekdayOptionsPiped, wordNumbers } from '../ordinals/number-words';
@@ -6,6 +5,7 @@ import { parseMonth } from '../utils/parse-month';
 import { weekdaysPiped, weekDays } from '../ordinals/weekdays';
 import { getDaysInBetween } from '../utils/get-days-in-between';
 import { monthsPiped } from '../ordinals/months';
+import { ParseResult } from '../types/parse-result';
 
 const groupDaysByMonth = (dates: Date[]): Date[][] =>
   dates.reduce<Date[][]>((accum, item, index) => {

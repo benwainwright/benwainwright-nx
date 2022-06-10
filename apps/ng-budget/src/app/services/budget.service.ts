@@ -59,6 +59,7 @@ export class BudgetService {
       pots
     );
 
+
     this.updateBudget(uuid(), distributedPayments, balance, startDate, endDate);
   }
 
@@ -130,6 +131,7 @@ export class BudgetService {
       budgets[existingBudget] = budget;
       this.budgets.next(budgets);
     } else {
+
       this.budgets.next([...budgets, budget]);
     }
   }

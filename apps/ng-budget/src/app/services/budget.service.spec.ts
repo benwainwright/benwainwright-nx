@@ -114,14 +114,52 @@ const expectSameDate = (dateOne: Date, dateTwo: Date) => {
 
 describe('BudgetService', () => {
   describe('createBudget', () => {
-    it('creates a single budget when you call create budget', async () => {
+    it.only('creates a single budget when you call create budget', async () => {
       when(jest.mocked(getNextParsedDate))
         .calledWith(date(1, 6, 2022), 'last thursday of every month')
         .mockReturnValue(date(30, 6, 2022));
 
+      when(jest.mocked(parseDates))
+        .calledWith('on the 3rd of June', {
+          from: date(1, 6, 2022),
+          to: date(30, 6, 2022),
+        })
+        .mockReturnValue({
+          type: 'NumberedWeekdayOfMonth',
+          dates: [date(30, 6, 2022)],
+          weekDay: 4,
+          which: 'last',
+        });
+
+      when(jest.mocked(parseDates))
+        .calledWith('6th of June', {
+          from: date(1, 6, 2022),
+          to: date(30, 6, 2022),
+        })
+        .mockReturnValue({
+          type: 'SpecificDateOfYear',
+          dates: [date(1, 6, 2022)],
+          month: 6,
+          day: 1,
+        });
+
+      when(jest.mocked(parseDates))
+        .calledWith('every week on wednesday', {
+          from: date(1, 6, 2022),
+          to: date(30, 6, 2022),
+        })
+        .mockReturnValue({
+          type: 'EveryWeek',
+          dates: [date(1, 6, 2022)],
+          weekDay: 3,
+          alternatingNumber: 1,
+        });
+
       const service = bootstrapBudgetService();
 
       service.createBudget();
+
+      jest.runAllTimers();
 
       const budgets = await lastValueFrom(service.getBudgets().pipe(take(1)));
 

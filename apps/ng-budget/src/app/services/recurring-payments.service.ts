@@ -1,20 +1,21 @@
-import { Injectable } from '@angular/core'
-import { Observable, of, BehaviorSubject, Subject } from 'rxjs'
-import { RecurringPayment } from '../../types/recurring-payment'
+import { Injectable } from '@angular/core';
+import { RecurringPayment } from '@benwainwright/budget-domain';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class RecurringPaymentsService {
-    private payments = new BehaviorSubject<RecurringPayment[]>([])
+  private payments = new BehaviorSubject<RecurringPayment[]>([]);
 
-    public constructor() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public constructor() {}
 
-    getPayments(): Observable<RecurringPayment[]> {
-        return this.payments.asObservable()
-    }
+  getPayments(): Observable<RecurringPayment[]> {
+    return this.payments.asObservable();
+  }
 
-    setPayments(payments: RecurringPayment[]) {
-        this.payments.next(payments)
-    }
+  setPayments(payments: RecurringPayment[]) {
+    this.payments.next(payments);
+  }
 }

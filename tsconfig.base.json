@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@benwainwright/budget-domain": ["libs/budget-domain/src/index.ts"],
       "@benwainwright/nl-dates": ["libs/nl-dates/src/index.ts"]
     }
   },

@@ -1,16 +1,17 @@
-import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable } from 'rxjs'
-import { Pot } from '../../types/pot'
+import { Injectable } from '@angular/core';
+import { Pot } from '@benwainwright/budget-domain';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class PotsService {
-    constructor() {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  constructor() {}
 
-    private pots = new BehaviorSubject<Pot[]>([])
+  private pots = new BehaviorSubject<Pot[]>([]);
 
-    getPots(): Observable<Pot[]> {
-        return this.pots.asObservable()
-    }
+  getPots(): Observable<Pot[]> {
+    return this.pots.asObservable();
+  }
 }

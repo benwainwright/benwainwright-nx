@@ -2,6 +2,7 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "budget-domain": "libs/budget-domain",
     "ng-budget": "apps/ng-budget",
     "ng-budget-e2e": "apps/ng-budget-e2e",
     "nl-dates": "libs/nl-dates"

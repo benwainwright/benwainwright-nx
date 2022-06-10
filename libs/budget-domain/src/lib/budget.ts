@@ -42,7 +42,21 @@ export class Budget {
 
   public isCurrent(): boolean {
     const now = new Date(Date.now());
-    return now > this.startDate && now < this.endDate;
+    const start = new Date(this.startDate.valueOf());
+
+    start.setHours(0);
+    start.setMinutes(0);
+    start.setSeconds(0);
+    start.setMilliseconds(0);
+
+    const end = new Date(this.endDate.valueOf());
+
+    end.setHours(0);
+    end.setMinutes(0);
+    end.setSeconds(0);
+    end.setMilliseconds(0);
+
+    return now > start && now < end;
   }
 
   public setPayments(payments: RecurringPayment[]) {
@@ -91,7 +105,7 @@ export class Budget {
   }
 
   public set pots(pots: Pot[]) {
-    this.potValues.map((pot) => ({
+    this.potValues = this.potValues.map((pot) => ({
       ...pot,
       ...pots.find((needle) => pot.id === needle.id),
     }));

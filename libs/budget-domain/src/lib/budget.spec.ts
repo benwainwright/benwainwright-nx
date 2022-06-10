@@ -6,7 +6,7 @@ import { Pot } from '../types/pot';
 import { RecurringPayment } from '../types/recurring-payment';
 import { Budget } from './budget';
 
-freezeDateWithJestFakeTimers(3, 6, 2022);
+freezeDateWithJestFakeTimers(new Date(1654869830 * 1000));
 
 jest.mock('@benwainwright/nl-dates');
 
@@ -212,5 +212,121 @@ describe('budget', () => {
     secondBudget.setPayments(PAYMENTS);
 
     expect(secondBudget.surplus).toEqual(2115);
+  });
+
+  it('correctly marks the budget as current or not depending on the date range and the current date', () => {
+    const budget = new Budget(
+      'id',
+      date(1, 6, 2022),
+      date(30, 6, 2022),
+      POTS,
+      1000
+    );
+
+    expect(budget.isCurrent()).toEqual(true);
+
+    const budgetTwo = new Budget(
+      'id',
+      date(20, 6, 2022),
+      date(30, 6, 2022),
+      POTS,
+      1000
+    );
+
+    expect(budgetTwo.isCurrent()).toEqual(false);
+
+    const budgetThree = new Budget(
+      'id',
+      new Date(1654851830 * 1000),
+      date(30, 6, 2022),
+      POTS,
+      1000
+    );
+
+    expect(budgetThree.isCurrent()).toEqual(true);
+
+    const budgetFour = new Budget(
+      'id',
+      new Date(1654884229 * 1000),
+      date(30, 6, 2022),
+      POTS,
+      1000
+    );
+
+    expect(budgetFour.isCurrent()).toEqual(true);
+
+    const budgetFive = new Budget(
+      'id',
+      date(1, 6, 2022),
+      new Date(1654898449 * 1000),
+      POTS,
+      1000
+    );
+
+    expect(budgetFive.isCurrent()).toEqual(false);
+
+    const budgetSix = new Budget(
+      'id',
+      date(1, 6, 2022),
+      new Date(1654905649 * 1000),
+      POTS,
+      1000
+    );
+
+    expect(budgetSix.isCurrent()).toEqual(true);
+  });
+
+  it('returns all the passed in pots from pots', () => {
+    const from = date(1, 6, 2022);
+    const to = date(30, 6, 2022);
+
+    const budget = new Budget('id', from, to, POTS, 1000);
+
+    expect(budget.pots).toEqual(POTS);
+  });
+
+  it('updating current pot balances updates the current adjustment amounts which is reflected in the final surpluses', () => {
+    const from = date(1, 6, 2022);
+    const to = date(30, 6, 2022);
+    const finalTo = date(28, 7, 2022);
+
+    setupDateMocks(from, to);
+    setupDateMocks(to, finalTo);
+
+    const budget = new Budget('id', from, to, POTS, 1000);
+    budget.setPayments(PAYMENTS);
+
+    const secondBudget = new Budget('id2', to, finalTo, POTS, 1000, budget);
+    secondBudget.setPayments(PAYMENTS);
+
+    budget.pots = [
+      {
+        id: '0',
+        balance: 65,
+        name: 'my other cool pot',
+      },
+      {
+        id: '1',
+        balance: 105,
+        name: 'my cool pot',
+      },
+      {
+        id: '2',
+        balance: 180,
+        name: 'my other cool pot',
+      },
+      {
+        id: '3',
+        balance: 405,
+        name: 'my next cool pot',
+      },
+    ];
+
+    expect(budget.potPlans[0].adjustmentAmount).toEqual(135);
+    expect(budget.potPlans[1].adjustmentAmount).toEqual(20);
+    expect(budget.potPlans[2].adjustmentAmount).toEqual(-180);
+    expect(budget.potPlans[3].adjustmentAmount).toEqual(-405);
+
+    expect(budget.surplus).toEqual(1430);
   });
 });

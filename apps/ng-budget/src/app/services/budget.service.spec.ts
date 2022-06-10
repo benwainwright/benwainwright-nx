@@ -1,16 +1,37 @@
 import { TestBed } from '@angular/core/testing';
-import { lastValueFrom, Observable, of, take } from 'rxjs';
+import { lastValueFrom, Observable, of, retryWhen, take } from 'rxjs';
 import { date } from '../../lib/date';
 import { Pot } from '../../types/pot';
 import { BalanceService } from './balance.service';
+import { getNextParsedDate, parseDates } from '@benwainwright/nl-dates';
 
 import { BudgetService } from './budget.service';
 import { PotsService } from './pots.service';
 import { RecurringPaymentsService } from './recurring-payments.service';
+import { when } from 'jest-when';
+import { freezeDateWithJestFakeTimers } from '../../testing-utils/freeze-date';
+import { SettingsService } from './settings.service';
+
+jest.mock('@benwainwright/nl-dates');
+
+freezeDateWithJestFakeTimers(1, 6, 2022);
+
+beforeEach(() => {
+  jest.resetAllMocks();
+});
 
 class MockBalanceService {
   getAvailableBalance(): Observable<number> {
     return of(1200);
+  }
+}
+
+class MockSettingsService {
+  getSettings() {
+    return of({
+      overdraft: 0,
+      payCycle: 'last thursday of every month',
+    });
   }
 }
 
@@ -69,6 +90,22 @@ class MockRecurringPaymentsService {
   }
 }
 
+const bootstrapBudgetService = () => {
+  TestBed.configureTestingModule({
+    providers: [
+      { provide: BalanceService, useClass: MockBalanceService },
+      { provide: PotsService, useClass: MockPotsService },
+      { provide: SettingsService, useClass: MockSettingsService },
+      {
+        provide: RecurringPaymentsService,
+        useClass: MockRecurringPaymentsService,
+      },
+    ],
+  });
+
+  return TestBed.inject(BudgetService);
+};
+
 const expectSameDate = (dateOne: Date, dateTwo: Date) => {
   expect(dateOne.getDate()).toEqual(dateTwo.getDate());
   expect(dateOne.getMonth()).toEqual(dateTwo.getMonth());
@@ -76,91 +113,108 @@ const expectSameDate = (dateOne: Date, dateTwo: Date) => {
 };
 
 describe('BudgetService', () => {
-  it('generates the correct payments in the pot plan when creating the initial budget', async () => {
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: BalanceService, useClass: MockBalanceService },
-        { provide: PotsService, useClass: MockPotsService },
-        {
-          provide: RecurringPaymentsService,
-          useClass: MockRecurringPaymentsService,
-        },
-      ],
+  describe('createBudget', () => {
+    it('creates a single budget when you call create budget', async () => {
+      when(jest.mocked(getNextParsedDate))
+        .calledWith(date(1, 6, 2022), 'last thursday of every month')
+        .mockReturnValue(date(30, 6, 2022));
+
+      const service = bootstrapBudgetService();
+
+      service.createBudget();
+
+      const budgets = await lastValueFrom(service.getBudgets().pipe(take(1)));
+
+      expect(budgets).toHaveLength(1);
     });
 
-    const service = TestBed.inject(BudgetService);
+    it('creates a second budget when you call create budget a second time', async () => {
+      const service = bootstrapBudgetService();
 
-    const startDate = date(31, 5, 2022);
-    const endDate = date(30, 6, 2022);
+      when(jest.mocked(getNextParsedDate))
+        .calledWith(date(1, 6, 2022), 'last thursday of every month')
+        .mockReturnValue(date(30, 6, 2022));
 
-    await service.createInitialBudget({
-      startDate,
-      endDate,
+      when(jest.mocked(getNextParsedDate))
+        .calledWith(date(30, 6, 2022), 'last thursday of every month')
+        .mockReturnValue(date(28, 6, 2022));
+
+      service.createBudget();
+      service.createBudget();
+
+      const budgetsSecond = await lastValueFrom(
+        service.getBudgets().pipe(take(1))
+      );
+
+      expect(budgetsSecond).toHaveLength(2);
     });
 
-    const budget = await lastValueFrom(service.getBudget().pipe(take(1)));
+    it('creates the first budget starting from today and ending on the next payday', async () => {
+      const service = bootstrapBudgetService();
 
-    expect(budget.length).toEqual(1);
-    expect(budget[0]).toEqual(
-      expect.objectContaining({
-        startDate,
-        endDate,
-      })
-    );
+      when(jest.mocked(getNextParsedDate))
+        .calledWith(date(1, 6, 2022), 'last thursday of every month')
+        .mockReturnValue(date(30, 6, 2022));
 
-    const first = budget[0].potPlans[0];
-    expect(first.payments.length).toEqual(2);
+      when(jest.mocked(getNextParsedDate))
+        .calledWith(date(30, 6, 2022), 'last thursday of every month')
+        .mockReturnValue(date(28, 7, 2022));
 
-    expectSameDate(first.payments[0].when, date(3, 6, 2022));
-    expectSameDate(first.payments[1].when, date(6, 6, 2022));
+      service.createBudget();
+      service.createBudget();
 
-    const second = budget[0].potPlans[1];
+      const budgets = await lastValueFrom(service.getBudgets().pipe(take(1)));
 
-    expect(second.payments.length).toEqual(5);
-
-    expectSameDate(second.payments[0].when, date(1, 6, 2022));
-    expectSameDate(second.payments[1].when, date(8, 6, 2022));
-    expectSameDate(second.payments[2].when, date(15, 6, 2022));
-    expectSameDate(second.payments[3].when, date(22, 6, 2022));
-    expectSameDate(second.payments[4].when, date(29, 6, 2022));
-
-    expect(second.payments[2].amount).toEqual(25);
-
-    const third = budget[0].potPlans[2];
-    expect(third.payments.length).toEqual(0);
-
-    const fourth = budget[0].potPlans[2];
-    expect(fourth.payments.length).toEqual(0);
-  });
-
-  it('calculates the correct pot plan balances', async () => {
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: BalanceService, useClass: MockBalanceService },
-        { provide: PotsService, useClass: MockPotsService },
-        {
-          provide: RecurringPaymentsService,
-          useClass: MockRecurringPaymentsService,
-        },
-      ],
+      expect(budgets[0].startDate).toBeSameDayAs(date(1, 6, 2022));
+      expect(budgets[0].endDate).toBeSameDayAs(date(30, 6, 2022));
+      expect(budgets[1].startDate).toBeSameDayAs(date(30, 6, 2022));
+      expect(budgets[1].endDate).toBeSameDayAs(date(28, 7, 2022));
     });
 
-    const service = TestBed.inject(BudgetService);
+    it('generates the correct payments in the pot plan', async () => {
+      const service = bootstrapBudgetService();
 
-    const startDate = date(31, 5, 2022);
-    const endDate = date(30, 6, 2022);
+      await service.createBudget();
 
-    await service.createInitialBudget({
-      startDate,
-      endDate,
+      const budget = await lastValueFrom(service.getBudgets().pipe(take(1)));
+
+      const first = budget[0].potPlans[0];
+      expect(first.payments.length).toEqual(2);
+
+      expectSameDate(first.payments[0].when, date(3, 6, 2022));
+      expectSameDate(first.payments[1].when, date(6, 6, 2022));
+
+      const second = budget[0].potPlans[1];
+
+      expect(second.payments.length).toEqual(5);
+
+      expectSameDate(second.payments[0].when, date(1, 6, 2022));
+      expectSameDate(second.payments[1].when, date(8, 6, 2022));
+      expectSameDate(second.payments[2].when, date(15, 6, 2022));
+      expectSameDate(second.payments[3].when, date(22, 6, 2022));
+      expectSameDate(second.payments[4].when, date(29, 6, 2022));
+
+      expect(second.payments[2].amount).toEqual(25);
+
+      const third = budget[0].potPlans[2];
+      expect(third.payments.length).toEqual(0);
+
+      const fourth = budget[0].potPlans[2];
+      expect(fourth.payments.length).toEqual(0);
     });
 
-    const budget = await lastValueFrom(service.getBudget().pipe(take(1)));
+    it('calculates the correct pot plan balances', async () => {
+      const service = bootstrapBudgetService();
 
-    expect(budget[0].potPlans[0].adjustmentAmount).toEqual(150);
-    expect(budget[0].potPlans[1].adjustmentAmount).toEqual(20);
-    expect(budget[0].potPlans[2].adjustmentAmount).toEqual(-205);
-    expect(budget[0].potPlans[3].adjustmentAmount).toEqual(-405);
-    expect(budget[0].surplus).toEqual(1640);
+      await service.createBudget();
+
+      const budget = await lastValueFrom(service.getBudgets().pipe(take(1)));
+
+      expect(budget[0].potPlans[0].adjustmentAmount).toEqual(150);
+      expect(budget[0].potPlans[1].adjustmentAmount).toEqual(20);
+      expect(budget[0].potPlans[2].adjustmentAmount).toEqual(-205);
+      expect(budget[0].potPlans[3].adjustmentAmount).toEqual(-405);
+      expect(budget[0].surplus).toEqual(1640);
+    });
   });
 });

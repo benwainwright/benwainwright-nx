@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { lastValueFrom, BehaviorSubject, Observable, take } from 'rxjs';
 import { uuid } from '../../lib/uuid';
-import { parseDates } from '@benwainwright/nl-dates';
+import { parseDates, getNextParsedDate } from '@benwainwright/nl-dates';
 import { Budget, PaymentPlan } from '../../types/budget';
 import { Pot } from '../../types/pot';
 import { PotPlan } from '../../types/pot-plan';
@@ -9,6 +9,7 @@ import { RecurringPayment } from '../../types/recurring-payment';
 import { BalanceService } from './balance.service';
 import { PotsService } from './pots.service';
 import { RecurringPaymentsService } from './recurring-payments.service';
+import { SettingsService } from './settings.service';
 
 interface InitialBudgetInput {
   startDate: Date;
@@ -22,39 +23,48 @@ export class BudgetService {
   constructor(
     private recurringPayments: RecurringPaymentsService,
     private pots: PotsService,
-    private balance: BalanceService
+    private balance: BalanceService,
+    private settings: SettingsService
   ) {}
 
   private budgets = new BehaviorSubject<Budget[]>([]);
 
-  async createInitialBudget(input: InitialBudgetInput) {
+  async createBudget() {
     const paymentsPromise = lastValueFrom(
       this.recurringPayments.getPayments().pipe(take(1))
+    );
+
+    const settingsPromise = lastValueFrom(
+      this.settings.getSettings().pipe(take(1))
     );
     const potsPromise = lastValueFrom(this.pots.getPots().pipe(take(1)));
     const balancePromise = lastValueFrom(
       this.balance.getAvailableBalance().pipe(take(1))
     );
 
-    const [payments, pots, balance] = await Promise.all([
+    const [payments, pots, balance, settings] = await Promise.all([
       paymentsPromise,
       potsPromise,
       balancePromise,
+      settingsPromise,
     ]);
 
-    const distributedPayments = this.distributePayments(input, payments, pots);
+    const startDate = new Date(Date.now());
+    const endDate = getNextParsedDate(startDate, settings.payCycle);
 
-    this.updateBudget(
-      uuid(),
-      distributedPayments,
-      balance,
-      input.startDate,
-      input.endDate
+    const distributedPayments = this.distributePayments(
+      startDate,
+      endDate,
+      payments,
+      pots
     );
+
+    this.updateBudget(uuid(), distributedPayments, balance, startDate, endDate);
   }
 
   private distributePayments(
-    input: InitialBudgetInput,
+    start: Date,
+    end: Date,
     payments: RecurringPayment[],
     pots: Pot[]
   ): Omit<PotPlan, 'adjustmentAmount'>[] {
@@ -66,8 +76,8 @@ export class BudgetService {
         .filter((payment) => payment.potId === pot.id)
         .flatMap((payment) =>
           parseDates(payment.when, {
-            from: input.startDate,
-            to: input.endDate,
+            from: start,
+            to: end,
           }).dates.map((date, index) => ({
             id: `${payment.id}-${index}`,
             name: payment.name,
@@ -124,7 +134,7 @@ export class BudgetService {
     }
   }
 
-  getBudget(): Observable<Budget[]> {
+  getBudgets(): Observable<Budget[]> {
     return this.budgets.asObservable();
   }
 }

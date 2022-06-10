@@ -2,7 +2,7 @@ import { parseDates } from './parse-dates';
 
 const ONE_WEEK = 7;
 
-export const getNextValidDate = (from: Date, text: string): Date => {
+export const getNextParsedDate = (from: Date, text: string): Date => {
   const to = new Date(from.valueOf());
   to.setDate(to.getDate() + ONE_WEEK);
 
@@ -16,5 +16,5 @@ export const getNextValidDate = (from: Date, text: string): Date => {
     return result.dates[0];
   }
 
-  return getNextValidDate(to, text);
+  return getNextParsedDate(to, text);
 };

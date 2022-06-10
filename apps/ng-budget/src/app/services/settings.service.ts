@@ -1,28 +1,28 @@
-import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable, of } from 'rxjs'
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 
 interface Settings {
-    overdraft: number
-    nextPayday: Date
+  overdraft: number;
+  payCycle: string;
 }
 
 @Injectable({
-    providedIn: 'root',
+  providedIn: 'root',
 })
 export class SettingsService {
-    constructor() {}
+  constructor() {}
 
-    private settings = new BehaviorSubject<Settings>({
-        overdraft: 0,
-        nextPayday: new Date(Date.now()),
-    })
+  private settings = new BehaviorSubject<Settings>({
+    overdraft: 0,
+    payCycle: 'on the first of every month',
+  });
 
-    getSettings(): Observable<Settings> {
-        return this.settings.asObservable()
-    }
+  getSettings(): Observable<Settings> {
+    return this.settings.asObservable();
+  }
 
-    setSettings(settings: Partial<Settings>) {
-        const nextSettings = { ...this.settings.value, ...settings }
-        this.settings.next(nextSettings)
-    }
+  setSettings(settings: Partial<Settings>) {
+    const nextSettings = { ...this.settings.value, ...settings };
+    this.settings.next(nextSettings);
+  }
 }

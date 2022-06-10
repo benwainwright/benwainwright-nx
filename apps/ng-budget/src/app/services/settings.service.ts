@@ -16,7 +16,7 @@ export class SettingsService {
 
   private settings = new BehaviorSubject<Settings>({
     overdraft: 0,
-    payCycle: 'on the first of every month',
+    payCycle: 'last thursday of every month',
     payAmount: 0,
   });
 

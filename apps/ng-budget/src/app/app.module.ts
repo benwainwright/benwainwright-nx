@@ -11,6 +11,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { PaymentsComponent } from './payments/payments.component';
+import { DummyDataComponent } from './dummy-data/dummy-data.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { PaymentsComponent } from './payments/payments.component';
     SettingsComponent,
     NavBarComponent,
     PaymentsComponent,
+    DummyDataComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule],
   providers: [SettingsService, RecurringPaymentsService, BudgetService],

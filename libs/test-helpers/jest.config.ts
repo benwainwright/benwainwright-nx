@@ -1,12 +1,11 @@
 /* eslint-disable */
 export default {
-  displayName: 'budget-domain',
+  displayName: 'test-helpers',
   preset: '../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]sx?$': 'babel-jest',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/libs/budget-domain',
-  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
+  coverageDirectory: '../../coverage/libs/test-helpers',
 };

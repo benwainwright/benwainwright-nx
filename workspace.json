@@ -5,6 +5,8 @@
     "budget-domain": "libs/budget-domain",
     "ng-budget": "apps/ng-budget",
     "ng-budget-e2e": "apps/ng-budget-e2e",
-    "nl-dates": "libs/nl-dates"
+    "nl-dates": "libs/nl-dates",
+    "test-helpers": "libs/test-helpers",
+    "utils": "libs/utils"
   }
 }

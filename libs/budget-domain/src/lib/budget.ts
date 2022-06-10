@@ -17,7 +17,7 @@ export class Budget {
     public readonly startDate: Date,
     public readonly endDate: Date,
     pots: Pot[],
-    public readonly balance: number,
+    public balance: number,
     public readonly previous?: Budget
   ) {
     this.potValues = pots.map((pot) => ({

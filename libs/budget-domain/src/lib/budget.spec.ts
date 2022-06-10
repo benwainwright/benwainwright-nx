@@ -163,6 +163,36 @@ describe('budget', () => {
     expect(fourth.adjustmentAmount).toEqual(0);
   });
 
+  it('disregards budgets that are in the past when calculating the surplus and adjustments', () => {
+    const from = date(1, 5, 2022);
+    const to = date(1, 6, 2022);
+    const laterTo = date(30, 6, 2022);
+    const finalTo = date(28, 7, 2022);
+
+    setupDateMocks(from, to);
+    setupDateMocks(to, laterTo);
+    setupDateMocks(laterTo, finalTo);
+
+    const budget = new Budget('id', from, to, POTS, 1000);
+    budget.setPayments(PAYMENTS);
+
+    const secondBudget = new Budget('id2', to, laterTo, POTS, 1000, budget);
+    secondBudget.setPayments(PAYMENTS);
+
+    const thirdBudget = new Budget(
+      'id3',
+      laterTo,
+      finalTo,
+      POTS,
+      1000,
+      secondBudget
+    );
+    thirdBudget.setPayments(PAYMENTS);
+
+    expect(secondBudget.surplus).toEqual(1440);
+    expect(thirdBudget.surplus).toEqual(2115);
+  });
+
   it('calculates the correct adjustment amounts', () => {
     const from = date(1, 6, 2022);
     const to = date(30, 6, 2022);
@@ -195,6 +225,39 @@ describe('budget', () => {
     budget.setPayments(PAYMENTS);
 
     expect(budget.surplus).toEqual(1440);
+  });
+
+  it('changing the balance results in a different surplus', () => {
+    const from = date(1, 6, 2022);
+    const to = date(30, 6, 2022);
+
+    setupDateMocks(from, to);
+    const budget = new Budget('id', from, to, POTS, 1000);
+
+    budget.setPayments(PAYMENTS);
+
+    budget.balance = 890;
+
+    expect(budget.surplus).toEqual(1330);
+  });
+
+  it('balance changes are not ignored over multiple budgets', () => {
+    const from = date(1, 6, 2022);
+    const to = date(30, 6, 2022);
+    const finalTo = date(28, 7, 2022);
+
+    setupDateMocks(from, to);
+    setupDateMocks(to, finalTo);
+
+    const budget = new Budget('id', from, to, POTS, 1000);
+    budget.setPayments(PAYMENTS);
+
+    budget.balance = 890;
+
+    const secondBudget = new Budget('id2', to, finalTo, POTS, 1000, budget);
+    secondBudget.setPayments(PAYMENTS);
+
+    expect(secondBudget.surplus).toEqual(2005);
   });
 
   it('adds previous budget surplus to the current balance', () => {

@@ -94,7 +94,7 @@ class MockRecurringPaymentsService {
 
 const setupDateMocks = () => {
   when(jest.mocked(getNextParsedDate))
-    .calledWith(date(1, 6, 2022), 'last thursday of every month')
+    .calledWith(date(2, 6, 2022), 'last thursday of every month')
     .mockReturnValue(date(30, 6, 2022));
 
   when(jest.mocked(parseDates))
@@ -140,7 +140,7 @@ const setupDateMocks = () => {
     });
 
   when(jest.mocked(getNextParsedDate))
-    .calledWith(date(30, 6, 2022), 'last thursday of every month')
+    .calledWith(date(1, 7, 2022), 'last thursday of every month')
     .mockReturnValue(date(28, 7, 2022));
 
   when(jest.mocked(parseDates))

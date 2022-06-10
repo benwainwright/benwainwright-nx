@@ -59,6 +59,10 @@ export class Budget {
     return now > start && now < end;
   }
 
+  public get potsTotalBalance(): number {
+    return this.potPlans.reduce((accum, pot) => pot.balance + accum, 0);
+  }
+
   public setPayments(payments: RecurringPayment[]) {
     this.potValues = this.distributePayments(
       this.potValues,

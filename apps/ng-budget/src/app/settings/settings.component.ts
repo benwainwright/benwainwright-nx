@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { SettingsService } from '../services/settings.service';
 
@@ -8,12 +8,22 @@ import { SettingsService } from '../services/settings.service';
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css'],
 })
-export class SettingsComponent implements OnInit, OnDestroy {
+export class SettingsComponent implements OnDestroy {
   private subscription: Subscription | undefined;
 
-  constructor(private settingService: SettingsService) {}
+  public form = new FormGroup({
+    overdraft: new FormControl<number>(0, { nonNullable: true }),
+    payCycle: new FormControl('', { nonNullable: true }),
+    expectedSalary: new FormControl<number>(0, { nonNullable: true }),
+  });
 
-  ngOnDestroy(): void {}
+  constructor(private settingService: SettingsService) {
+    this.subscription = this.form.valueChanges.subscribe((value) =>
+      this.settingService.setSettings(value)
+    );
+  }
 
-  ngOnInit(): void {}
+  public ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
 }

@@ -13,7 +13,7 @@ describe('settings service', () => {
 
     const today = new Date(Date.now());
 
-    expect(result.payCycle).toEqual('on the first of every month');
+    expect(result.payCycle).toEqual('last thursday of every month');
   });
 
   it('should return the new pay cycle when set', async () => {
@@ -23,7 +23,7 @@ describe('settings service', () => {
       service.getSettings().pipe(take(1))
     );
 
-    expect(firstResult.payCycle).toEqual('on the first of every month');
+    expect(firstResult.payCycle).toEqual('last thursday of every month');
 
     service.setSettings({
       payCycle: 'the last thursday of every month',
@@ -44,7 +44,7 @@ describe('settings service', () => {
 
     const firstResult = await lastValueFrom(settingsObservable.pipe(take(1)));
 
-    expect(firstResult.payCycle).toEqual('on the first of every month');
+    expect(firstResult.payCycle).toEqual('last thursday of every month');
 
     service.setSettings({
       payCycle: 'every thursday',

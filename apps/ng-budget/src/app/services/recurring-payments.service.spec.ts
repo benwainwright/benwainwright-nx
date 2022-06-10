@@ -1,6 +1,9 @@
 import { RecurringPayment } from '@benwainwright/budget-domain';
 import { lastValueFrom, take } from 'rxjs';
-import { RecurringPaymentsService } from './recurring-payments.service';
+import {
+  PAYMENTS,
+  RecurringPaymentsService,
+} from './recurring-payments.service';
 
 describe('recurring payments service', () => {
   it('should be instantiated without error', () => {
@@ -13,7 +16,7 @@ describe('recurring payments service', () => {
 
       const result = await lastValueFrom(service.getPayments().pipe(take(1)));
 
-      expect(result).toEqual([]);
+      expect(result).toEqual(PAYMENTS);
     });
 
     it('should emit a new result when payments are set', async () => {
@@ -38,7 +41,9 @@ describe('recurring payments service', () => {
 
       const paymentsObservable = service.getPayments();
 
-      expect(await lastValueFrom(paymentsObservable.pipe(take(1)))).toEqual([]);
+      expect(await lastValueFrom(paymentsObservable.pipe(take(1)))).toEqual(
+        PAYMENTS
+      );
 
       service.setPayments(payments);
 

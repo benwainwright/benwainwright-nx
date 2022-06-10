@@ -18,7 +18,6 @@ export class BudgetService {
     private balance: BalanceService,
     private settings: SettingsService
   ) {}
-
   private budgets = new BehaviorSubject<Budget[]>([]);
 
   async createBudget() {
@@ -58,7 +57,13 @@ export class BudgetService {
     const created = new Budget(uuid(), startDate, endDate, pots, balance, last);
 
     created.setPayments(payments);
-    this.budgets.next([...budgets, created]);
+    this.saveBudget(created);
+  }
+
+  private saveBudget(budget: Budget) {
+    const oldBudgets = this.budgets.getValue();
+    const newBudgets = [...oldBudgets, budget];
+    this.budgets.next(newBudgets);
   }
 
   getBudgets(): Observable<Budget[]> {

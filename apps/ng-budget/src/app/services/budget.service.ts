@@ -50,10 +50,10 @@ export class BudgetService {
 
     const endDate = getNextParsedDate(startDate, settings.payCycle);
 
-    const created = new Budget(uuid(), startDate, endDate, pots, balance);
+    const last = budgets.length > 0 ? budgets[budgets.length - 1] : undefined;
+    const created = new Budget(uuid(), startDate, endDate, pots, balance, last);
 
     created.setPayments(payments);
-
     this.budgets.next([...budgets, created]);
   }
 

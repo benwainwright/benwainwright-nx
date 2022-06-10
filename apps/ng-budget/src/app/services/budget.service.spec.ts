@@ -35,30 +35,32 @@ class MockSettingsService {
   }
 }
 
+const POTS: Pot[] = [
+  {
+    id: '0',
+    balance: 50,
+    name: 'my other cool pot',
+  },
+  {
+    id: '1',
+    balance: 105,
+    name: 'my cool pot',
+  },
+  {
+    id: '2',
+    balance: 205,
+    name: 'my other cool pot',
+  },
+  {
+    id: '3',
+    balance: 405,
+    name: 'my next cool pot',
+  },
+];
+
 class MockPotsService {
   getPots(): Observable<Pot[]> {
-    return of([
-      {
-        id: '0',
-        balance: 50,
-        name: 'my other cool pot',
-      },
-      {
-        id: '1',
-        balance: 105,
-        name: 'my cool pot',
-      },
-      {
-        id: '2',
-        balance: 205,
-        name: 'my other cool pot',
-      },
-      {
-        id: '3',
-        balance: 405,
-        name: 'my next cool pot',
-      },
-    ]);
+    return of(POTS);
   }
 }
 
@@ -228,7 +230,7 @@ describe('BudgetService', () => {
       expect(budgetsSecond).toHaveLength(2);
     });
 
-    it('creates the first budget starting from today and ending on the next payday', async () => {
+    it('creates the first budget starting from today and ending on the next payday, then the next budget following that', async () => {
       setupDateMocks();
       const service = bootstrapBudgetService();
 
@@ -241,6 +243,35 @@ describe('BudgetService', () => {
       expect(budgets[0].endDate).toBeSameDayAs(date(30, 6, 2022));
       expect(budgets[1].startDate).toBeSameDayAs(date(30, 6, 2022));
       expect(budgets[1].endDate).toBeSameDayAs(date(28, 7, 2022));
+    });
+
+    it('passes in pots and balance correctly', async () => {
+      setupDateMocks();
+      const service = bootstrapBudgetService();
+
+      await service.createBudget();
+      await service.createBudget();
+
+      const budgets = await lastValueFrom(service.getBudgets().pipe(take(1)));
+
+      expect(budgets[0].pots).toEqual(POTS);
+
+      expect(budgets[1].pots).toEqual(
+        POTS.map((pot) => ({ ...pot, balance: 0 }))
+      );
+    });
+
+    it('links together subsequent budgets', async () => {
+      setupDateMocks();
+      const service = bootstrapBudgetService();
+
+      await service.createBudget();
+      await service.createBudget();
+
+      const budgets = await lastValueFrom(service.getBudgets().pipe(take(1)));
+
+      expect(budgets[0].previous).toBeUndefined();
+      expect(budgets[1].previous).toEqual(budgets[0]);
     });
   });
 });

@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { RecurringPayment } from '@benwainwright/budget-domain';
 import { Observable, BehaviorSubject } from 'rxjs';
 
+const DUMMY: RecurringPayment[] = [];
+
 @Injectable({
   providedIn: 'root',
 })

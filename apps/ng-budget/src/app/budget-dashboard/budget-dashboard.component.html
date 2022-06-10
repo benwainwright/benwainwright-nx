@@ -1,0 +1,27 @@
+<div id="dashboard">
+    <h2>Dashboard <button (click)="budgetService.createBudget()" >Create Budget</button></h2>
+    <p *ngIf="budgets.length === 0">
+        No budgets were found. Click button to add one
+    </p>
+
+    <table *ngIf="budgets.length > 0">
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Starting Balance</th>
+                <th>Surplus</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let budget of budgets">
+                <td>{{budget.startDate | date: 'shortDate'}}</td>
+                <td>{{budget.endDate | date: 'shortDate'}}</td>
+                <td>{{budget.balance | currency: 'GBP'}}</td>
+                <td>{{budget.surplus | currency: 'GBP'}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>

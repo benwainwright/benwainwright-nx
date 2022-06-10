@@ -48,9 +48,13 @@ export class BudgetService {
         ? new Date(Date.now())
         : budgets[budgets.length - 1].endDate;
 
-    const endDate = getNextParsedDate(startDate, settings.payCycle);
+    const tomorrow = new Date(startDate.valueOf());
+    tomorrow.setDate(startDate.getDate() + 1);
+
+    const endDate = getNextParsedDate(tomorrow, settings.payCycle);
 
     const last = budgets.length > 0 ? budgets[budgets.length - 1] : undefined;
+
     const created = new Budget(uuid(), startDate, endDate, pots, balance, last);
 
     created.setPayments(payments);

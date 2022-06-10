@@ -111,6 +111,13 @@ export class Budget {
     }));
   }
 
+  public get allocated(): number {
+    return this.potPlans.reduce(
+      (runningBalance, plan) => runningBalance + plan.adjustmentAmount,
+      0
+    );
+  }
+
   public get surplus(): number {
     const balance =
       this.isCurrent() || !this.previous

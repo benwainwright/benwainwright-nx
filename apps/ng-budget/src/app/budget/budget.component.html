@@ -6,10 +6,19 @@
       <strong>{{ budget?.endDate | date: 'mediumDate' }}</strong>
     </li>
     <li>
-      Balance <strong>{{ budget?.balance | currency: 'GBP' }}</strong>
+      Account Balance: <strong>{{ budget?.balance | currency: 'GBP' }}</strong>
     </li>
     <li>
-      Surplus <strong>{{ budget?.surplus | currency: 'GBP' }}</strong>
+      Pots Balances Total: <strong>{{ budget?.potTotals | currency: 'GBP' }}</strong>
+    </li>
+    <li>
+      Total Available: {{ budget?.balance | currency: 'GBP' }} + ${{ budget?.potTotals | currency: 'GBP' }} = <strong>{{ availableBalance() | currency: 'GBP'}}</strong>
+    </li>
+    <li>
+      Allocated Total: <strong>{{ budget?.totalAllocated | currency: 'GBP' }}</strong>
+    </li>
+    <li>
+      Surplus: {{availableBalance() | currency: 'GBP' }} - {{ budget?.totalAllocated | currency: 'GBP' }} = <strong>{{ budget?.surplus | currency: 'GBP' }}</strong>
     </li>
   </ul>
 </mat-card>

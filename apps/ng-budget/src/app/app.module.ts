@@ -23,10 +23,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
 import { HeaderComponent } from './header/header.component';
+import { MatDialogModule } from '@angular/material/dialog';
 import { BodyComponent } from './body/body.component';
-import { DateParseInputComponent } from './date-parse-input/date-parse-input.component';
 import { InputComponent } from './input/input.component';
+import { DateStringInputComponent } from './date-string-input/date-string-input.component';
 
 @NgModule({
   declarations: [
@@ -40,8 +42,8 @@ import { InputComponent } from './input/input.component';
     PotComponent,
     HeaderComponent,
     BodyComponent,
-    DateParseInputComponent,
     InputComponent,
+    DateStringInputComponent,
   ],
   imports: [
     BrowserModule,
@@ -51,10 +53,12 @@ import { InputComponent } from './input/input.component';
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
+    MatDialogModule,
     MatPaginatorModule,
     MatTableModule,
     MatInputModule,
     MatButtonModule,
+    MatIconModule,
     MatCardModule,
   ],
   providers: [SettingsService, RecurringPaymentsService, BudgetService],

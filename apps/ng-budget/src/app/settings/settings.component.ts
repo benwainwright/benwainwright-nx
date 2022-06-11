@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { lastValueFrom, Subscription, take } from 'rxjs';
+import { validateDateString } from '../input/parse-date-validator';
 import { SettingsService } from '../services/settings.service';
 
 @Component({
@@ -13,7 +14,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   public form = new FormGroup({
     overdraft: new FormControl<number>(0, { nonNullable: true }),
-    payCycle: new FormControl('', { nonNullable: true }),
+    payCycle: new FormControl('', {
+      nonNullable: true,
+      validators: [validateDateString],
+    }),
     expectedSalary: new FormControl<number>(0, { nonNullable: true }),
   });
 

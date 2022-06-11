@@ -1,20 +1,20 @@
 <h2>Settings</h2>
 
 <form class="settings-form" [formGroup]="form">
-  <benwainwright-input
+  <benwainwright-date-string-input
     [formGroup]="form"
     id="pay-cycle"
     label="Pay Cycle"
     type="text"
-    formControlName="payCycle"
-  ></benwainwright-input>
+    control="payCycle"
+  ></benwainwright-date-string-input>
 
   <benwainwright-input
     [formGroup]="form"
     id="overdraft"
     label="Overdraft"
     type="number"
-    formControlName="overdraft"
+    control="overdraft"
   ></benwainwright-input>
 
   <benwainwright-input
@@ -22,6 +22,6 @@
     id="expected-salary"
     label="Monthly Salary"
     type="number"
-    formControlName="expectedSalary"
+    control="expectedSalary"
   ></benwainwright-input>
 </form>

@@ -77,7 +77,14 @@ export class Budget {
     return now > start && now < end;
   }
 
-  public get potsTotalBalance(): number {
+  public get totalAllocated(): number {
+    return this.potPlans.reduce(
+      (accum, pot) => pot.balance + pot.adjustmentAmount + accum,
+      0
+    );
+  }
+
+  public get potTotals(): number {
     return this.potPlans.reduce((accum, pot) => pot.balance + accum, 0);
   }
 

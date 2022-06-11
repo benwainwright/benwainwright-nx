@@ -16,6 +16,10 @@ export class BudgetComponent implements OnInit {
     private route: ActivatedRoute
   ) {}
 
+  availableBalance() {
+    return (this.budget?.balance ?? 0) + (this.budget?.potTotals ?? 0);
+  }
+
   ngOnInit(): void {
     this.budgetService.getBudgets().subscribe((budgets) => {
       const id = this.route.snapshot.paramMap.get('id');

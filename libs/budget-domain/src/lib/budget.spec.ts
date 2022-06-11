@@ -136,6 +136,25 @@ describe('budget', () => {
     expect(fourth.payments.length).toEqual(0);
   });
 
+  it('provides total pot balances correctly', () => {
+    const from = date(1, 6, 2022);
+    const to = date(30, 6, 2022);
+
+    const budget = new Budget('id', from, to, POTS, 1000);
+
+    expect(budget.potTotals).toEqual(765);
+  });
+
+  it('calculates total allocated correctly', () => {
+    const from = date(1, 6, 2022);
+    const to = date(30, 6, 2022);
+
+    const budget = new Budget('id', from, to, POTS, 1000);
+    budget.setPayments(PAYMENTS);
+
+    expect(budget.totalAllocated).toEqual(325);
+  });
+
   it('assumes pot balances are zero if budget is not current', () => {
     const from = date(1, 6, 2022);
     const to = date(30, 6, 2022);

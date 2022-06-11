@@ -20,15 +20,17 @@ export class InputComponent implements OnInit {
   placeholder = '';
 
   @Input()
-  formControlName = '';
+  control = '';
 
-  public form: FormGroup = new FormGroup({
-    payCycle: new FormControl('test'),
-  });
+  public form: FormGroup = new FormGroup({});
 
   constructor(private controlContainer: ControlContainer) {}
 
   ngOnInit(): void {
     this.form = <FormGroup>this.controlContainer.control;
+
+    const value = this.form.get(this.control);
+
+    console.log(value?.value);
   }
 }

@@ -8,6 +8,7 @@ import { monthsPiped } from '../ordinals/months';
 import { ParseResult } from '../types/parse-result';
 import { groupOrderedDatesByMonth } from '../utils/group-ordered-dates-by-month';
 import { isSameDate } from '../utils/is-same-date';
+import { getLastOfMonth } from '../utils/get-last-of-month';
 
 export interface NumberedWeekdayResult
   extends ParseResult<'NumberedWeekdayOfMonth'> {
@@ -15,18 +16,6 @@ export interface NumberedWeekdayResult
   dates: Date[];
   which: number | 'last';
 }
-
-const getLastOfMonth = (date: Date, originalDate?: Date): Date => {
-  if (originalDate && date.getMonth() === originalDate.getMonth() + 1) {
-    const returnDate = new Date(date.valueOf());
-    returnDate.setDate(date.getDate() - 1);
-    return returnDate;
-  }
-
-  const newDate = new Date(date.valueOf());
-  newDate.setDate(date.getDate() + 1);
-  return getLastOfMonth(newDate, originalDate ?? date);
-};
 
 const last = (
   month: string | undefined,
@@ -51,7 +40,8 @@ const last = (
       );
     })
     .map((month) => month.slice().reverse())
-    .map((month) => month[0]);
+    .map((month) => month[0])
+    .filter(Boolean);
 
   const finalDates = lastOfFullMonths.filter(
     (last) => allDays.findIndex((date) => isSameDate(last, date)) !== -1

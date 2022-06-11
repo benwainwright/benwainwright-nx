@@ -1,36 +1,38 @@
 <h2>Recurring Payments</h2>
-<table class="payments-table" mat-table *ngIf="payments.length > 0" [dataSource]="payments">
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let payment">
-        {{ payment.name | titlecase }}
-      </td>
-    </ng-container>
+<table
+  class="payments-table"
+  mat-table
+  *ngIf="payments.length > 0"
+  [dataSource]="payments"
+>
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let payment">
+      {{ payment.name | titlecase }}
+    </td>
+  </ng-container>
 
-    <ng-container matColumnDef="when">
-      <th mat-header-cell *matHeaderCellDef>When</th>
-      <td mat-cell *matCellDef="let payment">
-        {{ payment.when }}
-      </td>
-    </ng-container>
+  <ng-container matColumnDef="when">
+    <th mat-header-cell *matHeaderCellDef>When</th>
+    <td mat-cell *matCellDef="let payment">
+      {{ payment.when }}
+    </td>
+  </ng-container>
 
-    <ng-container matColumnDef="amount">
-      <th mat-header-cell *matHeaderCellDef>Amount</th>
-      <td mat-cell *matCellDef="let payment">
-        {{ payment.amount | currency: 'GBP'}}
-      </td>
-    </ng-container>
+  <ng-container matColumnDef="amount">
+    <th mat-header-cell *matHeaderCellDef>Amount</th>
+    <td mat-cell *matCellDef="let payment">
+      {{ payment.amount | currency: 'GBP' }}
+    </td>
+  </ng-container>
 
-    <ng-container matColumnDef="pot">
-      <th mat-header-cell *matHeaderCellDef>Pot</th>
-      <td mat-cell *matCellDef="let payment">
-        {{getPot(payment)?.name}}
-      </td>
-    </ng-container>
+  <ng-container matColumnDef="pot">
+    <th mat-header-cell *matHeaderCellDef>Pot</th>
+    <td mat-cell *matCellDef="let payment">
+      {{ getPot(payment)?.name }}
+    </td>
+  </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
-    <tr
-      mat-row
-      *matRowDef="let myRowData; columns: tableColumns"
-    ></tr>
+  <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+  <tr mat-row *matRowDef="let myRowData; columns: tableColumns"></tr>
 </table>

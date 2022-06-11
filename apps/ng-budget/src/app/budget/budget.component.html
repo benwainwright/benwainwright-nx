@@ -1,6 +1,10 @@
 <h2>Budget</h2>
 <mat-card>
-    From <strong>{{ budget?.startDate | date: 'mediumDate' }}</strong> to <strong>{{ budget?.endDate | date: 'mediumDate' }}</strong>
+    <ul class="budget-detail-ul">
+        <li>From <strong>{{ budget?.startDate | date: 'mediumDate' }}</strong> to <strong>{{ budget?.endDate | date: 'mediumDate' }}</strong></li>
+        <li>Balance <strong>{{budget?.balance | currency: 'GBP' }}</strong></li>
+        <li>Surplus <strong>{{budget?.surplus | currency: 'GBP' }}</strong></li>
+    </ul>
 </mat-card>
 
 <div class="pots-grid">

@@ -16,8 +16,8 @@
 
         <tbody>
             <tr *ngFor="let budget of budgets">
-                <td>{{budget.startDate | date: 'shortDate'}}</td>
-                <td>{{budget.endDate | date: 'shortDate'}}</td>
+                <td>{{budget.startDate | date: 'mediumDate'}}</td>
+                <td>{{budget.endDate | date: 'mediumDate'}}</td>
                 <td>{{budget.balance + (budget.previous?.surplus ?? 0)| currency: 'GBP'}}</td>
                 <td>{{budget.surplus | currency: 'GBP'}}</td>
             </tr>

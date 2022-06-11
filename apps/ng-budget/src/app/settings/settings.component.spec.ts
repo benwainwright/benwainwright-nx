@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { mock } from 'jest-mock-extended';
 import { Observable } from 'rxjs';
 import { SettingsService } from '../services/settings.service';
@@ -31,7 +31,7 @@ describe('SettingsComponent', () => {
 
     expect(mockSettingsService.setSettings).toHaveBeenCalledWith({
       payCycle: 'foo string',
-      expectedSalary: 0,
+      payAmount: 0,
       overdraft: 0,
     });
   });
@@ -43,7 +43,7 @@ describe('SettingsComponent', () => {
 
     expect(mockSettingsService.setSettings).toHaveBeenCalledWith({
       overdraft: 1000,
-      expectedSalary: 0,
+      payAmount: 0,
       payCycle: '',
     });
   });
@@ -54,9 +54,27 @@ describe('SettingsComponent', () => {
     component.form.controls.expectedSalary.setValue(95000);
 
     expect(mockSettingsService.setSettings).toHaveBeenCalledWith({
-      expectedSalary: 95000,
+      payAmount: 95000,
       overdraft: 0,
       payCycle: '',
     });
+  });
+
+  it('should have set values to whatever the settings service provides', async () => {
+    mockSettingsService.getSettings.mockReturnValue(
+      new Observable((subscriber) =>
+        subscriber.next({
+          overdraft: 99,
+          payAmount: 1021,
+          payCycle: 'hello!',
+        })
+      )
+    );
+
+    const component = bootstrapSettingsService();
+
+    await component.ngOnInit();
+
+    expect(component.form.controls.expectedSalary.getRawValue()).toEqual(1021);
   });
 });

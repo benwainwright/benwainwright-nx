@@ -7,6 +7,7 @@ import { getDaysInBetween } from '../utils/get-days-in-between';
 import { monthsPiped } from '../ordinals/months';
 import { ParseResult } from '../types/parse-result';
 import { groupOrderedDatesByMonth } from '../utils/group-ordered-dates-by-month';
+import { isSameDate } from '../utils/is-same-date';
 
 export interface NumberedWeekdayResult
   extends ParseResult<'NumberedWeekdayOfMonth'> {
@@ -15,33 +16,51 @@ export interface NumberedWeekdayResult
   which: number | 'last';
 }
 
+const getLastOfMonth = (date: Date, originalDate?: Date): Date => {
+  if (originalDate && date.getMonth() === originalDate.getMonth() + 1) {
+    const returnDate = new Date(date.valueOf());
+    returnDate.setDate(date.getDate() - 1);
+    return returnDate;
+  }
+
+  const newDate = new Date(date.valueOf());
+  newDate.setDate(date.getDate() + 1);
+  return getLastOfMonth(newDate, originalDate ?? date);
+};
+
 const last = (
   month: string | undefined,
   day: string,
   from: Date,
   to: Date
 ): NumberedWeekdayResult | undefined => {
-  const parsedMonth = parseMonth(month, from);
-
   const weekDay = getOrdinalIndex(day, weekDays, now().getDay());
 
-  const allWeekdays = getDaysInBetween(from, to).filter(
-    (date) => date.getDay() === weekDay
-  );
+  const allDays = getDaysInBetween(from, to);
 
-  const daysGroupedByMonth = groupOrderedDatesByMonth(allWeekdays);
+  const daysGroupedByMonth = groupOrderedDatesByMonth(allDays);
 
-  const finalDays = daysGroupedByMonth
-    .map((group) => group.slice().reverse())
+  const lastOfFullMonths = daysGroupedByMonth
     .map((group) => group[0])
-    .filter(
-      (date) => parseMonth === undefined || date.getMonth() === parsedMonth
-    );
+    .map((start) => {
+      const last = getLastOfMonth(start);
+      const next = new Date(last.valueOf());
+      next.setDate(last.getDate() + 1);
+      return getDaysInBetween(start, next).filter(
+        (date) => date.getDay() === weekDay
+      );
+    })
+    .map((month) => month.slice().reverse())
+    .map((month) => month[0]);
+
+  const finalDates = lastOfFullMonths.filter(
+    (last) => allDays.findIndex((date) => isSameDate(last, date)) !== -1
+  );
 
   return {
     type: 'NumberedWeekdayOfMonth',
     weekDay: weekDay,
-    dates: finalDays,
+    dates: finalDates,
     which: 'last',
   };
 };

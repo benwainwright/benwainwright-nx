@@ -16,6 +16,15 @@ describe('get next parsed date', () => {
     expect(() => getNextParsedDate(now(), 'foo')).toThrow();
   });
 
+  it('returns the actual next thursday of every month', () => {
+    const result = getNextParsedDate(
+      date(11, 6, 2022),
+      'last thursday of every month'
+    );
+
+    expect(result).toBeSameDayAs(date(30, 6, 2022));
+  });
+
   it('returns a date in the future when passed a specific date that is only a week from now', () => {
     const result = getNextParsedDate(now(), '5th of june');
 

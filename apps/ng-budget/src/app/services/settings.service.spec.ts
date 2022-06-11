@@ -11,8 +11,6 @@ describe('settings service', () => {
 
     const result = await lastValueFrom(service.getSettings().pipe(take(1)));
 
-    const today = new Date(Date.now());
-
     expect(result.payCycle).toEqual('last thursday of every month');
   });
 
@@ -35,10 +33,6 @@ describe('settings service', () => {
 
   it('should emit new values when set', async () => {
     const service = new SettingsService();
-
-    const tomorrow = new Date(Date.now() + 1000 * 60 * 60 * 24 * 4);
-
-    const today = new Date(Date.now());
 
     const settingsObservable = service.getSettings();
 

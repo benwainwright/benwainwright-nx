@@ -25,6 +25,7 @@ describe('parse dates', () => {
 
   it.each`
     parseString                        | from              | to                | numResults | date1             | date2             | date3             | date4             | date5             | type
+    ${`last thursday of every month`}  | ${d(11, 6, 2022)} | ${d(18, 6, 2022)} | ${0}       | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'NumberedWeekdayOfMonth'}
     ${`last thursday of every month`}  | ${d(1, 6, 2022)}  | ${d(1, 7, 2022)}  | ${1}       | ${d(30, 6, 2022)} | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'NumberedWeekdayOfMonth'}
     ${`third thursday of every month`} | ${d(1, 6, 2022)}  | ${d(1, 7, 2022)}  | ${1}       | ${d(16, 6, 2022)} | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'NumberedWeekdayOfMonth'}
     ${`every third thursday`}          | ${d(1, 6, 2022)}  | ${d(15, 7, 2022)} | ${2}       | ${d(16, 6, 2022)} | ${d(7, 7, 2022)}  | ${d()}            | ${d()}            | ${d()}            | ${'EveryWeek'}
@@ -67,7 +68,7 @@ describe('parse dates', () => {
     ${`16/06/2022`}                    | ${d(1, 6, 2022)}  | ${d(1, 7, 2022)}  | ${1}       | ${d(16, 6, 2022)} | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'SpecificDateOfYear'}
     ${`16/06/22`}                      | ${d(1, 6, 2022)}  | ${d(1, 7, 2022)}  | ${1}       | ${d(16, 6, 2022)} | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'SpecificDateOfYear'}
   `(
-    "Produces $numResults date(s) of type '$type' for range '$from.text' to '$to.text' - ('$date1.text', '$date2.text', '$date3.text', '$date4.text', '$date5.text')",
+    "'$parseString' produces $numResults date(s) of type '$type' for range '$from.text' to '$to.text' - ('$date1.text', '$date2.text', '$date3.text', '$date4.text', '$date5.text')",
     ({
       parseString,
       from,

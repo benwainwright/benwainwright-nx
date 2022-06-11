@@ -8,6 +8,8 @@ import { RecurringPaymentsService } from './recurring-payments.service';
 import { SettingsService } from './settings.service';
 import { Budget } from '@benwainwright/budget-domain';
 
+const LOCAL_STORAGE_KEY = 'ng-budget-budgets';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -18,7 +20,15 @@ export class BudgetService {
     private balance: BalanceService,
     private settings: SettingsService
   ) {}
-  private budgets = new BehaviorSubject<Budget[]>([]);
+  private budgets = new BehaviorSubject<Budget[]>(
+    JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) ?? '[]')
+      .map((item: Budget) => Budget.fromJson(item))
+      .map((item: Budget, index: number, collection: Budget[]) => {
+        const prev = index !== 0 ? collection[index - 1] : undefined;
+        item.previous = prev;
+        return item;
+      })
+  );
 
   async createBudget() {
     const paymentsPromise = lastValueFrom(
@@ -63,6 +73,7 @@ export class BudgetService {
   private saveBudget(budget: Budget) {
     const oldBudgets = this.budgets.getValue();
     const newBudgets = [...oldBudgets, budget];
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newBudgets));
     this.budgets.next(newBudgets);
   }
 

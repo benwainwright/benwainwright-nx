@@ -11,6 +11,24 @@ export interface PaymentPlan {
 
 export class Budget {
   private potValues: Omit<PotPlan, 'adjustmentAmount'>[];
+  public static fromJson(data: Budget) {
+    const budget = new Budget(
+      data.id,
+      new Date(data.startDate),
+      new Date(data.endDate),
+      [],
+      0
+    );
+    budget.balance = data.balance;
+    budget.potValues = data.potValues.map((pot) => ({
+      ...pot,
+      payments: pot.payments.map((payment) => ({
+        ...payment,
+        when: new Date(payment.when),
+      })),
+    }));
+    return budget;
+  }
 
   constructor(
     public readonly id: string,
@@ -18,7 +36,7 @@ export class Budget {
     public readonly endDate: Date,
     pots: Pot[],
     public balance: number,
-    public readonly previous?: Budget
+    public previous?: Budget
   ) {
     this.potValues = pots.map((pot) => ({
       ...pot,

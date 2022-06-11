@@ -31,23 +31,3 @@ body, html {
     height: 100%;
     @include mat.typography-level($my-typography, 'body-1');
 }
-
-form div {
-    display: flex;
-}
-
-form div label { 
-    width: 8rem;
-}
-
-form div {
-    margin: 0.5rem 0;
-}
-
-form label, form input {
-    align-self: center;
-}
-
-form input {
-    padding: 0.4rem;
-}

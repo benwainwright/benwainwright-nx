@@ -19,10 +19,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCard, MatCardModule } from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
+import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { HeaderComponent } from './header/header.component';
 import { BodyComponent } from './body/body.component';
+import { DateParseInputComponent } from './date-parse-input/date-parse-input.component';
+import { InputComponent } from './input/input.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +39,8 @@ import { BodyComponent } from './body/body.component';
     PotComponent,
     HeaderComponent,
     BodyComponent,
+    DateParseInputComponent,
+    InputComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,6 +51,7 @@ import { BodyComponent } from './body/body.component';
     MatSidenavModule,
     MatListModule,
     MatTableModule,
+    MatInputModule,
     MatButtonModule,
     MatCardModule,
   ],

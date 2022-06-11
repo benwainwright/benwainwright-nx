@@ -34,3 +34,10 @@ html {
   height: 100%;
   @include mat.typography-level($my-typography, 'body-1');
 }
+
+html {
+    box-sizing: border-box;
+  }
+  *, *:before, *:after {
+    box-sizing: inherit;
+  }

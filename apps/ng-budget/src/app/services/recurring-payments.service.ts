@@ -13,7 +13,7 @@ export const PAYMENTS: RecurringPayment[] = [
   {
     id: '2',
     name: 'Fish',
-    when: '6th of June',
+    when: '25th of June',
     amount: 100,
     potId: '0',
   },

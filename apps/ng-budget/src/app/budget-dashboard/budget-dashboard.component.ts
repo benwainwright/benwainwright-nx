@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Budget } from '@benwainwright/budget-domain';
 import { Subscription } from 'rxjs';
 import { BudgetService } from '../services/budget.service';
@@ -13,7 +14,7 @@ export class BudgetDashboardComponent implements OnInit, OnDestroy {
 
   public subscription: Subscription | undefined;
 
-  constructor(public budgetService: BudgetService) {}
+  constructor(public budgetService: BudgetService, public router: Router) {}
 
   ngOnInit(): void {
     this.subscription = this.budgetService
@@ -23,5 +24,9 @@ export class BudgetDashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
+  }
+
+  clickRow(id: string) {
+    this.router.navigate([`/budget/${id}`]);
   }
 }

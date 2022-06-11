@@ -1,14 +1,7 @@
-table {
-    border: 1px solid black;
-    border-collapse: collapse;
-    margin: 1rem 0;
+.dash-row {
+    cursor: pointer;
 }
 
-tr {
-    border: 1px solid black;
-}
-
-td, th {
-    border: 1px solid black;
-    padding: 0.3rem;
+.dash-row:hover {
+    background-color: #F1F1F1;
 }

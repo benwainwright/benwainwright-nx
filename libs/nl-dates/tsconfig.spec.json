@@ -17,5 +17,5 @@
     "**/*.test.jsx",
     "**/*.spec.jsx",
     "**/*.d.ts"
-  ]
+, "src/utils/get-last-of-month.ts"  ]
 }

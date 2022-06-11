@@ -15,7 +15,7 @@
         </thead>
 
         <tbody>
-            <tr *ngFor="let budget of budgets">
+            <tr class="dash-row" *ngFor="let budget of budgets" (click)="clickRow(budget.id)">
                 <td>{{budget.startDate | date: 'mediumDate'}}</td>
                 <td>{{budget.endDate | date: 'mediumDate'}}</td>
                 <td>{{budget.balance + (budget.previous?.surplus ?? 0)| currency: 'GBP'}}</td>

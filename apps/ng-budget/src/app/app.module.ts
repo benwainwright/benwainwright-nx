@@ -12,6 +12,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { PaymentsComponent } from './payments/payments.component';
 import { DummyDataComponent } from './dummy-data/dummy-data.component';
+import { BudgetComponent } from './budget/budget.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { DummyDataComponent } from './dummy-data/dummy-data.component';
     NavBarComponent,
     PaymentsComponent,
     DummyDataComponent,
+    BudgetComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule],
   providers: [SettingsService, RecurringPaymentsService, BudgetService],

@@ -1,7 +1,18 @@
 <h2>Settings</h2>
 
-<form>
+<form [formGroup]="form">
     <div>
-        <label for="payCyle">Pay Cycle</label>
+        <label for="pay-cycle">Pay Cycle</label>
+        <input id="pay-cycle" type="text" formControlName="payCycle" />
+    </div>
+
+    <div>
+        <label for="overdraft">Overdraft</label>
+        <input id="overdraft" type="text" formControlName="overdraft" />
+    </div>
+
+    <div>
+        <label for="expected-salary">Expected Salary</label>
+        <input id="expected-salary" type="text" formControlName="expectedSalary" />
     </div>
 </form>

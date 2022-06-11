@@ -10,7 +10,6 @@
                 <th>From</th>
                 <th>To</th>
                 <th>Starting Balance</th>
-                <th>Pot Balances</th>
                 <th>Surplus</th>
             </tr>
         </thead>
@@ -20,7 +19,6 @@
                 <td>{{budget.startDate | date: 'shortDate'}}</td>
                 <td>{{budget.endDate | date: 'shortDate'}}</td>
                 <td>{{budget.balance + (budget.previous?.surplus ?? 0)| currency: 'GBP'}}</td>
-                <td>{{budget.potsTotal | currency: 'GBP'}}</td>
                 <td>{{budget.surplus | currency: 'GBP'}}</td>
             </tr>
         </tbody>

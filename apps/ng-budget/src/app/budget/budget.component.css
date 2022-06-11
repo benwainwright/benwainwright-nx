@@ -1,0 +1,6 @@
+.pots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
+    grid-template-rows: repeat(3, 1fr);
+    gap: 1rem;
+}

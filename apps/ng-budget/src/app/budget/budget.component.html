@@ -1,8 +1,11 @@
 <h2>Budget</h2>
-From <strong>{{ budget?.startDate | date: 'mediumDate' }}</strong> to
-<strong>{{ budget?.endDate | date: 'mediumDate' }}</strong>
+<mat-card>
+    From <strong>{{ budget?.startDate | date: 'mediumDate' }}</strong> to <strong>{{ budget?.endDate | date: 'mediumDate' }}</strong>
+</mat-card>
 
-<benwainwright-pot
-  *ngFor="let pot of budget?.potPlans"
-  [pot]="pot"
-></benwainwright-pot>
+<div class="pots-grid">
+    <benwainwright-pot
+    *ngFor="let pot of budget?.potPlans"
+    [pot]="pot"
+    ></benwainwright-pot>
+</div>

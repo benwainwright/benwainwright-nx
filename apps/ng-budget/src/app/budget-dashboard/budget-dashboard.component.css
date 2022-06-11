@@ -5,3 +5,7 @@
 .dash-row:hover {
     background-color: #F1F1F1;
 }
+
+.dash-table {
+    width: 50rem;
+}

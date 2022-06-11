@@ -13,6 +13,16 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { PaymentsComponent } from './payments/payments.component';
 import { DummyDataComponent } from './dummy-data/dummy-data.component';
 import { BudgetComponent } from './budget/budget.component';
+import { PotComponent } from './pot/pot.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCard, MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { HeaderComponent } from './header/header.component';
+import { BodyComponent } from './body/body.component';
 
 @NgModule({
   declarations: [
@@ -23,8 +33,22 @@ import { BudgetComponent } from './budget/budget.component';
     PaymentsComponent,
     DummyDataComponent,
     BudgetComponent,
+    PotComponent,
+    HeaderComponent,
+    BodyComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, ReactiveFormsModule],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
+    MatToolbarModule,
+    MatSidenavModule,
+    MatListModule,
+    MatTableModule,
+    MatButtonModule,
+    MatCardModule,
+  ],
   providers: [SettingsService, RecurringPaymentsService, BudgetService],
   bootstrap: [AppComponent],
 })

@@ -1,16 +1,4 @@
 <h2>Budget</h2>
 From <strong>{{budget?.startDate | date: 'mediumDate'}}</strong> to <strong>{{budget?.endDate | date: 'mediumDate'}}</strong>
 
-<div *ngFor="let pot of budget?.potPlans">
-    <h3>{{pot.name | titlecase}}</h3>
-    <p *ngIf="pot.payments.length === 0"><em>No payments</em></p>
-    <table>
-        <tbody>
-            <tr *ngFor="let payment of pot.payments">
-                <td>{{payment.when | date: 'mediumDate' }}</td>
-                <td>{{payment.name}}</td>
-                <td>{{payment.amount | currency: 'GBP'}}</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+<benwainwright-pot *ngFor="let pot of budget?.potPlans" [pot]="pot"></benwainwright-pot>

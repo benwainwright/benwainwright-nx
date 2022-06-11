@@ -14,6 +14,8 @@ export class BudgetDashboardComponent implements OnInit, OnDestroy {
 
   public subscription: Subscription | undefined;
 
+  public tableColumns: string[] = ['from', 'to', 'starting', 'surplus'];
+
   constructor(public budgetService: BudgetService, public router: Router) {}
 
   ngOnInit(): void {

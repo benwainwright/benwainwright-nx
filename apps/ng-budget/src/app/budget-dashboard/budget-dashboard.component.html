@@ -1,27 +1,33 @@
 <div id="dashboard">
-    <h2>Dashboard <button (click)="budgetService.createBudget()" >Create Budget</button></h2>
+    <h2>Dashboard <button color="primary" mat-button (click)="budgetService.createBudget()" >Create Budget</button></h2>
     <p *ngIf="budgets.length === 0">
         No budgets were found. Click button to add one
     </p>
 
-    <table *ngIf="budgets.length > 0">
-        <thead>
-            <tr>
-                <th>From</th>
-                <th>To</th>
-                <th>Starting Balance</th>
-                <th>Surplus</th>
-            </tr>
-        </thead>
+    <table *ngIf="budgets.length > 0" mat-table [dataSource]="budgets" class="dash-table">
+        <ng-container matColumnDef="from">
+            <th mat-header-cell *matHeaderCellDef>From</th>
+            <td mat-cell *matCellDef="let budget"> {{budget.startDate | date: 'mediumDate' }} </td>
+        </ng-container>
 
-        <tbody>
-            <tr class="dash-row" *ngFor="let budget of budgets" (click)="clickRow(budget.id)">
-                <td>{{budget.startDate | date: 'mediumDate'}}</td>
-                <td>{{budget.endDate | date: 'mediumDate'}}</td>
-                <td>{{budget.balance + (budget.previous?.surplus ?? 0)| currency: 'GBP'}}</td>
-                <td>{{budget.surplus | currency: 'GBP'}}</td>
-            </tr>
-        </tbody>
-    </table>
+        <ng-container matColumnDef="to">
+            <th mat-header-cell *matHeaderCellDef>To</th>
+            <td mat-cell *matCellDef="let budget"> {{budget.endDate | date: 'mediumDate' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="starting">
+            <th mat-header-cell *matHeaderCellDef>Starting Balance</th>
+            <td mat-cell *matCellDef="let budget"> {{budget.balance | currency: 'GBP'}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="surplus">
+            <th mat-header-cell *matHeaderCellDef>Surplus</th>
+            <td mat-cell *matCellDef="let budget"> {{budget.surplus | currency: 'GBP'}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+        <tr class="dash-row" mat-row *matRowDef="let myRowData; columns: tableColumns" (click)="clickRow(myRowData.id)"></tr>
+      </table>
+
 
 </div>

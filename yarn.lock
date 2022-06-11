@@ -269,7 +269,7 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/router@~14.0.0":
+"@angular/router@^14.0.1":
   version "14.0.1"
   resolved "https://registry.npmjs.org/@angular/router/-/router-14.0.1.tgz#ad0f1f31a1f8617222f24be99a87e76b7ca55e2b"
   integrity sha512-FtJIe7acU6MuxoBlrl33VHKKVxePgOGnyPkRrxEHxrq8Dw6Y9JkW45Nk1t54CjcEhkkmPgSuJ2h2Jfn2fa6Vcw==

@@ -16,7 +16,7 @@
           "apps/ng-budget/src/favicon.ico",
           "apps/ng-budget/src/assets"
         ],
-        "styles": ["apps/ng-budget/src/styles.css"],
+        "styles": ["apps/ng-budget/src/styles.scss"],
         "scripts": []
       },
       "configurations": {

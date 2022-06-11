@@ -1,0 +1,34 @@
+<mat-card class="pot-card">
+    <mat-card-title-group>
+    <mat-card-title>{{pot?.name | titlecase }}</mat-card-title>
+    <mat-card-subtitle>Balance: {{pot?.balance | currency: 'GBP' }}</mat-card-subtitle>
+    </mat-card-title-group>
+    <mat-card-content>
+    <p *ngIf="pot?.payments?.length === 0"><em>No payments</em></p>
+    <table *ngIf="(pot?.payments?.length ?? 0) > 0" class="pot-table"  mat-table [dataSource]="pot?.payments ?? []">
+
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let payment"> {{payment.name }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="when">
+            <th mat-header-cell *matHeaderCellDef>When</th>
+            <td mat-cell *matCellDef="let payment"> {{payment.when | date: 'mediumDate' }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Amount</th>
+            <td mat-cell *matCellDef="let payment"> {{payment.amount | currency: 'GBP'}} </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+        <tr class="dash-row" mat-row *matRowDef="let myRowData; columns: tableColumns"></tr>
+
+    </table>
+    </mat-card-content>
+    <button mat-button>Add Payment</button>
+    <mat-card-actions>
+
+    </mat-card-actions>
+</mat-card>

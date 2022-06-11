@@ -1,3 +1,4 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { Component } from '@angular/core';
 
 @Component({
@@ -7,4 +8,15 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'budget';
+
+  public constructor(private breakpointObserver: BreakpointObserver) {}
+  public mobile = false;
+
+  ngOnInit(): void {
+    this.breakpointObserver
+      .observe('(max-width: 599px)')
+      .subscribe((observer) => {
+        this.mobile = observer.matches;
+      });
+  }
 }

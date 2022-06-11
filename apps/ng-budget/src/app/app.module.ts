@@ -17,6 +17,7 @@ import { PotComponent } from './pot/pot.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -50,6 +51,7 @@ import { InputComponent } from './input/input.component';
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
+    MatPaginatorModule,
     MatTableModule,
     MatInputModule,
     MatButtonModule,

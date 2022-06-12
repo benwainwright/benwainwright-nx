@@ -25,10 +25,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { HeaderComponent } from './header/header.component';
-import { MatDialogModule } from '@angular/material/dialog';
 import { BodyComponent } from './body/body.component';
 import { InputComponent } from './input/input.component';
+import { MatDialogModule } from '@angular/material/dialog';
+
 import { DateStringInputComponent } from './date-string-input/date-string-input.component';
+import { CreatePaymentDialogComponent } from './create-payment-dialog/create-payment-dialog.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,7 @@ import { DateStringInputComponent } from './date-string-input/date-string-input.
     BodyComponent,
     InputComponent,
     DateStringInputComponent,
+    CreatePaymentDialogComponent,
   ],
   imports: [
     BrowserModule,

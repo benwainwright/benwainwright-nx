@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Pot, RecurringPayment } from '@benwainwright/budget-domain';
 import { Subscription } from 'rxjs';
+import { CreatePaymentDialogComponent } from '../create-payment-dialog/create-payment-dialog.component';
 import { PotsService } from '../services/pots.service';
 import { RecurringPaymentsService } from '../services/recurring-payments.service';
 
@@ -12,7 +14,8 @@ import { RecurringPaymentsService } from '../services/recurring-payments.service
 export class PaymentsComponent implements OnInit, OnDestroy {
   constructor(
     private paymentsService: RecurringPaymentsService,
-    private potsService: PotsService
+    private potsService: PotsService,
+    private dialog: MatDialog
   ) {}
 
   public payments: RecurringPayment[] = [];
@@ -26,6 +29,10 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.paymentsSubscription?.unsubscribe();
     this.potsSubscription?.unsubscribe();
+  }
+
+  openCreateEditDialog() {
+    this.dialog.open(CreatePaymentDialogComponent);
   }
 
   getPot(payment: RecurringPayment): Pot | undefined {

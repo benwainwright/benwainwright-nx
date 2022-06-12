@@ -1,22 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Overlay } from '@angular/cdk/overlay';
+import { MatDialog } from '@angular/material/dialog';
+import { bootstrapComponent } from '../../testing-utils/bootstrap-component';
 
 import { PaymentsComponent } from './payments.component';
 
 describe('PaymentsComponent', () => {
-  let component: PaymentsComponent;
-  let fixture: ComponentFixture<PaymentsComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [PaymentsComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(PaymentsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
   it('should create', () => {
+    const component = bootstrapComponent(PaymentsComponent, [
+      MatDialog,
+      Overlay,
+    ]);
     expect(component).toBeTruthy();
   });
 });

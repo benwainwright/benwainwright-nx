@@ -28,9 +28,5 @@ export class InputComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = <FormGroup>this.controlContainer.control;
-
-    const value = this.form.get(this.control);
-
-    console.log(value?.value);
   }
 }

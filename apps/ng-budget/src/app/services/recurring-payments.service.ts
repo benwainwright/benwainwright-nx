@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { RecurringPayment } from '@benwainwright/budget-domain';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
 
 export const PAYMENTS: RecurringPayment[] = [
   {
@@ -32,8 +32,11 @@ export const PAYMENTS: RecurringPayment[] = [
 export class RecurringPaymentsService {
   private payments = new BehaviorSubject<RecurringPayment[]>(PAYMENTS);
 
+  private subscription: Subscription | undefined
+
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public constructor() {}
+
 
   getPayments(): Observable<RecurringPayment[]> {
     return this.payments.asObservable();

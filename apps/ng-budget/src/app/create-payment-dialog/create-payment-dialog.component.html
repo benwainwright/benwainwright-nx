@@ -1,4 +1,31 @@
-<mat-card>
-    <h2 mat-dialog-title>Create Payment</h2>
-</mat-card>
+<h2 mat-dialog-title>Create Payment</h2>
+<div mat-dialog-content class="create-payment-dialog">
+    <benwainwright-input
+        [formGroup]="form"
+        id="name"
+        label="Name"
+        type="text"
+        control="name"
+    ></benwainwright-input>
 
+    <benwainwright-input
+        [formGroup]="form"
+        id="amount"
+        label="Amount"
+        type="number"
+        control="amount"
+    ></benwainwright-input>
+
+    <benwainwright-date-string-input
+    [formGroup]="form"
+    id="when"
+    label="When"
+    type="text"
+    control="when"
+    ></benwainwright-date-string-input>
+
+    <div mat-dialog-actions>
+        <button mat-button color="primary">Save</button>
+        <button mat-button>Cancel</button>
+    </div>
+</div>

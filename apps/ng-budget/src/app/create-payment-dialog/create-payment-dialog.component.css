@@ -1,0 +1,4 @@
+.create-payment-dialog {
+    display: flex;
+    flex-direction: column;
+}

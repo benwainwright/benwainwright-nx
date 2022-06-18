@@ -4,10 +4,16 @@ import { bootstrapComponent } from '../../testing-utils/bootstrap-component';
 
 import { PaymentsComponent } from './payments.component';
 
+class MockMatDialog {
+  open() {
+    /* Noop */
+  }
+}
+
 describe('PaymentsComponent', () => {
   it('should create', () => {
     const component = bootstrapComponent(PaymentsComponent, [
-      MatDialog,
+      { provide: MatDialog, useClass: MockMatDialog },
       Overlay,
     ]);
     expect(component).toBeTruthy();

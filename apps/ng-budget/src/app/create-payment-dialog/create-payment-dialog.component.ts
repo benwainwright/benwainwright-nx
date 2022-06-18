@@ -1,5 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+export interface PaymentDialogData {
+  name: string;
+  amount: number;
+  when: string;
+}
 
 @Component({
   selector: 'benwainwright-create-payment-dialog',
@@ -12,4 +19,19 @@ export class CreatePaymentDialogComponent {
     amount: new FormControl<number>(0, { nonNullable: true }),
     when: new FormControl<string>('', { nonNullable: true }),
   });
+
+  public constructor(
+    public dialogRef: MatDialogRef<CreatePaymentDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: PaymentDialogData
+  ) {
+    this.form.valueChanges.subscribe((value) => {
+      this.data.amount = value.amount ?? 0;
+      this.data.name = value.name ?? '';
+      this.data.when = value.when ?? '';
+    });
+  }
+
+  onSaveClick(): void {
+    this.dialogRef.close();
+  }
 }

@@ -25,7 +25,7 @@
     ></benwainwright-date-string-input>
 
     <div mat-dialog-actions>
-        <button mat-button color="primary">Save</button>
-        <button mat-button>Cancel</button>
+        <button mat-button color="primary" [mat-dialog-close]="data">Save</button>
+        <button mat-button (click)="onSaveClick()">Cancel</button>
     </div>
 </div>

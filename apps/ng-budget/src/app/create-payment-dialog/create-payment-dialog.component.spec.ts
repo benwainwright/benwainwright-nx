@@ -1,22 +1,31 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { bootstrapComponent } from '../../testing-utils/bootstrap-component';
+import {
+  CreatePaymentDialogComponent,
+  PaymentDialogData,
+} from './create-payment-dialog.component';
 
-import { CreatePaymentDialogComponent } from './create-payment-dialog.component';
+class MockDialogRef {
+  close() {
+    // NOOP
+  }
+}
 
 describe('CreatePaymentDialogComponent', () => {
-  let component: CreatePaymentDialogComponent;
-  let fixture: ComponentFixture<CreatePaymentDialogComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [CreatePaymentDialogComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(CreatePaymentDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
   it('should create', () => {
+    const mockData: PaymentDialogData = {
+      name: 'foo',
+      amount: 0,
+      when: 'foo',
+    };
+    const component = bootstrapComponent(CreatePaymentDialogComponent, [
+      { provide: MatDialogRef, useClass: MockDialogRef },
+      { provide: MAT_DIALOG_DATA, useValue: mockData },
+    ]);
     expect(component).toBeTruthy();
   });
 });

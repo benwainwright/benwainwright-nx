@@ -1,5 +1,5 @@
 import { APP_BASE_HREF } from '@angular/common';
-import { ProviderToken } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Provider, ProviderToken } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
   ControlContainer,
@@ -10,10 +10,11 @@ import { RouterModule } from '@angular/router';
 
 export const bootstrapComponent = <T>(
   component: ProviderToken<T>,
-  providers: ProviderToken<unknown>[] = []
+  providers: Provider[] = []
 ) => {
   TestBed.configureTestingModule({
     declarations: [component],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
     providers: [
       { provide: APP_BASE_HREF, useValue: '/' },
       component,

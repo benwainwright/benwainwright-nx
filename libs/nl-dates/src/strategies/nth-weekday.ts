@@ -62,13 +62,13 @@ const forwards = (
   to: Date
 ): NumberedWeekdayResult | undefined => {
   const parsedMonth = parseMonth(month, from);
-  const parsedWhich = getOrdinalIndex(which ?? '', wordNumbers, -1);
+  const parsedWhich = getOrdinalIndex(which, wordNumbers, -1);
 
   if (parsedWhich === -1) {
     return undefined;
   }
 
-  const weekDay = getOrdinalIndex(day ?? '', weekDays, now().getDay());
+  const weekDay = getOrdinalIndex(day, weekDays, now().getDay());
 
   const allWeekdays = getDaysInBetween(from, to).filter(
     (date) => date.getDay() === weekDay

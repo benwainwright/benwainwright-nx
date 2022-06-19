@@ -11,6 +11,26 @@ describe('parse dates', () => {
     jest.useRealTimers();
   });
 
+  it('always sets the first day to today and the last day to a month from now', () => {
+    const result = parseDates('1st of June');
+    expect(result.dates).toHaveLength(1);
+
+    const result2 = parseDates('2nd of June');
+    expect(result2.dates).toHaveLength(1);
+
+    const result3 = parseDates('2nd of June');
+    expect(result3.dates).toHaveLength(1);
+
+    const result4 = parseDates('30th of June');
+    expect(result4.dates).toHaveLength(1);
+
+    const result5 = parseDates('1st of July');
+    expect(result5.dates).toHaveLength(0);
+
+    const result6 = parseDates('31st of May');
+    expect(result6.dates).toHaveLength(0);
+  });
+
   const d = (day?: number, month?: number, year?: number) => {
     return day && month && year
       ? {

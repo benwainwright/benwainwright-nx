@@ -117,6 +117,8 @@ export const numberedWeekday = (
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const day = numberedWeekdayResult.groups!['weekDay'];
 
+  // TODO
+  // This looks like a mistake but the tests all pass!
   const month = numberedWeekdayResult.groups?.['weekDay'];
 
   return which === 'last'

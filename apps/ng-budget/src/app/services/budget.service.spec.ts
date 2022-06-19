@@ -1,4 +1,3 @@
-import { TestBed } from '@angular/core/testing';
 import { lastValueFrom, Observable, of, take } from 'rxjs';
 import { date } from '../../lib/date';
 import { BalanceService } from './balance.service';
@@ -10,7 +9,9 @@ import { RecurringPaymentsService } from './recurring-payments.service';
 import { when } from 'jest-when';
 import { freezeDateWithJestFakeTimers } from '../../testing-utils/freeze-date';
 import { SettingsService } from './settings.service';
-import { Pot } from '@benwainwright/budget-domain';
+import { Pot, RecurringPayment } from '@benwainwright/budget-domain';
+import { mock } from 'jest-mock-extended';
+import { isSameDate } from '@benwainwright/utils';
 
 jest.mock('@benwainwright/nl-dates');
 
@@ -18,22 +19,32 @@ freezeDateWithJestFakeTimers(1, 6, 2022);
 
 beforeEach(() => {
   jest.resetAllMocks();
+  localStorage.clear();
 });
 
-class MockBalanceService {
-  getAvailableBalance(): Observable<number> {
-    return of(1200);
-  }
-}
-
-class MockSettingsService {
-  getSettings() {
-    return of({
-      overdraft: 0,
-      payCycle: 'last thursday of every month',
-    });
-  }
-}
+const PAYMENTS: RecurringPayment[] = [
+  {
+    id: '1',
+    name: 'Cleaner',
+    when: 'on the 3rd of June',
+    amount: 100,
+    potId: '0',
+  },
+  {
+    id: '2',
+    name: 'Fish',
+    when: '6th of June',
+    amount: 100,
+    potId: '0',
+  },
+  {
+    id: '3',
+    name: 'Electricity',
+    when: 'every week on wednesday',
+    amount: 25,
+    potId: '1',
+  },
+];
 
 const POTS: Pot[] = [
   {
@@ -213,22 +224,6 @@ const setupDateMocks = () => {
       weekDay: 3,
       alternatingNumber: 1,
     });
-};
-
-const bootstrapBudgetService = () => {
-  TestBed.configureTestingModule({
-    providers: [
-      { provide: BalanceService, useClass: MockBalanceService },
-      { provide: PotsService, useClass: MockPotsService },
-      { provide: SettingsService, useClass: MockSettingsService },
-      {
-        provide: RecurringPaymentsService,
-        useClass: MockRecurringPaymentsService,
-      },
-    ],
-  });
-
-  return TestBed.inject(BudgetService);
 };
 
 describe('BudgetService', () => {

@@ -1,5 +1,5 @@
+import { now } from '@benwainwright/utils';
 import { date } from './date';
-import { now } from './now';
 import { parseMonth } from './parse-month';
 
 describe('parse month', () => {

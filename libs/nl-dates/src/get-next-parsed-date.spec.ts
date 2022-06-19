@@ -1,6 +1,6 @@
 import { date } from './utils/date';
 import { getNextParsedDate } from './get-next-parsed-date';
-import { now } from './utils/now';
+import { now } from '@benwainwright/utils';
 
 describe('get next parsed date', () => {
   beforeEach(() => {

@@ -1,5 +1,4 @@
 import { getOrdinalIndex } from '../utils/get-ordinal-index';
-import { now } from '../utils/now';
 import {
   alternatingWordnumbersPiped,
   wordNumbers,
@@ -8,6 +7,7 @@ import { weekdaysPiped, weekDays } from '../ordinals/weekdays';
 import { getDaysInBetween } from '../utils/get-days-in-between';
 import { AppDate } from '../utils/app-date';
 import { ParseResult } from '../types/parse-result';
+import { now } from '@benwainwright/utils';
 
 export interface EveryWeekResult extends ParseResult<'EveryWeek'> {
   weekDay: number;

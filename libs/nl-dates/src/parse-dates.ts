@@ -1,10 +1,10 @@
 import { everyWeek } from './strategies/every-week';
-import { now } from './utils/now';
 import { numberedWeekday } from './strategies/nth-weekday';
 
 import { specificDateOfAnyYear } from './strategies/specific-date-of-any-year';
 import { specificDateOfAnyMonth } from './strategies/specific-date-of-any-month';
 import { GetDatesResult } from './types/get-dates-result';
+import { now } from '@benwainwright/utils';
 
 interface GetDatesOptions {
   from?: Date;

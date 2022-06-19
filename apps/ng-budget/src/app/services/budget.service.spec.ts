@@ -58,50 +58,49 @@ const POTS: Pot[] = [
   },
 ];
 
-class MockPotsService {
-  getPots(): Observable<Pot[]> {
-    return of(POTS);
-  }
-}
+const bootstrapBudgetService = () => {
+  const payments = mock<RecurringPaymentsService>();
+  payments.getPayments.mockReturnValue(of(PAYMENTS));
 
-class MockRecurringPaymentsService {
-  getPayments() {
-    return of([
-      {
-        id: '1',
-        name: 'Cleaner',
-        when: 'on the 3rd of June',
-        amount: 100,
-        potId: '0',
-      },
-      {
-        id: '2',
-        name: 'Fish',
-        when: '6th of June',
-        amount: 100,
-        potId: '0',
-      },
-      {
-        id: '3',
-        name: 'Electricity',
-        when: 'every week on wednesday',
-        amount: 25,
-        potId: '1',
-      },
-    ]);
-  }
-}
+  const pots = mock<PotsService>();
+  pots.getPots.mockReturnValue(of(POTS));
+
+  const balance = mock<BalanceService>();
+  balance.getAvailableBalance.mockReturnValue(of(1200));
+
+  const settings = mock<SettingsService>();
+  settings.getSettings.mockReturnValue(
+    of({
+      overdraft: 0,
+      payCycle: 'last thursday of every month',
+      payAmount: 1000,
+    })
+  );
+
+  return new BudgetService(payments, pots, balance, settings);
+};
 
 const setupDateMocks = () => {
   when(jest.mocked(getNextParsedDate))
-    .calledWith(date(2, 6, 2022), 'last thursday of every month')
+    .calledWith(
+      when.allArgs(
+        (args) =>
+          isSameDate(args[0], date(2, 6, 2022)) &&
+          args[1] === 'last thursday of every month'
+      )
+    )
     .mockReturnValue(date(30, 6, 2022));
 
   when(jest.mocked(parseDates))
-    .calledWith('on the 3rd of June', {
-      from: date(1, 6, 2022),
-      to: date(30, 6, 2022),
-    })
+    .calledWith(
+      when.allArgs(
+        (args) =>
+          args[0] === 'on the 3rd of June' &&
+          args[1]?.from !== undefined &&
+          isSameDate(args[1]?.from, date(1, 6, 2022)) &&
+          isSameDate(args[1]?.to, date(30, 6, 2022))
+      )
+    )
     .mockReturnValue({
       type: 'SpecificDateOfYear',
       dates: [date(30, 6, 2022)],
@@ -110,10 +109,15 @@ const setupDateMocks = () => {
     });
 
   when(jest.mocked(parseDates))
-    .calledWith('6th of June', {
-      from: date(1, 6, 2022),
-      to: date(30, 6, 2022),
-    })
+    .calledWith(
+      when.allArgs(
+        (args) =>
+          args[0] === '6th of June' &&
+          args[1]?.from !== undefined &&
+          isSameDate(args[1]?.from, date(1, 6, 2022)) &&
+          isSameDate(args[1]?.to, date(30, 6, 2022))
+      )
+    )
     .mockReturnValue({
       type: 'SpecificDateOfYear',
       dates: [date(1, 6, 2022)],
@@ -122,10 +126,15 @@ const setupDateMocks = () => {
     });
 
   when(jest.mocked(parseDates))
-    .calledWith('every week on wednesday', {
-      from: date(1, 6, 2022),
-      to: date(30, 6, 2022),
-    })
+    .calledWith(
+      when.allArgs(
+        (args) =>
+          args[0] === 'every week on wednesday' &&
+          args[1]?.from !== undefined &&
+          isSameDate(args[1]?.from, date(1, 6, 2022)) &&
+          isSameDate(args[1]?.to, date(30, 6, 2022))
+      )
+    )
     .mockReturnValue({
       type: 'EveryWeek',
       dates: [
@@ -140,14 +149,25 @@ const setupDateMocks = () => {
     });
 
   when(jest.mocked(getNextParsedDate))
-    .calledWith(date(1, 7, 2022), 'last thursday of every month')
+    .calledWith(
+      when.allArgs(
+        (args) =>
+          isSameDate(args[0], date(1, 7, 2022)) &&
+          args[1] === 'last thursday of every month'
+      )
+    )
     .mockReturnValue(date(28, 7, 2022));
 
   when(jest.mocked(parseDates))
-    .calledWith('on the 3rd of June', {
-      from: date(30, 6, 2022),
-      to: date(28, 7, 2022),
-    })
+    .calledWith(
+      when.allArgs(
+        (args) =>
+          args[0] === 'on the 3rd of June' &&
+          args[1]?.from !== undefined &&
+          isSameDate(args[1]?.from, date(30, 6, 2022)) &&
+          isSameDate(args[1]?.to, date(28, 7, 2022))
+      )
+    )
     .mockReturnValue({
       type: 'SpecificDateOfYear',
       dates: [],
@@ -156,10 +176,15 @@ const setupDateMocks = () => {
     });
 
   when(jest.mocked(parseDates))
-    .calledWith('6th of June', {
-      from: date(30, 6, 2022),
-      to: date(28, 7, 2022),
-    })
+    .calledWith(
+      when.allArgs(
+        (args) =>
+          args[0] === '6th of June' &&
+          args[1]?.from !== undefined &&
+          isSameDate(args[1]?.from, date(30, 6, 2022)) &&
+          isSameDate(args[1]?.to, date(28, 7, 2022))
+      )
+    )
     .mockReturnValue({
       type: 'SpecificDateOfYear',
       dates: [],
@@ -168,10 +193,15 @@ const setupDateMocks = () => {
     });
 
   when(jest.mocked(parseDates))
-    .calledWith('every week on wednesday', {
-      from: date(30, 6, 2022),
-      to: date(28, 7, 2022),
-    })
+    .calledWith(
+      when.allArgs(
+        (args) =>
+          args[0] === 'every week on wednesday' &&
+          args[1]?.from !== undefined &&
+          isSameDate(args[1]?.from, date(30, 6, 2022)) &&
+          isSameDate(args[1]?.to, date(28, 7, 2022))
+      )
+    )
     .mockReturnValue({
       type: 'EveryWeek',
       dates: [

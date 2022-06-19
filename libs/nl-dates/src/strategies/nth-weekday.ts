@@ -1,5 +1,4 @@
 import { getOrdinalIndex } from '../utils/get-ordinal-index';
-import { now } from '../utils/now';
 import { nthWeekdayOptionsPiped, wordNumbers } from '../ordinals/number-words';
 import { parseMonth } from '../utils/parse-month';
 import { weekdaysPiped, weekDays } from '../ordinals/weekdays';
@@ -7,8 +6,8 @@ import { getDaysInBetween } from '../utils/get-days-in-between';
 import { monthsPiped } from '../ordinals/months';
 import { ParseResult } from '../types/parse-result';
 import { groupOrderedDatesByMonth } from '../utils/group-ordered-dates-by-month';
-import { isSameDate } from '../utils/is-same-date';
 import { getLastOfMonth } from '../utils/get-last-of-month';
+import { isSameDate, now } from '@benwainwright/utils';
 
 export interface NumberedWeekdayResult
   extends ParseResult<'NumberedWeekdayOfMonth'> {

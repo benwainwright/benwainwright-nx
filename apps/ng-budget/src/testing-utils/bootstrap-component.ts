@@ -8,11 +8,11 @@ import {
 } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-export const bootstrapComponent = <T>(
+export const bootstrapComponent = async <T>(
   component: ProviderToken<T>,
   providers: Provider[] = []
 ) => {
-  TestBed.configureTestingModule({
+  await TestBed.configureTestingModule({
     declarations: [component],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
     providers: [

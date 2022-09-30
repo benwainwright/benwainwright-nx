@@ -1,10 +1,5 @@
 <h2>Recurring Payments <button (click)="openCreateEditDialog()" mat-button color="primary">Create</button></h2>
-<table
-  class="payments-table"
-  mat-table
-  *ngIf="payments.length > 0"
-  [dataSource]="payments"
->
+<table class="payments-table" mat-table *ngIf="payments.length > 0" [dataSource]="payments">
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>Name</th>
     <td mat-cell *matCellDef="let payment">
@@ -34,5 +29,5 @@
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
-  <tr mat-row *matRowDef="let myRowData; columns: tableColumns"></tr>
+  <tr mat-row *matRowDef="let payment; columns: tableColumns" (click)="openCreateEditDialog(payment)"></tr>
 </table>

@@ -16,5 +16,5 @@
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
-  <tr mat-row *matRowDef="let myRowData; columns: tableColumns"></tr>
+  <tr mat-row *matRowDef="let pot; columns: tableColumns" (click)="openCreateEditDialog(pot)"></tr>
 </table>

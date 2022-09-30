@@ -1,11 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Pot } from '@benwainwright/budget-domain';
 
-export interface PotDialogData {
-  name: string;
-  balance: number;
-}
+export type PotDialogData = Pot & { new: boolean }
 
 @Component({
   selector: 'benwainwright-pot-dialog',
@@ -14,15 +12,23 @@ export interface PotDialogData {
 })
 export class PotDialogComponent {
 
-  public form = new FormGroup({
-    name: new FormControl<string>('', { nonNullable: true }),
-    balance: new FormControl<number>(0, { nonNullable: true }),
-  });
+  public form: FormGroup 
+
+  public new: boolean
 
   constructor(
     public dialogRef: MatDialogRef<PotDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: PotDialogData
   ) {
+
+    this.new = data.new
+
+    this.form = new FormGroup({
+      name: new FormControl<string>(data.name ?? "", { nonNullable: true }),
+      balance: new FormControl<number>(data.balance ?? 0, { nonNullable: true }),
+    });
+
+
     this.form.valueChanges.subscribe((value) => {
       this.data.name = value.name ?? '';
       this.data.balance = value.balance ?? 0;

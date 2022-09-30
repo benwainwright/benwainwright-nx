@@ -6,6 +6,16 @@ body {
   margin: 0;
 }
 
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+table {
+  min-width: 30rem;
+}
+
 @include mat.core();
 
 $my-primary: mat.define-palette(mat.$indigo-palette, 500);

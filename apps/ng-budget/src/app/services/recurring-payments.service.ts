@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { RecurringPayment } from '@benwainwright/budget-domain';
 import { Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { DataService } from './data.service';
 
 export const PAYMENTS: RecurringPayment[] = [
   {
@@ -26,23 +27,34 @@ export const PAYMENTS: RecurringPayment[] = [
   },
 ];
 
+export const PAYMENTS_DATA_INJECTION_TOKEN = 'payments-data-service'
+
 @Injectable({
   providedIn: 'root',
 })
 export class RecurringPaymentsService {
-  private payments = new BehaviorSubject<RecurringPayment[]>(PAYMENTS);
-
-  private subscription: Subscription | undefined
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  public constructor() {}
+  public constructor(@Inject(PAYMENTS_DATA_INJECTION_TOKEN) private dataService: DataService<RecurringPayment>) {}
 
 
   getPayments(): Observable<RecurringPayment[]> {
-    return this.payments.asObservable();
+    return this.dataService.getAll()
   }
 
   setPayments(payments: RecurringPayment[]) {
-    this.payments.next(payments);
+    return this.dataService.setAll(payments)
+  }
+
+  updatePayment(payment: RecurringPayment) {
+    return this.dataService.updateItem(payment)
+  }
+
+  addPayment(payment: RecurringPayment) {
+    return this.dataService.insertItem(payment)
+  }
+
+  removePayment(payment: RecurringPayment) {
+    return this.dataService.removeItem(payment)
   }
 }

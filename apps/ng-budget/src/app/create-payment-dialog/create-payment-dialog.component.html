@@ -1,31 +1,20 @@
 <h2 mat-dialog-title>Create Payment</h2>
 <div mat-dialog-content class="create-payment-dialog">
-    <benwainwright-input
-        [formGroup]="form"
-        id="name"
-        label="Name"
-        type="text"
-        control="name"
-    ></benwainwright-input>
+  <form>
+    <benwainwright-input [formGroup]="form" id="name" label="Name" type="text" control="name"></benwainwright-input>
 
-    <benwainwright-input
-        [formGroup]="form"
-        id="amount"
-        label="Amount"
-        type="number"
-        control="amount"
-    ></benwainwright-input>
+    <benwainwright-input [formGroup]="form" id="amount" label="Amount" type="number" control="amount">
+    </benwainwright-input>
 
-    <benwainwright-date-string-input
-    [formGroup]="form"
-    id="when"
-    label="When"
-    type="text"
-    control="when"
-    ></benwainwright-date-string-input>
+    <benwainwright-date-string-input [formGroup]="form" id="when" label="When" type="text" control="when">
+    </benwainwright-date-string-input>
+
+    <benwainwright-select [formGroup]="form" [items]="pots" control="potId">
+    </benwainwright-select>
 
     <div mat-dialog-actions>
-        <button mat-button color="primary" [mat-dialog-close]="data">Save</button>
-        <button mat-button (click)="onSaveClick()">Cancel</button>
+      <button mat-button color="primary" [mat-dialog-close]="data">Save</button>
+      <button mat-button (click)="onSaveClick()">Cancel</button>
     </div>
+  </form>
 </div>

@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BudgetService } from './services/budget.service';
-import { RecurringPaymentsService } from './services/recurring-payments.service';
+import { PAYMENTS_DATA_INJECTION_TOKEN, RecurringPaymentsService } from './services/recurring-payments.service';
 import { SettingsService } from './services/settings.service';
 import { BudgetDashboardComponent } from './budget-dashboard/budget-dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -33,6 +33,10 @@ import { DateStringInputComponent } from './date-string-input/date-string-input.
 import { CreatePaymentDialogComponent } from './create-payment-dialog/create-payment-dialog.component';
 import { PotsComponent } from './pots/pots.component';
 import { PotDialogComponent } from './pot-dialog/pot-dialog.component';
+import { SelectComponent } from './select/select.component';
+import { MatSelectModule } from '@angular/material/select';
+import { LocalStorageDataService } from './services/local.storage.data.service';
+import { POTS_INJECTION_TOKEN } from './services/pots.service';
 
 @NgModule({
   declarations: [
@@ -51,6 +55,7 @@ import { PotDialogComponent } from './pot-dialog/pot-dialog.component';
     CreatePaymentDialogComponent,
     PotsComponent,
     PotDialogComponent,
+    SelectComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,8 +72,16 @@ import { PotDialogComponent } from './pot-dialog/pot-dialog.component';
     MatButtonModule,
     MatIconModule,
     MatCardModule,
+    MatSelectModule
   ],
-  providers: [SettingsService, RecurringPaymentsService, BudgetService],
+  providers: [
+    SettingsService,
+    RecurringPaymentsService,
+    BudgetService,
+    { provide: PAYMENTS_DATA_INJECTION_TOKEN, useFactory: () => new LocalStorageDataService('payments')},
+    { provide: POTS_INJECTION_TOKEN, useFactory: () => new LocalStorageDataService('pots')}
+
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

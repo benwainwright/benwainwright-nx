@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Pot } from '@benwainwright/budget-domain';
 import { Subscription } from 'rxjs';
-import { PaymentDialogData } from '../create-payment-dialog/create-payment-dialog.component';
+import { v4 } from "uuid"
 import { PotDialogComponent, PotDialogData } from '../pot-dialog/pot-dialog.component';
 import { PotsService } from '../services/pots.service';
 
@@ -30,19 +30,24 @@ export class PotsComponent implements OnInit {
       .subscribe((pots) => (this.pots = pots));
   }
 
-  openCreateEditDialog() {
+  openCreateEditDialog(pot?: Pot) {
     const startingData: PotDialogData = {
-      name: '',
-      balance: 0,
+      id: pot?.id ?? v4(),
+      name: pot?.name ?? '',
+      balance: pot?.balance ?? 0,
+      new: !pot
     };
 
-    const dialogRef = this.dialog.open(PotDialogComponent, {
+    const dialogRef = this.dialog.open<PotDialogComponent, PotDialogData, PotDialogData>(PotDialogComponent, {
       data: startingData,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log(result);
-      this.potsService.setPots([...this.pots, result]);
+      if(result?.new) {
+        this.potsService.setPots([...this.pots, result]);
+      } else if(result && !result.new) {
+        this.potsService.updatePot(result)
+      }
     });
   }
 }

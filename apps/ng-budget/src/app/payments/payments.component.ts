@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Pot, RecurringPayment } from '@benwainwright/budget-domain';
 import { Subscription } from 'rxjs';
+import { v4 } from 'uuid';
 import {
   CreatePaymentDialogComponent,
   PaymentDialogData,
@@ -34,20 +35,26 @@ export class PaymentsComponent implements OnInit, OnDestroy {
     this.potsSubscription?.unsubscribe();
   }
 
-  openCreateEditDialog() {
+  openCreateEditDialog(payment?: RecurringPayment) {
     const startingData: PaymentDialogData = {
-      name: '',
-      amount: 0,
-      when: '',
+      id: payment?.id ?? v4(),
+      name: payment?.name ?? '',
+      amount: payment?.amount ?? 0,
+      when: payment?.when ?? '',
+      potId: payment?.potId ?? '',
+      new: !payment
     };
 
-    const dialogRef = this.dialog.open(CreatePaymentDialogComponent, {
+    const dialogRef = this.dialog.open<CreatePaymentDialogComponent, PaymentDialogData, PaymentDialogData>(CreatePaymentDialogComponent, {
       data: startingData,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      console.log(result);
-      this.paymentsService.setPayments([...this.payments, result]);
+      if(result?.new) {
+        this.paymentsService.setPayments([...this.payments, result]);
+      } else if(result && !result.new) {
+        this.paymentsService.updatePayment(result)
+      }
     });
   }
 

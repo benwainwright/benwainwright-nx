@@ -1,0 +1,20 @@
+<h2>Pots <button (click)="openCreateEditDialog()" mat-button color="primary">Create</button></h2>
+
+<table class="pots-table" mat-table *ngIf="pots.length > 0" [dataSource]="pots">
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let pot">
+      {{ pot.name | titlecase }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="balance">
+    <th mat-header-cell *matHeaderCellDef>Balance</th>
+    <td mat-cell *matCellDef="let pot">
+      {{ pot.balance }}
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+  <tr mat-row *matRowDef="let myRowData; columns: tableColumns"></tr>
+</table>

@@ -31,6 +31,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 
 import { DateStringInputComponent } from './date-string-input/date-string-input.component';
 import { CreatePaymentDialogComponent } from './create-payment-dialog/create-payment-dialog.component';
+import { PotsComponent } from './pots/pots.component';
+import { PotDialogComponent } from './pot-dialog/pot-dialog.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +49,8 @@ import { CreatePaymentDialogComponent } from './create-payment-dialog/create-pay
     InputComponent,
     DateStringInputComponent,
     CreatePaymentDialogComponent,
+    PotsComponent,
+    PotDialogComponent,
   ],
   imports: [
     BrowserModule,

@@ -4,6 +4,7 @@ import { BudgetDashboardComponent } from './budget-dashboard/budget-dashboard.co
 import { BudgetComponent } from './budget/budget.component';
 import { DummyDataComponent } from './dummy-data/dummy-data.component';
 import { PaymentsComponent } from './payments/payments.component';
+import { PotsComponent } from './pots/pots.component';
 import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
@@ -33,6 +34,10 @@ const routes: Routes = [
     path: 'budget/:id',
     component: BudgetComponent,
   },
+  {
+    path: 'pots',
+    component: PotsComponent
+  }
 ];
 
 @NgModule({

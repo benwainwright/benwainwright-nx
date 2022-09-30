@@ -37,4 +37,8 @@ export class PotsService {
   getPots(): Observable<Pot[]> {
     return this.pots.asObservable();
   }
+  
+  setPots(payments: Pot[]) {
+    this.pots.next(payments);
+  }
 }

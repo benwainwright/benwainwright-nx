@@ -30,14 +30,17 @@ export class Budget {
     return budget;
   }
 
+  private rawBalance: number
+
   constructor(
     public readonly id: string,
     public readonly startDate: Date,
     public readonly endDate: Date,
     pots: Pot[],
-    public balance: number,
+    balance: number,
     public previous?: Budget
   ) {
+    this.rawBalance = balance
     this.potValues = pots.map((pot) => ({
       ...pot,
       adjustmentAmount: 0,
@@ -140,15 +143,20 @@ export class Budget {
     }));
   }
 
-  public get surplus(): number {
-    const balance =
-      this.isCurrent() || !this.previous
-        ? this.balance
-        : this.previous.surplus + this.balance;
+  public get balance(): number {
+      return this.isCurrent() || !this.previous
+        ? this.rawBalance
+        : this.previous.surplus + this.rawBalance;
+  }
 
+  public set balance(balance: number) {
+    this.rawBalance = balance
+  }
+
+  public get surplus(): number {
     return this.potPlans.reduce(
       (runningBalance, plan) => runningBalance - plan.adjustmentAmount,
-      balance
+      this.balance
     );
   }
 }

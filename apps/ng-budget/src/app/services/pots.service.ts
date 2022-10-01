@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { Pot } from '@benwainwright/budget-domain';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { DataService } from './data.service';
+import { map, Observable } from 'rxjs';
+import { DataSeriesService } from './data-series.service';
 
 export const POTS: Pot[] = [
   {
@@ -32,10 +32,9 @@ export const POTS_INJECTION_TOKEN = 'pots-data-service'
   providedIn: 'root',
 })
 export class PotsService {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor(@Inject(POTS_INJECTION_TOKEN) private dataService: DataService<Pot>) {}
+  constructor(@Inject(POTS_INJECTION_TOKEN) private dataService: DataSeriesService<Pot>) {}
   getPots(): Observable<Pot[]> {
-    return this.dataService.getAll()
+    return this.dataService.getAll().pipe(map(pots => pots.map(item => ({...item, balance: Number(item.balance)}))))
   }
   
   setPots(pots: Pot[]) {

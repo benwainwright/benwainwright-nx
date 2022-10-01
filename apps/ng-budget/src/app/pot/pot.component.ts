@@ -6,13 +6,26 @@ import { PotPlan } from '@benwainwright/budget-domain';
   templateUrl: './pot.component.html',
   styleUrls: ['./pot.component.css'],
 })
-export class PotComponent implements OnInit {
+export class PotComponent {
   @Input()
   public pot: PotPlan | undefined;
 
+
   public tableColumns: string[] = ['name', 'when', 'amount'];
 
-  constructor() {}
+  public get backgroundClass(): string {
+    if((this.pot?.adjustmentAmount ?? 0) > 0) {
+      return 'pot-deficit'
+    }
 
-  ngOnInit(): void {}
+    if((this.pot?.adjustmentAmount ?? 0) < 0) {
+      return 'pot-surplus'
+    }
+
+    return ''
+  }
+
+  public get allocated(): number {
+    return  (this.pot?.adjustmentAmount ?? 0) + (this.pot?.balance ?? 0)
+  }
 }

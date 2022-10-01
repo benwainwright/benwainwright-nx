@@ -2,10 +2,11 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
+import {MatChipsModule} from '@angular/material/chips';
 import { AppComponent } from './app.component';
-import { BudgetService } from './services/budget.service';
+import { BudgetService, BUDGET_INJECTION_TOKEN } from './services/budget.service';
 import { PAYMENTS_DATA_INJECTION_TOKEN, RecurringPaymentsService } from './services/recurring-payments.service';
-import { SettingsService } from './services/settings.service';
+import { SettingsService, SETTINGS_INJECTION_TOKEN } from './services/settings.service';
 import { BudgetDashboardComponent } from './budget-dashboard/budget-dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -35,8 +36,10 @@ import { PotsComponent } from './pots/pots.component';
 import { PotDialogComponent } from './pot-dialog/pot-dialog.component';
 import { SelectComponent } from './select/select.component';
 import { MatSelectModule } from '@angular/material/select';
-import { LocalStorageDataService } from './services/local.storage.data.service';
+import { LocalStorageDataSeriesService } from './services/local.storage.data-series.service';
 import { POTS_INJECTION_TOKEN } from './services/pots.service';
+import { Budget } from '@benwainwright/budget-domain';
+import { LocalStorageDataService } from './services/local-storage-data.service';
 
 @NgModule({
   declarations: [
@@ -72,14 +75,17 @@ import { POTS_INJECTION_TOKEN } from './services/pots.service';
     MatButtonModule,
     MatIconModule,
     MatCardModule,
-    MatSelectModule
+    MatSelectModule,
+    MatChipsModule
   ],
   providers: [
     SettingsService,
     RecurringPaymentsService,
     BudgetService,
-    { provide: PAYMENTS_DATA_INJECTION_TOKEN, useFactory: () => new LocalStorageDataService('payments')},
-    { provide: POTS_INJECTION_TOKEN, useFactory: () => new LocalStorageDataService('pots')}
+    { provide: BUDGET_INJECTION_TOKEN, useFactory: () => new LocalStorageDataSeriesService('budget', Budget.fromJson)},
+    { provide: PAYMENTS_DATA_INJECTION_TOKEN, useFactory: () => new LocalStorageDataSeriesService('payments')},
+    { provide: POTS_INJECTION_TOKEN, useFactory: () => new LocalStorageDataSeriesService('pots')},
+    { provide: SETTINGS_INJECTION_TOKEN, useFactory: () => new LocalStorageDataService('settings')}
 
   ],
   bootstrap: [AppComponent],

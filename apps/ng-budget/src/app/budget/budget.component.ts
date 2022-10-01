@@ -11,19 +11,25 @@ import { BudgetService } from '../services/budget.service';
 export class BudgetComponent implements OnInit {
   public budget: Budget | undefined;
 
+  public chips: string[]
+
   constructor(
     private budgetService: BudgetService,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    this.chips = []
+  }
 
   availableBalance() {
-    return (this.budget?.balance ?? 0) + (this.budget?.potTotals ?? 0);
+    const amount = (this.budget?.balance ?? 0) + (this.budget?.potTotals ?? 0);
+    return amount
   }
 
   ngOnInit(): void {
     this.budgetService.getBudgets().subscribe((budgets) => {
       const id = this.route.snapshot.paramMap.get('id');
       this.budget = budgets.find((budget) => budget.id === id);
+      this.chips = [...this.chips, this.budget?.isCurrent() ? "Current" : "Future"]
     });
   }
 }

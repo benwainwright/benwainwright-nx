@@ -1,38 +1,42 @@
 <h2>Budget</h2>
-<mat-card>
-  <ul class="budget-detail-ul">
-    <li>
-      From <strong>{{ budget?.startDate | date: 'mediumDate' }}</strong> to
-      <strong>{{ budget?.endDate | date: 'mediumDate' }}</strong>
-    </li>
-    <li>
-      Account Balance: <strong>{{ budget?.balance | currency: 'GBP' }}</strong>
-    </li>
-    <li>
-      Pots Balances Total:
-      <strong>{{ budget?.potTotals | currency: 'GBP' }}</strong>
-    </li>
-    <li>
-      Total Available: {{ budget?.balance | currency: 'GBP' }} + ${{
+<mat-chip-list>
+  <mat-chip *ngFor="let chip of chips">{{ chip }}</mat-chip>
+</mat-chip-list>
+<mat-card class="budget-detail-summary">
+  <mat-list class="budget-detail-ul">
+    <mat-list-item>
+      <p>From: <strong>{{ budget?.startDate | date: 'mediumDate' }}</strong> to
+        <strong>{{ budget?.endDate | date: 'mediumDate' }}</strong>
+      </p>
+    </mat-list-item>
+    <mat-list-item>
+      <p>Account Balance: <strong>{{ budget?.balance | currency: 'GBP' }}</strong></p>
+    </mat-list-item>
+    <mat-list-item>
+      <p>Pots Balances Total:
+        <strong>{{ budget?.potTotals | currency: 'GBP' }}</strong>
+      </p>
+    </mat-list-item>
+    <mat-list-item>
+      <p>Total Available: {{ budget?.balance | currency: 'GBP' }} + ${{
         budget?.potTotals | currency: 'GBP'
-      }}
-      = <strong>{{ availableBalance() | currency: 'GBP' }}</strong>
-    </li>
-    <li>
-      Allocated Total:
-      <strong>{{ budget?.totalAllocated | currency: 'GBP' }}</strong>
-    </li>
-    <li>
-      Surplus: {{ availableBalance() | currency: 'GBP' }} -
-      {{ budget?.totalAllocated | currency: 'GBP' }} =
-      <strong>{{ budget?.surplus | currency: 'GBP' }}</strong>
-    </li>
-  </ul>
+        }}
+        = <strong>{{ availableBalance() | currency: 'GBP' }}</strong></p>
+    </mat-list-item>
+    <mat-list-item>
+      <p>Allocated Total:
+        <strong>{{ budget?.totalAllocated | currency: 'GBP' }}</strong>
+      </p>
+    </mat-list-item>
+    <mat-list-item>
+      <p>Surplus: {{ availableBalance() | currency: 'GBP' }} -
+        {{ budget?.totalAllocated | currency: 'GBP' }} =
+        <strong>{{ budget?.surplus | currency: 'GBP' }}</strong>
+      </p>
+    </mat-list-item>
+  </mat-list>
 </mat-card>
 
 <div class="pots-grid">
-  <benwainwright-pot
-    *ngFor="let pot of budget?.potPlans"
-    [pot]="pot"
-  ></benwainwright-pot>
+  <benwainwright-pot *ngFor="let pot of budget?.potPlans" [pot]="pot"></benwainwright-pot>
 </div>

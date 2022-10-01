@@ -4,7 +4,8 @@
   <form>
     <benwainwright-input [formGroup]="form" id="name" label="Name" type="text" control="name"></benwainwright-input>
 
-    <benwainwright-input [formGroup]="form" id="balance" label="Balance" type="number" control="balance">
+    <benwainwright-input type="currency" [formGroup]="form" id="balance" label="Balance" type="number"
+      control="balance">
     </benwainwright-input>
 
     <div mat-dialog-actions>

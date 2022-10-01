@@ -28,6 +28,6 @@
     </td>
   </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+  <tr class="payments-row" mat-header-row *matHeaderRowDef="tableColumns"></tr>
   <tr mat-row *matRowDef="let payment; columns: tableColumns" (click)="openCreateEditDialog(payment)"></tr>
 </table>

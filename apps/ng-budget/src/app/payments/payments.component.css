@@ -1,3 +1,11 @@
-.payments-table {
-  width: 40rem;
+.payments-table td {
+  padding: 0 1rem;
+}
+
+.payments-table tr {
+  cursor: pointer;
+}
+
+.payments-table tr:hover {
+  background-color: #f1f1f1;
 }

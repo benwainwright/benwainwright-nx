@@ -1,0 +1,11 @@
+.pots-table td {
+  padding: 0 1rem;
+}
+
+.pots-table tr {
+  cursor: pointer;
+}
+
+.pots-table tr:hover {
+  background-color: #f1f1f1;
+}

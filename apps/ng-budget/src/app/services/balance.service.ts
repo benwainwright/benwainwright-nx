@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
   providedIn: 'root',
 })
 export class BalanceService {
-  private balance = 1500;
+  private balance = 0;
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor() {}

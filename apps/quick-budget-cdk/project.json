@@ -1,0 +1,42 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/quick-budget-cdk/src",
+  "targets": {
+    "deploy": {
+      "executor": "@ago-dev/nx-aws-cdk-v2:deploy",
+      "dependsOn": [
+        {
+          "projects": "dependencies",
+          "target": "build"
+        }
+      ],
+      "options": {}
+    },
+    "destroy": {
+      "executor": "@ago-dev/nx-aws-cdk-v2:destroy",
+      "options": {}
+    },
+    "bootstrap": {
+      "executor": "@ago-dev/nx-aws-cdk-v2:bootstrap",
+      "options": {}
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/quick-budget-cdk/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/quick-budget-cdk"],
+      "options": {
+        "jestConfig": "apps/quick-budget-cdk/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "implicitDependencies": ["ng-budget"],
+  "tags": []
+}

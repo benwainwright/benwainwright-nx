@@ -5,8 +5,6 @@
   gap: 2rem;
 }
 
-.budget-detail-ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.budget-detail-summary {
+  margin-top: 2rem;
 }

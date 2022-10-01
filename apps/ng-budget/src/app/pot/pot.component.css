@@ -13,3 +13,20 @@
 .pot-content {
     flex-grow: 2;
 }
+
+.mat-table {
+  background-color: transparent
+}
+
+.pot-deficit {
+  background-color: #FA9782
+}
+
+.pot-surplus {
+  background-color: #DBFFCD
+}
+
+ul {
+  margin: 1rem 0 0 1rem;
+  padding: 0;
+}

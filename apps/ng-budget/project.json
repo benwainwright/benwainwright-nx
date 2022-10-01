@@ -39,7 +39,10 @@
               "with": "apps/ng-budget/src/environments/environment.prod.ts"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "buildOptimizer": true,
+          "optimization": true,
+          "sourceMap": true
         },
         "development": {
           "buildOptimizer": false,

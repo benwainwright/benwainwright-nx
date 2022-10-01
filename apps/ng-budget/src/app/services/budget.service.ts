@@ -33,7 +33,7 @@ export class BudgetService {
             this.getBudgets()
           ))
 
-      this.dependentData.subscribe(this.updateBudgets)
+      this.dependentData.subscribe(this.updateBudgets.bind(this))
   }
 
   updateBudgets([payments, settings, pots, balance, budgets]: DependentData) {

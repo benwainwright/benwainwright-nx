@@ -7,8 +7,9 @@ import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as path from "node:path"
 
 const PACKAGE_DIR = path.join(__dirname, '..', '..')
-const ROOT_DIR = path.join(PACKAGE_DIR, '..')
-const DEPLOYMENT_DIR = path.join(ROOT_DIR, 'dist', 'apps', 'ng-budget')
+const ROOT_DIR = path.join(PACKAGE_DIR, '..', '..')
+const DIST_DIR = path.join(ROOT_DIR, 'dist')
+const DEPLOYMENT_DIR = path.join(DIST_DIR, 'apps', 'ng-budget')
 
 interface AppStackProps {
   transient: boolean;

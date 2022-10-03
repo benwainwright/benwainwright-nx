@@ -16,10 +16,7 @@ jobs:
     name: Bake Latest Dependencies
     runs-on: ubuntu-latest
     container:
-      image: benwainwrighttnm/tnm-deps
-      credentials:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+      image: bwainwrighttnm/tnm-deps
 
     steps:
       - uses: actions/checkout@v3

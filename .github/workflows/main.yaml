@@ -55,7 +55,7 @@ jobs:
         with:
           context: .
           build-args: |
-            workspace_path=${{ github.workspace }}
+            workspace_path=$GITHUB_WORKSPACE
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

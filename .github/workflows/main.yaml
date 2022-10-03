@@ -16,7 +16,7 @@ jobs:
     name: Bake Latest Dependencies
     runs-on: ubuntu-latest
     container:
-      image: bwainwrighttnm/tnm-deps
+      image: bwainwrighttnm/tnm-deps:main
 
     steps:
       - uses: actions/checkout@v3

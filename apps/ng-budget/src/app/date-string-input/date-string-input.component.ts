@@ -35,8 +35,10 @@ export class DateStringInputComponent implements OnInit {
   constructor(private controlContainer: ControlContainer) {}
 
   private parseInput(text: string) {
-    this.result = parseDates(text);
-    this.next = getNextParsedDate(new Date(Date.now()), text);
+    try {
+      this.result = parseDates(text);
+      this.next = getNextParsedDate(new Date(Date.now()), text);
+    } catch (error) {}
   }
 
   fieldChange(event: { target: HTMLInputElement }) {

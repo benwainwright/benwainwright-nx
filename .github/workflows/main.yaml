@@ -26,6 +26,10 @@ jobs:
         with:
           node-version: '16'
 
+      - name: List Dir
+        shell: 'bash'
+        run: ls
+
       - name: Install Dependencies
         shell: 'bash'
         run: yarn install --frozen-lockfile

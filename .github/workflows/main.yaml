@@ -15,11 +15,8 @@ jobs:
   bake-dependencies:
     name: Bake Latest Dependencies
     runs-on: ubuntu-latest
-    container:
-      image: bwainwrighttnm/tnm-deps:main
 
     steps:
-
       - name: List Dir
         shell: 'bash'
         run: ls
@@ -59,3 +56,28 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+  run-tests:
+    name: Run Test
+    runs-on: ubuntu-latest
+    container:
+      image: bwainwrighttnm/tnm-deps:main
+
+    steps:
+      - name: List Dir
+        shell: 'bash'
+        run: ls
+      - uses: actions/checkout@v3
+
+      - name: Configure node 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: List Dir
+        shell: 'bash'
+        run: ls
+
+      - name: Install Dependencies
+        shell: 'bash'
+        run: yarn install --frozen-lockfile

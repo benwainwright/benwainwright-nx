@@ -17,23 +17,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: List Dir
-        shell: 'bash'
-        run: ls
-      - uses: actions/checkout@v3
-
       - name: Configure node 16
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-
-      - name: List Dir
-        shell: 'bash'
-        run: ls
-
-      - name: Echo Workspace
-        shell: 'bash'
-        run: echo $RUNNER_WORKSPACE
 
       - name: Install Dependencies
         shell: 'bash'

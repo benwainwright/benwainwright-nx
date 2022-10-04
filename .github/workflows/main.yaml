@@ -56,7 +56,7 @@ jobs:
         with:
           context: .
           build-args: |
-            workspace_path=${{ env.PWD }}
+            workspace_path=/__w/benwainwright-nx/benwainwright-nx
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

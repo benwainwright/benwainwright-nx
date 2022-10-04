@@ -33,7 +33,7 @@ jobs:
 
       - name: Echo Workspace
         shell: 'bash'
-        run: echo $GITHUB_WORKSPACE 
+        run: echo $RUNNER_WORKSPACE
 
       - name: Install Dependencies
         shell: 'bash'

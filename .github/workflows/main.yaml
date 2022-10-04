@@ -31,6 +31,10 @@ jobs:
         shell: 'bash'
         run: ls
 
+      - name: Echo Workspace
+        shell: 'bash'
+        run: echo $GITHUB_WORKSPACE 
+
       - name: Install Dependencies
         shell: 'bash'
         run: yarn install --frozen-lockfile

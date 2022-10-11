@@ -143,7 +143,11 @@ export class AppStack extends Stack {
       }),
       authSignUpUrl: userPoolDomain.signInUrl(client, {
         redirectUri: `https://${domainName}/`,
-        signInPath: 'signup',
+        signInPath: '/signup',
+      }),
+      authSignOutUrl: userPoolDomain.signInUrl(client, {
+        redirectUri: `https://${domainName}/`,
+        signInPath: '/logout',
       }),
     };
 

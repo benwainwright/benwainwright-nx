@@ -1,12 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  filter,
-  BehaviorSubject,
-  Observable,
-  switchMap,
-  map,
-  mergeMap,
-} from 'rxjs';
+import { filter, BehaviorSubject, Observable, map, mergeMap } from 'rxjs';
 import { BackendConfig } from '@benwainwright/types';
 import { AppConfigService } from './app-config.service';
 import { CognitoAuth } from 'amazon-cognito-auth-js';
@@ -57,28 +50,13 @@ export class AuthService {
     );
   }
 
-  private saveConfig(config: BackendConfig | undefined) {
-    this.logger.debug(JSON.stringify(config));
-    if (!this.auth && config) {
-      this.config = config;
-      const authData = {
-        UserPoolId: config.userpoolId,
-        ClientId: config.userPoolClientId,
-        RedirectUriSignIn: `https://${config.domainName}/`,
-        RedirectUriSignOut: `https://${config.domainName}/`,
-        AppWebDomain: config.domainName,
-        TokenScopesArray: ['email'],
-        Region: config.region,
-      };
-      this.auth = new CognitoAuth(authData);
-    }
-
-    return config;
-  }
-
   public logout() {
     this.auth?.signOut();
-    this.redirectIfLoggedOut();
+    if (!this.config) {
+      return;
+    }
+
+    window.location.href = this.config.authSignOutUrl;
   }
 
   private saveUser() {
@@ -125,29 +103,34 @@ export class AuthService {
     }
   }
 
+  private saveConfig(config: BackendConfig | undefined) {
+    this.logger.debug(JSON.stringify(config, null, 2));
+    if (!this.auth && config) {
+      this.config = config;
+      const authData = {
+        UserPoolId: config.userpoolId,
+        ClientId: config.userPoolClientId,
+        RedirectUriSignIn: `https://${config.domainName}/`,
+        RedirectUriSignOut: `https://${config.domainName}/`,
+        AppWebDomain: config.domainName,
+        TokenScopesArray: ['email'],
+        Region: config.region,
+      };
+      this.auth = new CognitoAuth(authData);
+    }
+
+    return config;
+  }
+
   private async loadUserFromUrlCredentials(url: string) {
     if (url.indexOf('id_token') !== -1) {
       // eslint-disable-next-line no-restricted-syntax
-      console.debug(`Parsing token`);
+      this.logger.debug(`Parsing token`);
       await this.parseUrl(url);
     }
   }
 
-  loaded() {
+  private loaded() {
     return this.loadedSubject.pipe(filter((value) => value));
-  }
-
-  redirectIfLoggedOut() {
-    if (!this.config) {
-      return;
-    }
-
-    if (!this.user.value) {
-      window.location.href = this.config.authSignInUrl;
-    }
-  }
-
-  getCurrentUser(): Observable<User | undefined> {
-    return this.user.asObservable();
   }
 }

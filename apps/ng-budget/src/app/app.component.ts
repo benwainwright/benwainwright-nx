@@ -12,6 +12,10 @@ export class AppComponent {
   public constructor(private breakpointObserver: BreakpointObserver) {}
   public mobile = false;
 
+  toggleNav() {
+    this.mobile = !this.mobile;
+  }
+
   ngOnInit(): void {
     this.breakpointObserver
       .observe('(max-width: 599px)')

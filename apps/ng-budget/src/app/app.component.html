@@ -1,4 +1,13 @@
-<benwainwright-header></benwainwright-header>
+<mat-toolbar color="primary">
+  <button
+    mat-icon-button
+    aria-label="Example icon button with a menu icon"
+    (click)="toggleNav()"
+  >
+    <mat-icon>menu</mat-icon>
+  </button>
+  NG Budget
+</mat-toolbar>
 <mat-drawer-container class="drawer-full-height">
   <mat-drawer mode="side" [opened]="!mobile"
     ><benwainwright-nav-bar></benwainwright-nav-bar

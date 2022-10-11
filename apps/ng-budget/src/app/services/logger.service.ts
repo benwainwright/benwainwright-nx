@@ -1,4 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+
+export const LOGGER_CONTEXT_TOKEN = 'loggerContext';
 
 @Injectable({
   providedIn: 'root',
@@ -6,11 +8,11 @@ import { Injectable } from '@angular/core';
 export class LoggerService {
   constructor() {}
 
-  log(message: string) {
+  public log(message: string) {
     console.log(message);
   }
 
-  debug(message: string) {
+  public debug(message: string) {
     // eslint-disable-next-line no-restricted-syntax
     console.debug(message);
   }

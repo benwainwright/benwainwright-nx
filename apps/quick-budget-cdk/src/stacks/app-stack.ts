@@ -72,8 +72,6 @@ export class AppStack extends Stack {
       },
     });
 
-    console.log(`node`, this.node);
-
     const domainName = getDomainName(props.envName);
 
     const hostedZone = HostedZone.fromLookup(this, 'hosted-zone', {

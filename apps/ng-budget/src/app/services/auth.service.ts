@@ -1,8 +1,16 @@
 import { Injectable } from '@angular/core';
-import { filter, BehaviorSubject, Observable, switchMap, map } from 'rxjs';
+import {
+  filter,
+  BehaviorSubject,
+  Observable,
+  switchMap,
+  map,
+  mergeMap,
+} from 'rxjs';
 import { BackendConfig } from '@benwainwright/types';
 import { AppConfigService } from './app-config.service';
 import { CognitoAuth } from 'amazon-cognito-auth-js';
+import { LoggerService } from './logger.service';
 
 export interface User {
   username: string;
@@ -18,13 +26,17 @@ export class AuthService {
   private loadedSubject = new BehaviorSubject(false);
   private auth: CognitoAuth | undefined;
 
-  constructor(private configService: AppConfigService) {
+  constructor(
+    private configService: AppConfigService,
+    private logger: LoggerService
+  ) {
     this.configService
       .getConfig()
       .pipe(map(this.saveConfig.bind(this)))
       .subscribe(async () => {
-        this.saveUser();
         await this.loadUserFromUrlCredentials(window.location.href);
+        this.saveUser();
+        this.logger.debug(`User saved`);
         this.loadedSubject.next(true);
       });
   }
@@ -37,10 +49,16 @@ export class AuthService {
   }
 
   public getUser() {
-    return this.loaded().pipe(switchMap(() => this.user));
+    return this.loaded().pipe(
+      mergeMap(() => {
+        this.logger.debug(`Loaded`);
+        return this.user;
+      })
+    );
   }
 
   private saveConfig(config: BackendConfig | undefined) {
+    this.logger.debug(JSON.stringify(config));
     if (!this.auth && config) {
       this.config = config;
       const authData = {
@@ -58,14 +76,24 @@ export class AuthService {
     return config;
   }
 
+  public logout() {
+    this.auth?.signOut();
+    this.redirectIfLoggedOut();
+  }
+
   private saveUser() {
     const auth = this.auth;
+    this.logger.debug(`No auth found`);
     if (!auth) {
       return;
     }
+    this.logger.debug(`Auth found`);
     const username = auth.getUsername();
     if (!username) {
+      this.logger.debug(`No user to save`);
       return;
+    } else {
+      this.logger.debug(`Found user`);
     }
 
     const user = { username, groups: [] };
@@ -99,8 +127,9 @@ export class AuthService {
 
   private async loadUserFromUrlCredentials(url: string) {
     if (url.indexOf('id_token') !== -1) {
+      // eslint-disable-next-line no-restricted-syntax
+      console.debug(`Parsing token`);
       await this.parseUrl(url);
-      this.saveUser();
     }
   }
 

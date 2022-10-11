@@ -20,7 +20,7 @@ export class AuthorisedGuard implements CanActivate {
           of(true),
           this.authService.redirectUrl().pipe(
             map((url) => {
-              window.location.href = url ?? '';
+              // window.location.href = url ?? '';
               return false;
             })
           )

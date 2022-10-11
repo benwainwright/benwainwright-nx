@@ -54,6 +54,7 @@ import { LocalStorageDataService } from './services/local-storage-data.service';
 import { AppConfigService } from './services/app-config.service';
 import { AuthService } from './services/auth.service';
 import { AuthorisedGuard } from './guards/authorised.guard';
+import { LoggerService } from './services/logger.service';
 
 @NgModule({
   declarations: [
@@ -97,6 +98,7 @@ import { AuthorisedGuard } from './guards/authorised.guard';
     SettingsService,
     AppConfigService,
     AuthService,
+    LoggerService,
     AuthorisedGuard,
     RecurringPaymentsService,
     BudgetService,

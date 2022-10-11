@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BackendConfig } from '@benwainwright/types';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, filter } from 'rxjs';
 
 const getConfigUrl = () => {
   return `https://quickbudget.co.uk/backend-config.json`;
@@ -20,6 +20,6 @@ export class AppConfigService {
   }
 
   public getConfig(): Observable<BackendConfig | undefined> {
-    return this.config.asObservable();
+    return this.config.pipe(filter((config) => Boolean(config)));
   }
 }

@@ -1,6 +1,10 @@
 import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
-import { Distribution, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
+import {
+  Distribution,
+  OriginRequestPolicy,
+  ViewerProtocolPolicy,
+} from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
@@ -120,6 +124,7 @@ export class AppStack extends Stack {
       defaultBehavior: {
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         origin: new S3Origin(assetsBucket),
+        originRequestPolicy: OriginRequestPolicy.CORS_S3_ORIGIN,
       },
     });
 

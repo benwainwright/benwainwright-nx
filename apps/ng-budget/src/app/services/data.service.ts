@@ -1,6 +1,6 @@
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
-export  interface DataService<T> {
+export interface DataService<T> {
   getAll(): Observable<T>;
   setAll(data: T): Observable<void>;
 }

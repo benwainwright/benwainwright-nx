@@ -1,12 +1,23 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { HttpClientModule } from '@angular/common/http';
+
 import { AppRoutingModule } from './app-routing.module';
-import {MatChipsModule} from '@angular/material/chips';
+import { MatChipsModule } from '@angular/material/chips';
 import { AppComponent } from './app.component';
-import { BudgetService, BUDGET_INJECTION_TOKEN } from './services/budget.service';
-import { PAYMENTS_DATA_INJECTION_TOKEN, RecurringPaymentsService } from './services/recurring-payments.service';
-import { SettingsService, SETTINGS_INJECTION_TOKEN } from './services/settings.service';
+import {
+  BudgetService,
+  BUDGET_INJECTION_TOKEN,
+} from './services/budget.service';
+import {
+  PAYMENTS_DATA_INJECTION_TOKEN,
+  RecurringPaymentsService,
+} from './services/recurring-payments.service';
+import {
+  SettingsService,
+  SETTINGS_INJECTION_TOKEN,
+} from './services/settings.service';
 import { BudgetDashboardComponent } from './budget-dashboard/budget-dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -40,6 +51,9 @@ import { LocalStorageDataSeriesService } from './services/local.storage.data-ser
 import { POTS_INJECTION_TOKEN } from './services/pots.service';
 import { Budget } from '@benwainwright/budget-domain';
 import { LocalStorageDataService } from './services/local-storage-data.service';
+import { AppConfigService } from './services/app-config.service';
+import { AuthService } from './services/auth.service';
+import { AuthorisedGuard } from './guards/authorised.guard';
 
 @NgModule({
   declarations: [
@@ -63,6 +77,7 @@ import { LocalStorageDataService } from './services/local-storage-data.service';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatToolbarModule,
@@ -76,17 +91,32 @@ import { LocalStorageDataService } from './services/local-storage-data.service';
     MatIconModule,
     MatCardModule,
     MatSelectModule,
-    MatChipsModule
+    MatChipsModule,
   ],
   providers: [
     SettingsService,
+    AppConfigService,
+    AuthService,
+    AuthorisedGuard,
     RecurringPaymentsService,
     BudgetService,
-    { provide: BUDGET_INJECTION_TOKEN, useFactory: () => new LocalStorageDataSeriesService('budget', Budget.fromJson)},
-    { provide: PAYMENTS_DATA_INJECTION_TOKEN, useFactory: () => new LocalStorageDataSeriesService('payments')},
-    { provide: POTS_INJECTION_TOKEN, useFactory: () => new LocalStorageDataSeriesService('pots')},
-    { provide: SETTINGS_INJECTION_TOKEN, useFactory: () => new LocalStorageDataService('settings')}
-
+    {
+      provide: BUDGET_INJECTION_TOKEN,
+      useFactory: () =>
+        new LocalStorageDataSeriesService('budget', Budget.fromJson),
+    },
+    {
+      provide: PAYMENTS_DATA_INJECTION_TOKEN,
+      useFactory: () => new LocalStorageDataSeriesService('payments'),
+    },
+    {
+      provide: POTS_INJECTION_TOKEN,
+      useFactory: () => new LocalStorageDataSeriesService('pots'),
+    },
+    {
+      provide: SETTINGS_INJECTION_TOKEN,
+      useFactory: () => new LocalStorageDataService('settings'),
+    },
   ],
   bootstrap: [AppComponent],
 })

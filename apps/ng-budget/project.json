@@ -21,7 +21,7 @@
             {
               "type": "initial",
               "maximumWarning": "500kb",
-              "maximumError": "1mb"
+              "maximumError": "5mb"
             },
             {
               "type": "anyComponentStyle",
@@ -53,12 +53,6 @@
     },
     "serve": {
       "executor": "@angular-devkit/build-angular:dev-server",
-      "options": {
-        "assets": [
-          "apps/ng-budget/src/favicon.ico",
-          "apps/ng-budget/src/assets"
-        ]
-      },
       "configurations": {
         "production": {
           "browserTarget": "ng-budget:build:production"

@@ -9,49 +9,54 @@ import { Settings, SettingsService } from './settings.service';
 import { Budget, Pot, RecurringPayment } from '@benwainwright/budget-domain';
 import { DataSeriesService } from './data-series.service';
 
-export const BUDGET_INJECTION_TOKEN = 'budget-service-data'
+export const BUDGET_INJECTION_TOKEN = 'budget-service-data';
 
-type DependentData = [RecurringPayment[], Settings, Pot[], number, Budget[]]
+type DependentData = [RecurringPayment[], Settings, Pot[], number, Budget[]];
 
 @Injectable({
   providedIn: 'root',
 })
 export class BudgetService {
-  private dependentData: Observable<DependentData>
+  private dependentData: Observable<DependentData>;
   constructor(
     private recurringPayments: RecurringPaymentsService,
     private pots: PotsService,
     private balance: BalanceService,
     private settings: SettingsService,
-    @Inject(BUDGET_INJECTION_TOKEN) private dataService: DataSeriesService<Budget>
+    @Inject(BUDGET_INJECTION_TOKEN)
+    private dataService: DataSeriesService<Budget>
   ) {
-      this.dependentData = this.recurringPayments.getPayments()
-          .pipe(combineLatestWith(
-            this.settings.getSettings(),
-            this.pots.getPots(),
-            this.balance.getAvailableBalance(),
-            this.getBudgets()
-          ))
+    this.dependentData = this.recurringPayments
+      .getPayments()
+      .pipe(
+        combineLatestWith(
+          this.settings.getSettings(),
+          this.pots.getPots(),
+          this.balance.getAvailableBalance(),
+          this.getBudgets()
+        )
+      );
 
-      this.dependentData.subscribe(this.updateBudgets.bind(this))
+    this.dependentData.subscribe(this.updateBudgets.bind(this));
   }
 
   updateBudgets([payments, settings, pots, balance, budgets]: DependentData) {
+    const newBudgets = [...budgets];
 
-    const newBudgets = [...budgets]
+    newBudgets.forEach((budget) => {
+      (budget.balance = budget.previous ? settings.payAmount : balance),
+        budget.setPayments(payments),
+        (budget.pots = pots);
+      budget.setPayments(payments);
+    });
 
-    newBudgets.forEach(budget => {
-      budget.balance = budget.previous ? settings.payAmount : balance,
-      budget.setPayments(payments),
-      budget.pots = pots
-      budget.setPayments(payments)
-    })
-
-    this.dataService.setAll(newBudgets)
+    this.dataService.setAll(newBudgets);
   }
 
   async createBudget() {
-    const [payments, settings, pots, balance, budgets] = await lastValueFrom(this.dependentData.pipe(take(1)))
+    const [payments, settings, pots, balance, budgets] = await lastValueFrom(
+      this.dependentData.pipe(take(1))
+    );
 
     const startDate =
       budgets.length === 0
@@ -68,16 +73,18 @@ export class BudgetService {
     const created = new Budget(uuid(), startDate, endDate, pots, balance, last);
 
     created.setPayments(payments);
-    this.dataService.insertItem(created)
+    this.dataService.insertItem(created);
   }
 
   getBudgets(): Observable<Budget[]> {
-    return this.dataService.getAll().pipe(map((value) => 
+    return this.dataService.getAll().pipe(
+      map((value) =>
         value.map((budget, index, collection) => {
           const prev = index !== 0 ? collection[index - 1] : undefined;
           budget.previous = prev;
           return budget;
         })
-    ))
+      )
+    );
   }
 }

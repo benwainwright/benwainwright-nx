@@ -8,6 +8,7 @@
     "nl-dates": "libs/nl-dates",
     "quick-budget-cdk": "apps/quick-budget-cdk",
     "test-helpers": "libs/test-helpers",
+    "types": "libs/types",
     "utils": "libs/utils"
   }
 }

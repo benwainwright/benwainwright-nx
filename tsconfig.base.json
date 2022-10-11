@@ -18,6 +18,7 @@
       "@benwainwright/budget-domain": ["libs/budget-domain/src/index.ts"],
       "@benwainwright/nl-dates": ["libs/nl-dates/src/index.ts"],
       "@benwainwright/test-helpers": ["libs/test-helpers/src/index.ts"],
+      "@benwainwright/types": ["libs/types/src/index.ts"],
       "@benwainwright/utils": ["libs/utils/src/index.ts"]
     }
   },

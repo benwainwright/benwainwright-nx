@@ -4,12 +4,13 @@ import { Distribution, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
+import { BackendConfig } from '@benwainwright/types';
 import {
   CloudFrontTarget,
   UserPoolDomainTarget,
 } from 'aws-cdk-lib/aws-route53-targets';
 
-import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as path from 'node:path';
 import { Environment } from './environment';
@@ -25,12 +26,6 @@ interface AppStackProps {
   envName: Environment;
 }
 
-interface BackendConfig {
-  userpoolId: string;
-  userPoolClientId: string;
-  authSignInUrl: string;
-}
-
 export class AppStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps & AppStackProps) {
     super(scope, id, props);
@@ -42,6 +37,7 @@ export class AppStack extends Stack {
     const pool = new UserPool(this, 'user-pool', {
       removalPolicy,
 
+      selfSignUpEnabled: true,
       passwordPolicy: {
         minLength: 8,
         requireDigits: false,
@@ -75,7 +71,8 @@ export class AppStack extends Stack {
       {
         region: 'us-east-1',
         hostedZone,
-        domainName: `*.${domainName}`,
+        domainName,
+        subjectAlternativeNames: [`*.${domainName}`],
       }
     );
 
@@ -108,6 +105,13 @@ export class AppStack extends Stack {
       websiteErrorDocument: 'index.html',
       websiteIndexDocument: 'index.html',
       removalPolicy,
+      cors: [
+        {
+          allowedMethods: [HttpMethods.GET],
+          allowedOrigins: [`https://${domainName}`, `http://localhost:4200`],
+          allowedHeaders: [`*`],
+        },
+      ],
     });
 
     const distribution = new Distribution(this, 'cloudfront-distribution', {
@@ -125,10 +129,16 @@ export class AppStack extends Stack {
     });
 
     const backendConfig: BackendConfig = {
+      region: Stack.of(this).region,
       userpoolId: pool.userPoolId,
       userPoolClientId: client.userPoolClientId,
+      domainName,
       authSignInUrl: userPoolDomain.signInUrl(client, {
-        redirectUri: `https://${domainName}`,
+        redirectUri: `https://${domainName}/`,
+      }),
+      authSignUpUrl: userPoolDomain.signInUrl(client, {
+        redirectUri: `https://${domainName}/`,
+        signInPath: 'signup',
       }),
     };
 

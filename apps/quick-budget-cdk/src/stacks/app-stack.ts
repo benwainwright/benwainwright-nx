@@ -14,11 +14,20 @@ import {
   UserPoolDomainTarget,
 } from 'aws-cdk-lib/aws-route53-targets';
 
+import {
+  ApiGatewayToDynamoDB,
+  ApiGatewayToDynamoDBProps,
+} from '@aws-solutions-constructs/aws-apigateway-dynamodb';
+
 import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as path from 'node:path';
 import { Environment } from './environment';
 import { getDomainName } from './get-domain-name';
+import {
+  AuthorizationType,
+  CognitoUserPoolsAuthorizer,
+} from 'aws-cdk-lib/aws-apigateway';
 
 const PACKAGE_DIR = path.join(__dirname, '..', '..');
 const ROOT_DIR = path.join(PACKAGE_DIR, '..', '..');
@@ -63,6 +72,8 @@ export class AppStack extends Stack {
       },
     });
 
+    console.log(`node`, this.node);
+
     const domainName = getDomainName(props.envName);
 
     const hostedZone = HostedZone.fromLookup(this, 'hosted-zone', {
@@ -103,6 +114,31 @@ export class AppStack extends Stack {
       },
     });
 
+    const makeApi = (id: string) => {
+      const authorizer = new CognitoUserPoolsAuthorizer(this, `${id}-auth`, {
+        cognitoUserPools: [pool],
+      });
+
+      const apiProps: ApiGatewayToDynamoDBProps = {
+        allowCreateOperation: true,
+        allowDeleteOperation: true,
+        allowUpdateOperation: true,
+        allowReadOperation: true,
+        apiGatewayProps: {
+          defaultMethodOptions: {
+            authorizer,
+            authorizationType: AuthorizationType.COGNITO,
+          },
+        },
+      };
+
+      return new ApiGatewayToDynamoDB(this, id, apiProps);
+    };
+
+    const settings = makeApi('settings-api');
+    const budgets = makeApi('budgets-api');
+    const payments = makeApi('payments-api');
+
     const assetsBucket = new Bucket(this, 'assets-bucket', {
       bucketName: domainName,
       publicReadAccess: true,
@@ -137,6 +173,9 @@ export class AppStack extends Stack {
       region: Stack.of(this).region,
       userpoolId: pool.userPoolId,
       userPoolClientId: client.userPoolClientId,
+      settingsApi: settings.apiGateway.url,
+      budgetsApi: budgets.apiGateway.url,
+      paymentsApi: payments.apiGateway.url,
       domainName,
       authSignInUrl: userPoolDomain.signInUrl(client, {
         redirectUri: `https://${domainName}/`,

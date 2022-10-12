@@ -121,9 +121,17 @@ export class AppStack extends Stack {
       amount: z.string(),
     });
 
+    const potsSchema = z.object({
+      id: z.string(),
+      balance: z.string(),
+      name: z.string(),
+      username: z.string(),
+    });
+
     const data = new DataApi(this, 'settings-api', {
       removalPolicy,
       pool,
+      domainName,
       resources: [
         {
           name: 'settings',
@@ -132,6 +140,10 @@ export class AppStack extends Stack {
         {
           name: 'payments',
           schema: paymentsSchema,
+        },
+        {
+          name: 'pots',
+          schema: potsSchema,
         },
       ],
     });

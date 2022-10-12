@@ -8,6 +8,7 @@ import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { ZodTypeAny } from 'zod';
+import { addDomain } from './add-domain';
 import { addMethod } from './add-method';
 import { makeMappingTemplate } from './make-mapping-template';
 
@@ -20,6 +21,7 @@ interface DataApiProps {
   resources: ResourceDefinition[];
   removalPolicy: RemovalPolicy;
   pool: UserPool;
+  domainName?: string;
 }
 
 export class DataApi extends Construct {
@@ -114,5 +116,9 @@ export class DataApi extends Construct {
 
       return table;
     });
+
+    if (props.domainName) {
+      addDomain(this, `${id}-domain`, this.api, props.domainName);
+    }
   }
 }

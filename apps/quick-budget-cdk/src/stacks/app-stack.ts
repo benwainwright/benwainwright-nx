@@ -184,7 +184,6 @@ export class AppStack extends Stack {
       region: Stack.of(this).region,
       userpoolId: pool.userPoolId,
       userPoolClientId: client.userPoolClientId,
-      settingsApi: `${data.api.url}/settings`,
       paymentsApi: `${data.api.url}/payments`,
       domainName,
       authSignInUrl: userPoolDomain.signInUrl(client, {

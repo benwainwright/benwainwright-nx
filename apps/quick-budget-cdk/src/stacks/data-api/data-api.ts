@@ -12,9 +12,11 @@ import { addDomain } from './add-domain';
 import { addMethod } from './add-method';
 import { makeMappingTemplate } from './make-mapping-template';
 
-interface ResourceDefinition {
+interface DeployedResource {
   name: string;
   schema: ZodTypeAny;
+  url: string;
+  table: Table;
 }
 
 interface DataApiProps {
@@ -27,6 +29,8 @@ interface DataApiProps {
 export class DataApi extends Construct {
   public tables: Table[];
   public api: RestApi;
+  public resources: DeployedResource[];
+
   constructor(scope: Construct, id: string, props: DataApiProps) {
     super(scope, id);
 
@@ -41,7 +45,7 @@ export class DataApi extends Construct {
       },
     });
 
-    this.tables = props.resources.map(({ name, schema }) => {
+    const resources = props.resources.map(({ name, schema }) => {
       const table = new Table(this, `${id}-${name}-table`, {
         billingMode: BillingMode.PAY_PER_REQUEST,
         partitionKey: {
@@ -114,11 +118,18 @@ export class DataApi extends Construct {
         table
       );
 
-      return table;
+      return { table, schema, name };
     });
 
     if (props.domainName) {
       addDomain(this, `${id}-domain`, this.api, props.domainName);
     }
+
+    const url = props.domainName ? `https://${props.domainName}` : this.api.url;
+
+    this.resources = resources.map((resource) => ({
+      ...resource,
+      url: `${url}/${resource.name}`,
+    }));
   }
 }

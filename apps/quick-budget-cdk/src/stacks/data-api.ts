@@ -1,12 +1,13 @@
 import { RemovalPolicy } from 'aws-cdk-lib';
 import {
   AwsIntegration,
-  JsonSchemaType,
-  Model,
-  RequestValidator,
   RestApi,
+  Resource,
+  CognitoUserPoolsAuthorizer,
+  AuthorizationType,
 } from 'aws-cdk-lib/aws-apigateway';
-import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
 import {
   Effect,
   Policy,
@@ -15,210 +16,175 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
+import { ZodTypeAny } from 'zod';
+import { makeMappingTemplate } from './make-mapping-template';
+
+interface ResourceDefinition {
+  name: string;
+  schema: ZodTypeAny;
+}
 
 interface DataApiProps {
-  resourceName: string;
-  transient: boolean;
+  resources: ResourceDefinition[];
+  removalPolicy: RemovalPolicy;
+  pool: UserPool;
 }
 
 export class DataApi extends Construct {
+  public tables: Table[];
+  public api: RestApi;
   constructor(scope: Construct, id: string, props: DataApiProps) {
     super(scope, id);
 
-    const idName = `${id}-${props.resourceName}`;
+    const authorizer = new CognitoUserPoolsAuthorizer(this, `${id}-auth`, {
+      cognitoUserPools: [props.pool],
+    });
 
-    const dynamoTable = new Table(this, `${idName}-table`, {
-      partitionKey: {
-        name: 'id',
-        type: AttributeType.STRING,
+    this.api = new RestApi(this, `${id}-api`, {
+      defaultMethodOptions: {
+        authorizer,
+        authorizationType: AuthorizationType.COGNITO,
       },
-      removalPolicy: !props.transient
-        ? RemovalPolicy.RETAIN
-        : RemovalPolicy.DESTROY,
     });
 
-    const api = new RestApi(this, `${idName}-api`, {});
-
-    const resource = api.root.addResource(props.resourceName);
-
-    const singleResource = resource.addResource('{id}');
-
-    const dbPolicy = new Policy(this, `${idName}-api-policy`, {
-      statements: [
-        new PolicyStatement({
-          actions: [
-            'dynamodb:PutItem',
-            'dynamodb:GetItem',
-            'dynamodb:DeleteItem',
-          ],
-          effect: Effect.ALLOW,
-          resources: [dynamoTable.tableArn],
-        }),
-      ],
-    });
-
-    const apiRole = new Role(this, `${idName}-api-role`, {
-      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
-    });
-
-    apiRole.attachInlinePolicy(dbPolicy);
-
-    const errorResponses = [
-      {
-        selectionPattern: '400',
-        statusCode: '400',
-        responseTemplates: {
-          'application/json': `{
-                        "error": "Bad input!",
-                    }`,
+    this.tables = props.resources.map(({ name, schema }) => {
+      const table = new Table(this, `${id}-${name}-table`, {
+        billingMode: BillingMode.PAY_PER_REQUEST,
+        partitionKey: {
+          name: `id`,
+          type: AttributeType.STRING,
         },
-      },
-      {
-        selectionPattern: '5\\d{2}',
-        statusCode: '500',
-        responseTemplates: {
-          'application/json': `{
-                        "error": "Internal Service Error!"
-                    }`,
-        },
-      },
-    ];
+        removalPolicy: props.removalPolicy,
+      });
 
-    const integrationResponses = [
-      {
-        statusCode: '200',
-        message: '',
-      },
-      ...errorResponses,
-    ];
-
-    const requestValidator = new RequestValidator(this, `${idName}-validator`, {
-      restApi: api,
-      validateRequestBody: true,
-    });
-
-    const payloadModel = new Model(this, `${idName}-validator-model`, {
-      restApi: api,
-      contentType: 'application/json',
-      description: 'json schema to validate api payload',
-      schema: {
-        type: JsonSchemaType.OBJECT,
-        properties: {
-          id: {
-            type: JsonSchemaType.STRING,
-          },
-        },
-        required: ['id'],
-      },
-    });
-
-    singleResource.addMethod(
-      'GET',
-      new AwsIntegration({
-        service: 'dynamodb',
-        action: 'GetItem',
-        options: {
-          credentialsRole: apiRole,
-          integrationResponses,
-          requestTemplates: {
-            'application/json': `{
-                "Key": {
-                  "userId": {
-                      "S": "$method.request.path.id"
-                  }
-                },
-              "TableName": "${dynamoTable.tableName}"
-            }`,
-          },
-        },
-      }),
-      {
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseModels: {
-              'application/json': Model.EMPTY_MODEL,
-            },
-          },
-          { statusCode: '400' },
-          { statusCode: '500' },
-        ],
-      }
-    );
-
-    const deleteAfterSeconds = 10;
-
-    resource.addMethod(
-      'POST',
-      new AwsIntegration({
-        service: 'dynamodb',
-        action: 'PutItem',
-        options: {
-          credentialsRole: apiRole,
-          integrationResponses: [
-            {
-              statusCode: '200',
-              responseTemplates: {
-                'application/json': `{
-                "requestId": "$context.requestId"
-              }`,
-              },
-            },
-            ...errorResponses,
-          ],
-          requestTemplates: {
-            'application/json': `#set($ttlEpoch = $context.requestTimeEpoch / 1000 + ${deleteAfterSeconds})
-    {
-        "Item":
+      const errorResponses = [
         {
-            "userId":
-            {
-                "S": "$input.path('$context.requestId')-$input.path('$.player_name')"
-            },
-            "correlationId":
-            {
-                "S": "$context.requestId"
-            },
-            "status":
-            {
-                "S": "to_be_confirmed"
-            },
-            "userName":
-            {
-                "S":"$input.path('$.user_name')"
-            },
-            "email":
-            {
-                "S": "$input.path('$.email')"
-            },
-            "locale":
-            {
-                "S": "$input.path('$.language_code')"
-            },
-            "ttl":
-            {
-                "N": "$ttlEpoch"
-            }
-        },
-        "TableName": "${dynamoTable.tableName}"
-    }`,
+          selectionPattern: '400',
+          statusCode: '400',
+          responseTemplates: {
+            'application/json': `{
+            "error": "Bad input!"
+          }`,
           },
         },
-      }),
-      {
-        requestValidator,
-        requestModels: { 'application/json': payloadModel },
-        methodResponses: [
+        {
+          selectionPattern: '5\\d{2}',
+          statusCode: '500',
+          responseTemplates: {
+            'application/json': `{
+            "error": "Internal Service Error!"
+          }`,
+          },
+        },
+      ];
+
+      const integrationResponses = [
+        {
+          statusCode: '200',
+        },
+        ...errorResponses,
+      ];
+
+      const addMethod = (
+        method: string,
+        action: string,
+        requestTemplate: string,
+        resource: Resource,
+        table: Table
+      ) => {
+        const policy = new Policy(
+          this,
+          `${id}-${name}-${method.toLocaleLowerCase()}-${action.toLocaleLowerCase()}-policy`,
           {
-            statusCode: '200',
-            responseModels: {
-              'application/json': Model.EMPTY_MODEL,
+            statements: [
+              new PolicyStatement({
+                actions: [`dynamodb:${action}`],
+                effect: Effect.ALLOW,
+                resources: [table.tableArn],
+              }),
+            ],
+          }
+        );
+
+        const credentialsRole = new Role(
+          this,
+          `${id}-${name}-${method.toLocaleLowerCase()}-${action.toLocaleLowerCase()}-role`,
+          {
+            assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+          }
+        );
+
+        credentialsRole.attachInlinePolicy(policy);
+
+        const methodOptions = {
+          methodResponses: [
+            { statusCode: '200' },
+            { statusCode: '400' },
+            { statusCode: '500' },
+          ],
+        };
+
+        const integration = new AwsIntegration({
+          action,
+          options: {
+            credentialsRole,
+            integrationResponses,
+            requestTemplates: {
+              'application/json': requestTemplate,
             },
           },
-          { statusCode: '400' },
-          { statusCode: '500' },
-        ],
-      }
-    );
+          service: 'dynamodb',
+        });
+
+        resource.addMethod(method, integration, methodOptions);
+      };
+
+      const allResource = this.api.root.addResource(name);
+      const singleResource = allResource.addResource('{id}');
+
+      const getAndDeleteTemplate = `
+      {
+        "Key": {
+          "id": {
+            "S": "$method.request.path.id"
+          }
+        },
+        "TableName": "${table.tableName}"
+      }`;
+
+      addMethod('GET', 'GetItem', getAndDeleteTemplate, singleResource, table);
+
+      addMethod(
+        'GET',
+        'Scan',
+        `{ "TableName": "${table.tableName}" }`,
+        allResource,
+        table
+      );
+      addMethod(
+        'POST',
+        'PutItem',
+        makeMappingTemplate(schema, table.tableName),
+        allResource,
+        table
+      );
+      addMethod(
+        'PUT',
+        'PutItem',
+        makeMappingTemplate(schema, table.tableName),
+        allResource,
+        table
+      );
+
+      addMethod(
+        'DELETE',
+        'DeleteItem',
+        getAndDeleteTemplate,
+        allResource,
+        table
+      );
+
+      return table;
+    });
   }
 }

@@ -1,4 +1,5 @@
 import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
+import { z, ZodObject } from 'zod';
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import {
   Distribution,
@@ -27,7 +28,11 @@ import { getDomainName } from './get-domain-name';
 import {
   AuthorizationType,
   CognitoUserPoolsAuthorizer,
+  Cors,
+  RestApi,
 } from 'aws-cdk-lib/aws-apigateway';
+import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { DataApi } from './data-api';
 
 const PACKAGE_DIR = path.join(__dirname, '..', '..');
 const ROOT_DIR = path.join(PACKAGE_DIR, '..', '..');
@@ -112,30 +117,26 @@ export class AppStack extends Stack {
       },
     });
 
-    const makeApi = (id: string) => {
-      const authorizer = new CognitoUserPoolsAuthorizer(this, `${id}-auth`, {
-        cognitoUserPools: [pool],
-      });
+    const settingsSchema = z.object({
+      id: z.string(),
+      username: z.string(),
+      payCycle: z.string(),
+      salary: z.number(),
+      overdraft: z.number(),
+    });
 
-      const apiProps: ApiGatewayToDynamoDBProps = {
-        allowCreateOperation: true,
-        allowDeleteOperation: true,
-        allowUpdateOperation: true,
-        allowReadOperation: true,
-        apiGatewayProps: {
-          defaultMethodOptions: {
-            authorizer,
-            authorizationType: AuthorizationType.COGNITO,
-          },
+    const settings = new DataApi(this, 'settings-api', {
+      removalPolicy,
+      pool,
+      resources: [
+        {
+          name: 'settings',
+          schema: settingsSchema,
         },
-      };
-
-      return new ApiGatewayToDynamoDB(this, id, apiProps);
-    };
-
-    const settings = makeApi('settings-api');
-    const budgets = makeApi('budgets-api');
-    const payments = makeApi('payments-api');
+      ],
+    });
+    // const budgets = makeApi('budgets-api');
+    // const payments = makeApi('payments-api');
 
     const assetsBucket = new Bucket(this, 'assets-bucket', {
       bucketName: domainName,
@@ -171,9 +172,9 @@ export class AppStack extends Stack {
       region: Stack.of(this).region,
       userpoolId: pool.userPoolId,
       userPoolClientId: client.userPoolClientId,
-      settingsApi: settings.apiGateway.url,
-      budgetsApi: budgets.apiGateway.url,
-      paymentsApi: payments.apiGateway.url,
+      settingsApi: settings.api.url,
+      // budgetsApi: budgets.apiGateway.url,
+      // paymentsApi: payments.apiGateway.url,
       domainName,
       authSignInUrl: userPoolDomain.signInUrl(client, {
         redirectUri: `https://${domainName}/`,

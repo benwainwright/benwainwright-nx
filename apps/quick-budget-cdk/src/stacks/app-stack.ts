@@ -1,5 +1,5 @@
 import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
-import { z, ZodObject } from 'zod';
+import { z } from 'zod';
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import {
   Distribution,
@@ -15,23 +15,11 @@ import {
   UserPoolDomainTarget,
 } from 'aws-cdk-lib/aws-route53-targets';
 
-import {
-  ApiGatewayToDynamoDB,
-  ApiGatewayToDynamoDBProps,
-} from '@aws-solutions-constructs/aws-apigateway-dynamodb';
-
 import { Bucket, HttpMethods } from 'aws-cdk-lib/aws-s3';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as path from 'node:path';
 import { Environment } from './environment';
 import { getDomainName } from './get-domain-name';
-import {
-  AuthorizationType,
-  CognitoUserPoolsAuthorizer,
-  Cors,
-  RestApi,
-} from 'aws-cdk-lib/aws-apigateway';
-import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { DataApi } from './data-api';
 
 const PACKAGE_DIR = path.join(__dirname, '..', '..');
@@ -125,13 +113,25 @@ export class AppStack extends Stack {
       overdraft: z.number(),
     });
 
-    const settings = new DataApi(this, 'settings-api', {
+    const paymentsSchema = z.object({
+      id: z.string(),
+      username: z.string(),
+      when: z.string(),
+      potId: z.string(),
+      amount: z.string(),
+    });
+
+    const data = new DataApi(this, 'settings-api', {
       removalPolicy,
       pool,
       resources: [
         {
           name: 'settings',
           schema: settingsSchema,
+        },
+        {
+          name: 'payments',
+          schema: paymentsSchema,
         },
       ],
     });
@@ -172,9 +172,8 @@ export class AppStack extends Stack {
       region: Stack.of(this).region,
       userpoolId: pool.userPoolId,
       userPoolClientId: client.userPoolClientId,
-      settingsApi: settings.api.url,
-      // budgetsApi: budgets.apiGateway.url,
-      // paymentsApi: payments.apiGateway.url,
+      settingsApi: `${data.api.url}/settings`,
+      paymentsApi: `${data.api.url}/payments`,
       domainName,
       authSignInUrl: userPoolDomain.signInUrl(client, {
         redirectUri: `https://${domainName}/`,

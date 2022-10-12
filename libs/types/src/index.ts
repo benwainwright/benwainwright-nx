@@ -3,7 +3,7 @@ export interface BackendConfig {
   userpoolId: string;
   settingsApi: string;
   // budgetsApi: string;
-  // paymentsApi: string;
+  paymentsApi: string;
   userPoolClientId: string;
   authSignInUrl: string;
   authSignOutUrl: string;

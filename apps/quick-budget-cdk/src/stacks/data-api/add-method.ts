@@ -1,4 +1,10 @@
-import { AwsIntegration, Resource } from 'aws-cdk-lib/aws-apigateway';
+import {
+  AuthorizationType,
+  AwsIntegration,
+  CognitoUserPoolsAuthorizer,
+  MethodOptions,
+  Resource,
+} from 'aws-cdk-lib/aws-apigateway';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import {
   Effect,
@@ -16,7 +22,9 @@ export const addMethod = (
   action: string,
   requestTemplate: string,
   resource: Resource,
-  table: Table
+  table: Table,
+  authorizer: CognitoUserPoolsAuthorizer,
+  domainName: string
 ) => {
   const errorResponses = [
     {
@@ -37,13 +45,6 @@ export const addMethod = (
           }`,
       },
     },
-  ];
-
-  const integrationResponses = [
-    {
-      statusCode: '200',
-    },
-    ...errorResponses,
   ];
 
   const policy = new Policy(
@@ -70,19 +71,43 @@ export const addMethod = (
 
   credentialsRole.attachInlinePolicy(policy);
 
-  const methodOptions = {
+  const methodOptions: MethodOptions = {
     methodResponses: [
-      { statusCode: '200' },
+      {
+        statusCode: '200',
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Origin': true,
+          'method.response.header.Access-Control-Allow-Methods': true,
+          'method.response.header.Access-Control-Allow-Headers': true,
+          'method.response.header.Access-Control-Allow-Credentials': true,
+        },
+      },
       { statusCode: '400' },
       { statusCode: '500' },
     ],
+    authorizer,
+    authorizationType: AuthorizationType.COGNITO,
   };
 
   const integration = new AwsIntegration({
     action,
     options: {
       credentialsRole,
-      integrationResponses,
+      integrationResponses: [
+        {
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin':
+              "'https://localhost:4200'",
+            'method.response.header.Access-Control-Allow-Methods':
+              "'GET, PUT, POST, DELETE'",
+            'method.response.header.Access-Control-Allow-Headers':
+              "'Authorization, Content-type'",
+            'method.response.header.Access-Control-Allow-Credentials': "'true'",
+          },
+          statusCode: '200',
+        },
+        ...errorResponses,
+      ],
       requestTemplates: {
         'application/json': requestTemplate,
       },

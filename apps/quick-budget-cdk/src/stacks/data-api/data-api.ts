@@ -12,18 +12,23 @@ import { addDomain } from './add-domain';
 import { addMethod } from './add-method';
 import { makeMappingTemplate } from './make-mapping-template';
 
-interface DeployedResource {
+interface ResourceDefinition {
   name: string;
   schema: ZodTypeAny;
+}
+
+type DeployedResource = {
   url: string;
   table: Table;
-}
+} & ResourceDefinition;
 
 interface DataApiProps {
   resources: ResourceDefinition[];
   removalPolicy: RemovalPolicy;
   pool: UserPool;
   domainName?: string;
+  primaryKeyName?: string;
+  sortKeyName?: string;
 }
 
 export class DataApi extends Construct {
@@ -39,19 +44,37 @@ export class DataApi extends Construct {
     });
 
     this.api = new RestApi(this, `${id}-api`, {
-      defaultMethodOptions: {
-        authorizer,
-        authorizationType: AuthorizationType.COGNITO,
+      defaultCorsPreflightOptions: {
+        allowHeaders: [
+          'Content-Type',
+          'X-Amz-Date',
+          'Authorization',
+          'X-Api-Key',
+          'Origin',
+        ],
+        allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        allowCredentials: true,
+        allowOrigins: [props.domainName, 'http://localhost:4200'],
       },
     });
+
+    const sortKey = props.sortKeyName
+      ? {
+          sortKey: {
+            name: props.sortKeyName,
+            type: AttributeType.STRING,
+          },
+        }
+      : {};
 
     const resources = props.resources.map(({ name, schema }) => {
       const table = new Table(this, `${id}-${name}-table`, {
         billingMode: BillingMode.PAY_PER_REQUEST,
         partitionKey: {
-          name: `id`,
+          name: props.primaryKeyName ? props.primaryKeyName : `id`,
           type: AttributeType.STRING,
         },
+        ...sortKey,
         removalPolicy: props.removalPolicy,
       });
 
@@ -61,8 +84,11 @@ export class DataApi extends Construct {
       const getAndDeleteTemplate = `
       {
         "Key": {
+          "username": {
+            "S": "$method.request.path.username"
+          },
           "id": {
-            "S": "$method.request.path.id"
+            "S": "$input.params().querystring.get('username')
           }
         },
         "TableName": "${table.tableName}"
@@ -75,7 +101,9 @@ export class DataApi extends Construct {
         'GetItem',
         getAndDeleteTemplate,
         singleResource,
-        table
+        table,
+        authorizer,
+        props.domainName
       );
 
       addMethod(
@@ -85,7 +113,9 @@ export class DataApi extends Construct {
         'Scan',
         `{ "TableName": "${table.tableName}" }`,
         allResource,
-        table
+        table,
+        authorizer,
+        props.domainName
       );
 
       addMethod(
@@ -95,7 +125,9 @@ export class DataApi extends Construct {
         'PutItem',
         makeMappingTemplate(schema, table.tableName),
         allResource,
-        table
+        table,
+        authorizer,
+        props.domainName
       );
 
       addMethod(
@@ -105,7 +137,9 @@ export class DataApi extends Construct {
         'PutItem',
         makeMappingTemplate(schema, table.tableName),
         allResource,
-        table
+        table,
+        authorizer,
+        props.domainName
       );
 
       addMethod(
@@ -115,7 +149,9 @@ export class DataApi extends Construct {
         'DeleteItem',
         getAndDeleteTemplate,
         allResource,
-        table
+        table,
+        authorizer,
+        props.domainName
       );
 
       return { table, schema, name };
@@ -125,7 +161,9 @@ export class DataApi extends Construct {
       addDomain(this, `${id}-domain`, this.api, props.domainName);
     }
 
-    const url = props.domainName ? `https://${props.domainName}` : this.api.url;
+    const url = props.domainName
+      ? `https://api.${props.domainName}`
+      : this.api.url;
 
     this.resources = resources.map((resource) => ({
       ...resource,

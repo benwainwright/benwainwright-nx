@@ -22,20 +22,23 @@ export class SettingsComponent implements OnInit, OnDestroy {
   });
 
   constructor(private settingService: SettingsService) {
-    this.subscription = this.form.valueChanges.subscribe((value) =>
-      this.settingService.setSettings({
-        payAmount: value.expectedSalary,
-        overdraft: value.overdraft,
-        payCycle: value.payCycle,
-      })
-    );
+    this.subscription = this.form.valueChanges.subscribe((value) => {
+      console.log('change');
+      this.settingService
+        .setSettings({
+          salary: value.expectedSalary,
+          overdraft: value.overdraft,
+          payCycle: value.payCycle,
+        })
+        .subscribe();
+    });
   }
   async ngOnInit() {
     const settings = await lastValueFrom(
       this.settingService.getSettings().pipe(take(1))
     );
 
-    this.form.controls.expectedSalary.setValue(settings.payAmount);
+    this.form.controls.expectedSalary.setValue(settings.salary);
     this.form.controls.overdraft.setValue(settings.overdraft);
     this.form.controls.payCycle.setValue(settings.payCycle);
   }

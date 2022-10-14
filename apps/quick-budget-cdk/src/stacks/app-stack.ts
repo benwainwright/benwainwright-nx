@@ -1,9 +1,11 @@
 import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
 import { z } from 'zod';
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
+// import { settingsSchema } from '@benwainwright/budget-domain';
 import {
   Distribution,
   OriginRequestPolicy,
+  ResponseHeadersPolicy,
   ViewerProtocolPolicy,
 } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
@@ -105,14 +107,6 @@ export class AppStack extends Stack {
       },
     });
 
-    const settingsSchema = z.object({
-      id: z.string(),
-      username: z.string(),
-      payCycle: z.string(),
-      salary: z.number(),
-      overdraft: z.number(),
-    });
-
     const paymentsSchema = z.object({
       id: z.string(),
       username: z.string(),
@@ -123,15 +117,25 @@ export class AppStack extends Stack {
 
     const potsSchema = z.object({
       id: z.string(),
+      username: z.string(),
       balance: z.string(),
       name: z.string(),
+    });
+
+    const settingsSchema = z.object({
+      id: z.string(),
       username: z.string(),
+      payCycle: z.string(),
+      salary: z.number(),
+      overdraft: z.number(),
     });
 
     const data = new DataApi(this, 'settings-api', {
       removalPolicy,
       pool,
       domainName,
+      primaryKeyName: 'username',
+      sortKeyName: 'id',
       resources: [
         {
           name: 'settings',
@@ -150,6 +154,8 @@ export class AppStack extends Stack {
     // const budgets = makeApi('budgets-api');
     // const payments = makeApi('payments-api');
 
+    const allowedOrigins = [`https://${domainName}`, `http://localhost:4200`];
+
     const assetsBucket = new Bucket(this, 'assets-bucket', {
       bucketName: domainName,
       publicReadAccess: true,
@@ -159,11 +165,25 @@ export class AppStack extends Stack {
       cors: [
         {
           allowedMethods: [HttpMethods.GET],
-          allowedOrigins: [`https://${domainName}`, `http://localhost:4200`],
+          allowedOrigins,
           allowedHeaders: [`*`],
         },
       ],
     });
+
+    const responseHeadersPolicy = new ResponseHeadersPolicy(
+      this,
+      'response-headers-policy',
+      {
+        corsBehavior: {
+          accessControlAllowCredentials: false,
+          accessControlAllowHeaders: ['*'],
+          accessControlAllowMethods: ['GET', 'OPTIONS'],
+          accessControlAllowOrigins: allowedOrigins,
+          originOverride: true,
+        },
+      }
+    );
 
     const distribution = new Distribution(this, 'cloudfront-distribution', {
       domainNames: [domainName],
@@ -172,6 +192,7 @@ export class AppStack extends Stack {
         viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         origin: new S3Origin(assetsBucket),
         originRequestPolicy: OriginRequestPolicy.CORS_S3_ORIGIN,
+        responseHeadersPolicy,
       },
     });
 
@@ -184,7 +205,7 @@ export class AppStack extends Stack {
       region: Stack.of(this).region,
       userpoolId: pool.userPoolId,
       userPoolClientId: client.userPoolClientId,
-      paymentsApi: `${data.api.url}/payments`,
+      apiUrl: `https://api.${domainName}`,
       domainName,
       authSignInUrl: userPoolDomain.signInUrl(client, {
         redirectUri: `https://${domainName}/`,

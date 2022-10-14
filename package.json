@@ -38,6 +38,7 @@
     "jest-mock-extended": "^2.0.6",
     "jest-when": "^3.5.1",
     "ng2-currency-mask": "^13.0.3",
+    "rx-query": "^2.0.1",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
     "uuid": "^9.0.0",

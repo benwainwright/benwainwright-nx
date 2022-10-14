@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { filter, BehaviorSubject, Observable, map, mergeMap } from 'rxjs';
 import { BackendConfig } from '@benwainwright/types';
 import { AppConfigService } from './app-config.service';
-import { CognitoAuth } from 'amazon-cognito-auth-js';
+import { CognitoAuth, CognitoAuthSession } from 'amazon-cognito-auth-js';
 import { LoggerService } from './logger.service';
 
 export interface User {
   username: string;
+  session: CognitoAuthSession;
   groups: string[];
 }
 
@@ -74,7 +75,10 @@ export class AuthService {
       this.logger.debug(`Found user`);
     }
 
-    const user = { username, groups: [] };
+    const session = auth.getSignInUserSession();
+    const tokenPayload = session.getIdToken().decodePayload() as any;
+    const user = { username, session, groups: tokenPayload['cognito:groups'] };
+    console.log(user.groups);
     this.user.next(user);
   }
 
@@ -131,6 +135,12 @@ export class AuthService {
   }
 
   private loaded() {
-    return this.loadedSubject.pipe(filter((value) => value));
+    return this.loadedSubject.pipe(
+      map((thing) => {
+        console.trace();
+        return thing;
+      }),
+      filter((value) => value)
+    );
   }
 }

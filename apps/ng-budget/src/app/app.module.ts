@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { HttpClientModule } from '@angular/common/http';
@@ -55,6 +55,8 @@ import { AppConfigService } from './services/app-config.service';
 import { AuthService } from './services/auth.service';
 import { AuthorisedGuard } from './guards/authorised.guard';
 import { LoggerService } from './services/logger.service';
+import { ApiService } from './services/api.service';
+import { RemoteDataService } from './remote-data.service';
 
 @NgModule({
   declarations: [
@@ -117,7 +119,10 @@ import { LoggerService } from './services/logger.service';
     },
     {
       provide: SETTINGS_INJECTION_TOKEN,
-      useFactory: () => new LocalStorageDataService('settings'),
+      useFactory: (api: ApiService, auth: AuthService) => {
+        return new RemoteDataService('settings', api, auth);
+      },
+      deps: [ApiService, AuthService],
     },
   ],
   bootstrap: [AppComponent],

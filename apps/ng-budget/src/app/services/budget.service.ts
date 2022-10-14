@@ -5,8 +5,13 @@ import { getNextParsedDate } from '@benwainwright/nl-dates';
 import { BalanceService } from './balance.service';
 import { PotsService } from './pots.service';
 import { RecurringPaymentsService } from './recurring-payments.service';
-import { Settings, SettingsService } from './settings.service';
-import { Budget, Pot, RecurringPayment } from '@benwainwright/budget-domain';
+import { SettingsService } from './settings.service';
+import {
+  Budget,
+  Pot,
+  RecurringPayment,
+  Settings,
+} from '@benwainwright/budget-domain';
 import { DataSeriesService } from './data-series.service';
 
 export const BUDGET_INJECTION_TOKEN = 'budget-service-data';
@@ -44,7 +49,7 @@ export class BudgetService {
     const newBudgets = [...budgets];
 
     newBudgets.forEach((budget) => {
-      (budget.balance = budget.previous ? settings.payAmount : balance),
+      (budget.balance = budget.previous ? settings.salary : balance),
         budget.setPayments(payments),
         (budget.pots = pots);
       budget.setPayments(payments);

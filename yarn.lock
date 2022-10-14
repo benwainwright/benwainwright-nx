@@ -10801,6 +10801,11 @@ run-parallel@^1.1.9:
   dependencies:
     queue-microtask "^1.2.2"
 
+rx-query@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/rx-query/-/rx-query-2.0.1.tgz#eab598344369e1ac2a2380e279612baef3bc611f"
+  integrity sha512-yCfsJAlxKuT+87tBN0z5SzVTKe0vXvgP7dQ2ZN0b1oxDdf0+FZWnLFiL5pSWGEmcucmUNmXJFIht5lF1PXBNXA==
+
 rxjs-for-await@0.0.2:
   version "0.0.2"
   resolved "https://registry.npmjs.org/rxjs-for-await/-/rxjs-for-await-0.0.2.tgz#26598a1d6167147cc192172970e7eed4e620384b"

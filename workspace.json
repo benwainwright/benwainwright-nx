@@ -7,8 +7,10 @@
     "ng-budget-e2e": "apps/ng-budget-e2e",
     "nl-dates": "libs/nl-dates",
     "quick-budget-cdk": "apps/quick-budget-cdk",
+    "schema": "libs/schema",
     "test-helpers": "libs/test-helpers",
     "types": "libs/types",
-    "utils": "libs/utils"
+    "utils": "libs/utils",
+    "y": "libs/y"
   }
 }

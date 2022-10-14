@@ -1,12 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { DataService } from './data.service';
-
-export interface Settings {
-  overdraft: number;
-  payCycle: string;
-  payAmount: number;
-}
+import { Settings } from '@benwainwright/budget-domain';
 
 export const SETTINGS_INJECTION_TOKEN = 'settings-data-service';
 
@@ -17,7 +12,9 @@ export class SettingsService {
   private settings: Settings = {
     overdraft: 0,
     payCycle: 'last thursday of every month',
-    payAmount: 0,
+    salary: 0,
+    username: '',
+    id: '',
   };
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -34,13 +31,14 @@ export class SettingsService {
       map((value) => ({
         ...value,
         overdraft: value.overdraft && Number(value.overdraft),
-        payAmount: value.payAmount && Number(value.payAmount),
+        salary: value.salary && Number(value.salary),
       })),
       map((value) => ({ ...this.settings, ...value }))
     );
   }
 
   setSettings(settings: Partial<Settings>) {
+    console.log('set');
     return this.dataService.setAll({ ...this.settings, ...settings });
   }
 }

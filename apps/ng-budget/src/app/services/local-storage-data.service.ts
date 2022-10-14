@@ -1,5 +1,6 @@
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { DataService } from './data.service';
+
 export class LocalStorageDataService<T> implements DataService<T> {
   private data: BehaviorSubject<T>;
   private key: string;

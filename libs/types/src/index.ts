@@ -5,6 +5,9 @@ export interface BackendConfig {
   apiUrl: string;
   authSignInUrl: string;
   authSignOutUrl: string;
+  authSignInUrlForLocal: string;
+  authSignOutUrlForLocal: string;
   domainName: string;
+  authSignUpUrlForLocal: string;
   authSignUpUrl: string;
 }

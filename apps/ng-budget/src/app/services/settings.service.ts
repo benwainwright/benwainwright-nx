@@ -28,17 +28,18 @@ export class SettingsService {
 
   getSettings(): Observable<Settings> {
     return this.dataService.getAll().pipe(
-      map((value) => ({
-        ...value,
-        overdraft: value.overdraft && Number(value.overdraft),
-        salary: value.salary && Number(value.salary),
-      })),
+      map((value) => {
+        return {
+          ...value,
+          overdraft: value.overdraft && Number(value.overdraft),
+          salary: value.salary && Number(value.salary),
+        };
+      }),
       map((value) => ({ ...this.settings, ...value }))
     );
   }
 
   setSettings(settings: Partial<Settings>) {
-    console.log('set');
     return this.dataService.setAll({ ...this.settings, ...settings });
   }
 }

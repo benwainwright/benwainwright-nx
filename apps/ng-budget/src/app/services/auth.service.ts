@@ -4,6 +4,7 @@ import { BackendConfig } from '@benwainwright/types';
 import { AppConfigService } from './app-config.service';
 import { CognitoAuth, CognitoAuthSession } from 'amazon-cognito-auth-js';
 import { LoggerService } from './logger.service';
+import { environment } from '../../environments/environment';
 
 export interface User {
   username: string;
@@ -38,7 +39,11 @@ export class AuthService {
   public redirectUrl() {
     return this.configService.getConfig().pipe(
       filter((config) => Boolean(config)),
-      map((config) => config?.authSignInUrl)
+      map((config) =>
+        environment.production
+          ? config?.authSignInUrl
+          : config?.authSignInUrlForLocal
+      )
     );
   }
 
@@ -78,7 +83,6 @@ export class AuthService {
     const session = auth.getSignInUserSession();
     const tokenPayload = session.getIdToken().decodePayload() as any;
     const user = { username, session, groups: tokenPayload['cognito:groups'] };
-    console.log(user.groups);
     this.user.next(user);
   }
 
@@ -111,11 +115,12 @@ export class AuthService {
     this.logger.debug(JSON.stringify(config, null, 2));
     if (!this.auth && config) {
       this.config = config;
+      const protocal = !environment.production ? 'http' : 'https';
       const authData = {
         UserPoolId: config.userpoolId,
         ClientId: config.userPoolClientId,
-        RedirectUriSignIn: `https://${config.domainName}/`,
-        RedirectUriSignOut: `https://${config.domainName}/`,
+        RedirectUriSignIn: `${protocal}://${config.domainName}/`,
+        RedirectUriSignOut: `${protocal}://${config.domainName}/`,
         AppWebDomain: config.domainName,
         TokenScopesArray: ['email'],
         Region: config.region,

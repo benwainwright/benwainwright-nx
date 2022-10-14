@@ -2,8 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BackendConfig } from '@benwainwright/types';
 import { BehaviorSubject, Observable, filter } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 const getConfigUrl = () => {
+  if (environment.production) {
+    return `/backend-config.json`;
+  }
   return `https://quickbudget.co.uk/backend-config.json`;
 };
 
@@ -15,7 +19,10 @@ export class AppConfigService {
 
   constructor(private httpClient: HttpClient) {
     this.httpClient.get<BackendConfig>(getConfigUrl()).subscribe((config) => {
-      this.config.next(config);
+      const nextConfig = environment.production
+        ? config
+        : { ...config, domainName: 'localhost' };
+      this.config.next(nextConfig);
     });
   }
 

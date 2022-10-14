@@ -103,7 +103,7 @@ export class AppStack extends Stack {
         flows: {
           implicitCodeGrant: true,
         },
-        callbackUrls: [`https://${domainName}/`],
+        callbackUrls: [`https://${domainName}/`, `http://localhost:4200`],
       },
     });
 
@@ -210,12 +210,25 @@ export class AppStack extends Stack {
       authSignInUrl: userPoolDomain.signInUrl(client, {
         redirectUri: `https://${domainName}/`,
       }),
+
+      authSignInUrlForLocal: userPoolDomain.signInUrl(client, {
+        redirectUri: `http://localhost:4200`,
+      }),
       authSignUpUrl: userPoolDomain.signInUrl(client, {
         redirectUri: `https://${domainName}/`,
         signInPath: '/signup',
       }),
+
+      authSignUpUrlForLocal: userPoolDomain.signInUrl(client, {
+        redirectUri: `http://localhost:4200`,
+        signInPath: '/signup',
+      }),
       authSignOutUrl: userPoolDomain.signInUrl(client, {
         redirectUri: `https://${domainName}/`,
+        signInPath: '/logout',
+      }),
+      authSignOutUrlForLocal: userPoolDomain.signInUrl(client, {
+        redirectUri: `http://localhost:4200`,
         signInPath: '/logout',
       }),
     };

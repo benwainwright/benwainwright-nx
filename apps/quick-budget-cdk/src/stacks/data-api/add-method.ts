@@ -2,6 +2,7 @@ import {
   AuthorizationType,
   AwsIntegration,
   CognitoUserPoolsAuthorizer,
+  Cors,
   MethodOptions,
   Resource,
 } from 'aws-cdk-lib/aws-apigateway';
@@ -14,6 +15,7 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
+import { getAllowOrigin } from './get-allowed-origins';
 
 export const addMethod = (
   context: Construct,
@@ -95,13 +97,18 @@ export const addMethod = (
       credentialsRole,
       integrationResponses: [
         {
+          responseTemplates: {
+            'application/json':
+              getAllowOrigin([
+                `https://${domainName}`,
+                `http://localhost:4200`,
+              ]) + '$input.body',
+          },
           responseParameters: {
-            'method.response.header.Access-Control-Allow-Origin':
-              "'http://localhost:4200'",
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
             'method.response.header.Access-Control-Allow-Methods':
               "'GET, PUT, POST, DELETE'",
-            'method.response.header.Access-Control-Allow-Headers':
-              "'Authorization, Content-type'",
+            'method.response.header.Access-Control-Allow-Headers': `'${Cors.DEFAULT_HEADERS}'`,
             'method.response.header.Access-Control-Allow-Credentials': "'true'",
           },
           statusCode: '200',

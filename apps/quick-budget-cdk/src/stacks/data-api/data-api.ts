@@ -2,7 +2,6 @@ import { RemovalPolicy } from 'aws-cdk-lib';
 import {
   RestApi,
   CognitoUserPoolsAuthorizer,
-  AuthorizationType,
 } from 'aws-cdk-lib/aws-apigateway';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
@@ -54,7 +53,7 @@ export class DataApi extends Construct {
         ],
         allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowCredentials: true,
-        allowOrigins: [props.domainName, 'http://localhost:4200'],
+        allowOrigins: [`https://domainName`, `http://localhost:4200`],
       },
     });
 

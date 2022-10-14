@@ -97,7 +97,7 @@ export const addMethod = (
         {
           responseParameters: {
             'method.response.header.Access-Control-Allow-Origin':
-              "'https://localhost:4200'",
+              "'http://localhost:4200'",
             'method.response.header.Access-Control-Allow-Methods':
               "'GET, PUT, POST, DELETE'",
             'method.response.header.Access-Control-Allow-Headers':

@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@angular/core';
-import { combineLatestWith, of, switchMap } from 'rxjs';
+import { combineLatestWith, of, switchMap, map } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import { AuthService } from './auth.service';
 
@@ -28,18 +29,23 @@ export class ApiService {
         const normalisedPath = path.startsWith('/') ? path.slice(1) : path;
         const url = `${config?.apiUrl}/${normalisedPath}`;
 
-        console.log(url);
-
         const headers = new HttpHeaders({
           Authorization: user?.session.getIdToken().getJwtToken(),
-          Origin: 'http://localhost:4200',
         });
+
         const finalOptions = { ...(options ?? {}), withCredentials: true };
 
-        return this.client.request<R>(method, url, {
-          ...finalOptions,
-          headers,
-        });
+        return this.client
+          .request<{ Item: R }>(method, url, {
+            ...finalOptions,
+            headers,
+          })
+          .pipe(
+            map((response) => {
+              console.log(response);
+              return unmarshall(response.Item) as R;
+            })
+          );
       })
     );
   }

@@ -85,10 +85,10 @@ export class DataApi extends Construct {
       {
         "Key": {
           "username": {
-            "S": "$method.request.path.username"
+            "S": "$input.params().querystring.get('username')"
           },
           "id": {
-            "S": "$input.params().querystring.get('username')
+            "S": "$method.request.path.id"
           }
         },
         "TableName": "${table.tableName}"

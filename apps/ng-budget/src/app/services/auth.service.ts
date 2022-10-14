@@ -137,7 +137,6 @@ export class AuthService {
   private loaded() {
     return this.loadedSubject.pipe(
       map((thing) => {
-        console.trace();
         return thing;
       }),
       filter((value) => value)

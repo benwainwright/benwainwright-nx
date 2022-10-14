@@ -9,8 +9,9 @@ import { SettingsService } from '../services/settings.service';
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css'],
 })
-export class SettingsComponent implements OnInit, OnDestroy {
+export class SettingsComponent implements OnDestroy {
   private subscription: Subscription | undefined;
+  private settingsSubcription: Subscription | undefined;
 
   public form = new FormGroup({
     overdraft: new FormControl<number>(0, { nonNullable: true }),
@@ -23,24 +24,23 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   constructor(private settingService: SettingsService) {
     this.subscription = this.form.valueChanges.subscribe((value) => {
-      console.log('change');
       this.settingService
         .setSettings({
           salary: value.expectedSalary,
           overdraft: value.overdraft,
           payCycle: value.payCycle,
         })
+        .pipe(take(1))
         .subscribe();
     });
-  }
-  async ngOnInit() {
-    const settings = await lastValueFrom(
-      this.settingService.getSettings().pipe(take(1))
-    );
 
-    this.form.controls.expectedSalary.setValue(settings.salary);
-    this.form.controls.overdraft.setValue(settings.overdraft);
-    this.form.controls.payCycle.setValue(settings.payCycle);
+    this.settingsSubcription = this.settingService
+      .getSettings()
+      .subscribe((settings) => {
+        this.form.controls.expectedSalary.setValue(settings.salary, {});
+        this.form.controls.overdraft.setValue(settings.overdraft);
+        this.form.controls.payCycle.setValue(settings.payCycle);
+      });
   }
 
   public ngOnDestroy(): void {

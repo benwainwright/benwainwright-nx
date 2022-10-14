@@ -1,4 +1,4 @@
-import { Injector, NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { HttpClientModule } from '@angular/common/http';
@@ -59,6 +59,8 @@ import { RemoteDataService } from './remote-data.service';
 import { RemoteDataSeriesService } from './services/remote-data-series.service';
 import { RouteReuseStrategy } from '@angular/router';
 import { AppRouteReuseStrategy } from '../lib/app-route-reuse-strategy';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ErrorHandlerService } from './error-handler.service';
 
 @NgModule({
   declarations: [
@@ -86,6 +88,7 @@ import { AppRouteReuseStrategy } from '../lib/app-route-reuse-strategy';
     ReactiveFormsModule,
     BrowserAnimationsModule,
     MatToolbarModule,
+    MatSnackBarModule,
     MatSidenavModule,
     MatListModule,
     MatDialogModule,
@@ -100,6 +103,7 @@ import { AppRouteReuseStrategy } from '../lib/app-route-reuse-strategy';
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy },
+    { provide: ErrorHandler, useClass: ErrorHandlerService },
     SettingsService,
     AppConfigService,
     AuthService,

@@ -1,4 +1,4 @@
-import { map, Observable, switchMap } from 'rxjs';
+import { filter, map, Observable, switchMap } from 'rxjs';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 import { DataSeriesService } from './data-series.service';
@@ -14,9 +14,7 @@ export class RemoteDataSeriesService<T extends { id: string }>
     private resource: string,
     private api: ApiService,
     private auth: AuthService
-  ) {
-
-  }
+  ) {}
 
   insertItem(item: T): Observable<void> {
     return this.auth.getUser().pipe(
@@ -35,10 +33,11 @@ export class RemoteDataSeriesService<T extends { id: string }>
         query(this.resource, user?.username, (username) =>
           this.api.get<{ Count: number; Items: T[]; ScannedCount: number }>(
             `${this.resource}/${username}`
-          ), 
+          )
         )
       ),
       filterNullish(),
+      filter((response) => response.status === 'success'),
       map((response) => {
         const result = response.data?.Items.map((item) =>
           unmarshall(item)

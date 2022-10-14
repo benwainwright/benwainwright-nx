@@ -42,18 +42,22 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       amount: payment?.amount ?? 0,
       when: payment?.when ?? '',
       potId: payment?.potId ?? '',
-      new: !payment
+      new: !payment,
     };
 
-    const dialogRef = this.dialog.open<CreatePaymentDialogComponent, PaymentDialogData, PaymentDialogData>(CreatePaymentDialogComponent, {
+    const dialogRef = this.dialog.open<
+      CreatePaymentDialogComponent,
+      PaymentDialogData,
+      PaymentDialogData
+    >(CreatePaymentDialogComponent, {
       data: startingData,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if(result?.new) {
-        this.paymentsService.setPayments([...this.payments, result]);
-      } else if(result && !result.new) {
-        this.paymentsService.updatePayment(result)
+      if (result?.new) {
+        this.paymentsService.addPayment(result).subscribe();
+      } else if (result && !result.new) {
+        this.paymentsService.updatePayment(result).subscribe();
       }
     });
   }

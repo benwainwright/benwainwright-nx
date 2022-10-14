@@ -2,5 +2,5 @@ import { Observable } from 'rxjs';
 
 export interface DataService<T> {
   getAll(): Observable<T>;
-  setAll(data: T): Observable<void>;
+  setAll(data: T): void;
 }

@@ -22,7 +22,7 @@ export class ApiService {
   ) {
     return this.config.getConfig().pipe(
       combineLatestWith(this.auth.getUser()),
-      debounce(() => timer(1000)),
+      // debounce(() => timer(1000)),
       switchMap(([config, user]) => {
         if (!config || !user) {
           return of(void 0);
@@ -37,16 +37,10 @@ export class ApiService {
 
         const finalOptions = { ...(options ?? {}), withCredentials: true };
 
-        return this.client
-          .request<{ Item: R }>(method, url, {
-            ...finalOptions,
-            headers,
-          })
-          .pipe(
-            map((response) => {
-              return unmarshall(response.Item) as R;
-            })
-          );
+        return this.client.request<R>(method, url, {
+          ...finalOptions,
+          headers,
+        });
       })
     );
   }
@@ -57,7 +51,7 @@ export class ApiService {
 
   public post<R>(
     path: string,
-    options: Parameters<typeof this.client.post>[1]
+    options?: Parameters<typeof this.client.post>[1]
   ) {
     return this.request<R>('POST', path, options);
   }
@@ -66,7 +60,10 @@ export class ApiService {
     return this.request<R>('PUT', path, options);
   }
 
-  public delete(path: string, options: Parameters<typeof this.client.post>[1]) {
-    return this.request('DELETE', path, options);
+  public delete<R>(
+    path: string,
+    options?: Parameters<typeof this.client.post>[1]
+  ) {
+    return this.request<R>('DELETE', path, options);
   }
 }

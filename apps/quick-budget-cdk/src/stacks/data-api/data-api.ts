@@ -42,6 +42,11 @@ export class DataApi extends Construct {
       cognitoUserPools: [props.pool],
     });
 
+    const allowOrigins = [
+      `https://api.${props.domainName}`,
+      `http://localhost:4200`,
+    ];
+
     this.api = new RestApi(this, `${id}-api`, {
       defaultCorsPreflightOptions: {
         allowHeaders: [
@@ -53,7 +58,7 @@ export class DataApi extends Construct {
         ],
         allowMethods: ['OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
         allowCredentials: true,
-        allowOrigins: [`https://domainName`, `http://localhost:4200`],
+        allowOrigins,
       },
     });
 
@@ -77,17 +82,20 @@ export class DataApi extends Construct {
         removalPolicy: props.removalPolicy,
       });
 
-      const allResource = this.api.root.addResource(name);
-      const singleResource = allResource.addResource('{id}');
+      const allResource = this.api.root
+        .addResource(name)
+        .addResource('{username}');
+
+      const singleResource = allResource.addResource('id').addResource('{id}');
 
       const getAndDeleteTemplate = `
       {
         "Key": {
           "username": {
-            "S": "$input.params().querystring.get('username')"
+            "S": "$method.request.path.id"
           },
           "id": {
-            "S": "$method.request.path.id"
+            "S": "$method.request.path.username"
           }
         },
         "TableName": "${table.tableName}"
@@ -102,19 +110,25 @@ export class DataApi extends Construct {
         singleResource,
         table,
         authorizer,
-        props.domainName
+        allowOrigins
       );
 
       addMethod(
         this,
         `${id}-${name}`,
         'GET',
-        'Scan',
-        `{ "TableName": "${table.tableName}" }`,
+        'Query',
+        `{
+          "TableName": "${table.tableName}",
+          "KeyConditionExpression": "username = :username",
+          "ExpressionAttributeValues": {
+            ":username": { "S": "$method.request.path.username" }
+          }
+        }`,
         allResource,
         table,
         authorizer,
-        props.domainName
+        allowOrigins
       );
 
       addMethod(
@@ -126,7 +140,7 @@ export class DataApi extends Construct {
         allResource,
         table,
         authorizer,
-        props.domainName
+        allowOrigins
       );
 
       addMethod(
@@ -138,7 +152,7 @@ export class DataApi extends Construct {
         allResource,
         table,
         authorizer,
-        props.domainName
+        allowOrigins
       );
 
       addMethod(
@@ -147,10 +161,10 @@ export class DataApi extends Construct {
         'DELETE',
         'DeleteItem',
         getAndDeleteTemplate,
-        allResource,
+        singleResource,
         table,
         authorizer,
-        props.domainName
+        allowOrigins
       );
 
       return { table, schema, name };

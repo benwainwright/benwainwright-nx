@@ -37,14 +37,11 @@ export class SettingsComponent implements OnDestroy, OnInit {
 
     this.subscription = this.form.valueChanges.subscribe((value) => {
       if (this.loaded) {
-        this.settingService
-          .setSettings({
-            salary: value.expectedSalary,
-            overdraft: value.overdraft,
-            payCycle: value.payCycle,
-          })
-          .pipe(take(1))
-          .subscribe();
+        this.settingService.setSettings({
+          salary: value.expectedSalary,
+          overdraft: value.overdraft,
+          payCycle: value.payCycle,
+        });
       }
     });
   }

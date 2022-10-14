@@ -62,7 +62,9 @@ export class AuthService {
       return;
     }
 
-    window.location.href = this.config.authSignOutUrl;
+    window.location.href = environment.production
+      ? this.config.authSignOutUrl
+      : this.config.authSignOutUrlForLocal;
   }
 
   private saveUser() {

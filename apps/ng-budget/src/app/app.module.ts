@@ -50,13 +50,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { LocalStorageDataSeriesService } from './services/local.storage.data-series.service';
 import { POTS_INJECTION_TOKEN } from './services/pots.service';
 import { Budget } from '@benwainwright/budget-domain';
-import { LocalStorageDataService } from './services/local-storage-data.service';
 import { AppConfigService } from './services/app-config.service';
 import { AuthService } from './services/auth.service';
 import { AuthorisedGuard } from './guards/authorised.guard';
 import { LoggerService } from './services/logger.service';
 import { ApiService } from './services/api.service';
 import { RemoteDataService } from './remote-data.service';
+import { RemoteDataSeriesService } from './services/remote-data-series.service';
 
 @NgModule({
   declarations: [
@@ -111,11 +111,17 @@ import { RemoteDataService } from './remote-data.service';
     },
     {
       provide: PAYMENTS_DATA_INJECTION_TOKEN,
-      useFactory: () => new LocalStorageDataSeriesService('payments'),
+      useFactory: (api: ApiService, auth: AuthService) => {
+        return new RemoteDataSeriesService('payments', api, auth);
+      },
+      deps: [ApiService, AuthService],
     },
     {
       provide: POTS_INJECTION_TOKEN,
-      useFactory: () => new LocalStorageDataSeriesService('pots'),
+      useFactory: (api: ApiService, auth: AuthService) => {
+        return new RemoteDataSeriesService('pots', api, auth);
+      },
+      deps: [ApiService, AuthService],
     },
     {
       provide: SETTINGS_INJECTION_TOKEN,

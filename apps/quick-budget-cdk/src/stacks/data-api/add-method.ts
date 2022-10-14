@@ -26,7 +26,7 @@ export const addMethod = (
   resource: Resource,
   table: Table,
   authorizer: CognitoUserPoolsAuthorizer,
-  domainName: string
+  allowOrigins: string[]
 ) => {
   const errorResponses = [
     {
@@ -98,11 +98,7 @@ export const addMethod = (
       integrationResponses: [
         {
           responseTemplates: {
-            'application/json':
-              getAllowOrigin([
-                `https://${domainName}`,
-                `http://localhost:4200`,
-              ]) + '$input.body',
+            'application/json': getAllowOrigin(allowOrigins) + '$input.body',
           },
           responseParameters: {
             'method.response.header.Access-Control-Allow-Origin': "'*'",

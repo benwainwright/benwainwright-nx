@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { timer, debounce, combineLatestWith, of, switchMap, map } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import { AuthService } from './auth.service';
+import { LoggerService } from './logger.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,8 @@ export class ApiService {
   constructor(
     private client: HttpClient,
     private config: AppConfigService,
-    private auth: AuthService
+    private auth: AuthService,
+    private logger: LoggerService
   ) {}
 
   private request<R>(
@@ -24,11 +26,13 @@ export class ApiService {
       combineLatestWith(this.auth.getUser()),
       // debounce(() => timer(1000)),
       switchMap(([config, user]) => {
+        this.logger.debug(`fetching ${method} ${path}`);
         if (!config || !user) {
           return of(void 0);
         }
         const normalisedPath = path.startsWith('/') ? path.slice(1) : path;
         const url = `${config?.apiUrl}/${normalisedPath}`;
+
 
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',

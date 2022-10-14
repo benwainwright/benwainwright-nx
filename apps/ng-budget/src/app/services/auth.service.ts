@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { filter, BehaviorSubject, Observable, map, mergeMap } from 'rxjs';
+import { filter, BehaviorSubject, map, mergeMap } from 'rxjs';
 import { BackendConfig } from '@benwainwright/types';
 import { AppConfigService } from './app-config.service';
 import { CognitoAuth, CognitoAuthSession } from 'amazon-cognito-auth-js';
@@ -21,7 +21,7 @@ export class AuthService {
   private loadedSubject = new BehaviorSubject(false);
   private auth: CognitoAuth | undefined;
 
-  constructor(
+  public constructor(
     private configService: AppConfigService,
     private logger: LoggerService
   ) {
@@ -82,7 +82,9 @@ export class AuthService {
       this.logger.debug(`Found user`);
     }
 
+    auth.getSession();
     const session = auth.getSignInUserSession();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tokenPayload = session.getIdToken().decodePayload() as any;
     const user = { username, session, groups: tokenPayload['cognito:groups'] };
     this.user.next(user);
@@ -128,6 +130,12 @@ export class AuthService {
         Region: config.region,
       };
       this.auth = new CognitoAuth(authData);
+      this.auth.userhandler = {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        onSuccess: () => {},
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        onFailure: () => {},
+      };
     }
 
     return config;

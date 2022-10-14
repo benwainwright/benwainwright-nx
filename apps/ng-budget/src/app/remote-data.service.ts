@@ -25,10 +25,12 @@ export class RemoteDataService<T> implements DataService<T> {
         query(
           this.resource,
           user?.username,
-          (username) =>
-            this.api.get<{ Item: T }>(
+          (username) => {
+            console.log(username);
+            return this.api.get<{ Item: T }>(
               `${this.resource}/${username}/id/${username}`
-            ),
+            );
+          },
           {
             mutator: (data, { queryParameters }) => {
               return this.api

@@ -57,6 +57,8 @@ import { LoggerService } from './services/logger.service';
 import { ApiService } from './services/api.service';
 import { RemoteDataService } from './remote-data.service';
 import { RemoteDataSeriesService } from './services/remote-data-series.service';
+import { RouteReuseStrategy } from '@angular/router';
+import { AppRouteReuseStrategy } from '../lib/app-route-reuse-strategy';
 
 @NgModule({
   declarations: [
@@ -97,6 +99,7 @@ import { RemoteDataSeriesService } from './services/remote-data-series.service';
     MatChipsModule,
   ],
   providers: [
+    { provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy },
     SettingsService,
     AppConfigService,
     AuthService,

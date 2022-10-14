@@ -22,6 +22,9 @@ const routes: Routes = [
     path: 'settings',
     component: SettingsComponent,
     canActivate: [AuthorisedGuard],
+    data: {
+      reuseComponent: true,
+    },
   },
   {
     path: 'payments',

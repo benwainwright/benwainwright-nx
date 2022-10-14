@@ -11,7 +11,6 @@ import { SettingsService } from '../services/settings.service';
 })
 export class SettingsComponent implements OnDestroy, OnInit {
   private subscription: Subscription | undefined;
-  private settingsSubcription: Subscription | undefined;
   private loaded = false;
 
   public form = new FormGroup({

@@ -43,7 +43,7 @@ export class DataApi extends Construct {
     });
 
     const allowOrigins = [
-      `https://api.${props.domainName}`,
+      `https://${props.domainName}`,
       `http://localhost:4200`,
     ];
 

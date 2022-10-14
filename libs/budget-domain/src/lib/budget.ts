@@ -30,7 +30,7 @@ export class Budget {
     return budget;
   }
 
-  private rawBalance: number
+  private rawBalance: number;
 
   constructor(
     public readonly id: string,
@@ -40,7 +40,7 @@ export class Budget {
     balance: number,
     public previous?: Budget
   ) {
-    this.rawBalance = balance
+    this.rawBalance = balance;
     this.potValues = pots.map((pot) => ({
       ...pot,
       adjustmentAmount: 0,
@@ -144,13 +144,13 @@ export class Budget {
   }
 
   public get balance(): number {
-      return this.isCurrent() || !this.previous
-        ? this.rawBalance
-        : this.previous.surplus + this.rawBalance;
+    return this.isCurrent() || !this.previous
+      ? this.rawBalance
+      : this.previous.surplus + this.rawBalance;
   }
 
   public set balance(balance: number) {
-    this.rawBalance = balance
+    this.rawBalance = balance;
   }
 
   public get surplus(): number {

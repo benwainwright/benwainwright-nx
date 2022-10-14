@@ -9,7 +9,7 @@
   NG Budget
 </mat-toolbar>
 <mat-drawer-container class="drawer-full-height">
-  <mat-drawer mode="side" [opened]="!mobile"
+  <mat-drawer [mode]="mobile ? 'over' : 'side'" [opened]="!mobile"
     ><benwainwright-nav-bar></benwainwright-nav-bar
   ></mat-drawer>
   <benwainwright-body></benwainwright-body>

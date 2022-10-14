@@ -82,7 +82,7 @@ export class AuthService {
       this.logger.debug(`Found user`);
     }
 
-    auth.getSession();
+    // auth.getSession();
     const session = auth.getSignInUserSession();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tokenPayload = session.getIdToken().decodePayload() as any;

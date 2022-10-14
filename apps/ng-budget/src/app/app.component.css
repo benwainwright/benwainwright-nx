@@ -2,6 +2,12 @@
   height: 100%;
 }
 
+@media only screen and (max-width: 599px) {
+  .drawer-full-height {
+    width: 100%;
+  }
+}
+
 form {
   display: flex;
   flex-direction: column;

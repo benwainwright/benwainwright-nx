@@ -2,15 +2,30 @@
 <h2 *ngIf="!new" mat-dialog-title>Edit Pot</h2>
 <div mat-dialog-content>
   <form>
-    <benwainwright-input [formGroup]="form" id="name" label="Name" type="text" control="name"></benwainwright-input>
+    <benwainwright-input
+      [formGroup]="form"
+      id="name"
+      label="Name"
+      type="text"
+      control="name"
+    ></benwainwright-input>
 
-    <benwainwright-input type="currency" [formGroup]="form" id="balance" label="Balance" type="number"
-      control="balance">
+    <benwainwright-input
+      type="currency"
+      [formGroup]="form"
+      id="balance"
+      label="Balance"
+      type="number"
+      control="balance"
+    >
     </benwainwright-input>
 
     <div mat-dialog-actions>
       <button mat-button color="primary" [mat-dialog-close]="data">Save</button>
-      <button mat-button (click)="onSaveClick()">Cancel</button>
+      <button mat-button (click)="onSaveClick($event)">Cancel</button>
+      <button mat-button *ngIf="!new" (click)="onDeleteClick($event)">
+        Delete
+      </button>
     </div>
   </form>
 </div>

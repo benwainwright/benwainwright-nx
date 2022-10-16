@@ -3,29 +3,6 @@ import { Pot } from '@benwainwright/budget-domain';
 import { map, Observable } from 'rxjs';
 import { DataSeriesService } from './data-series.service';
 
-export const POTS: Pot[] = [
-  {
-    id: '0',
-    balance: 50,
-    name: 'my other cool pot',
-  },
-  {
-    id: '1',
-    balance: 105,
-    name: 'my cool pot',
-  },
-  {
-    id: '2',
-    balance: 205,
-    name: 'my other cool pot',
-  },
-  {
-    id: '3',
-    balance: 405,
-    name: 'my next cool pot',
-  },
-];
-
 export const POTS_INJECTION_TOKEN = 'pots-data-service';
 
 @Injectable({

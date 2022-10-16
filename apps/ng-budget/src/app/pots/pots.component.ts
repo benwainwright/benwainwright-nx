@@ -35,6 +35,7 @@ export class PotsComponent implements OnInit {
       name: pot?.name ?? '',
       balance: pot?.balance ?? 0,
       new: !pot,
+      delete: false,
     };
 
     const dialogRef = this.dialog.open<
@@ -46,7 +47,9 @@ export class PotsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result?.new) {
+      if (result?.delete) {
+        this.potsService.removePot(result).subscribe();
+      } else if (result?.new) {
         this.potsService.addPot(result).subscribe();
       } else if (result && !result.new) {
         this.potsService.updatePot(result).subscribe();

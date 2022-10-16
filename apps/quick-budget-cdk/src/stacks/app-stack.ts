@@ -110,6 +110,7 @@ export class AppStack extends Stack {
     const paymentsSchema = z.object({
       id: z.string(),
       username: z.string(),
+      name: z.string(),
       when: z.string(),
       potId: z.string(),
       amount: z.string(),

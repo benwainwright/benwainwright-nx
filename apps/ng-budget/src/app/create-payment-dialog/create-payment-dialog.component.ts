@@ -6,7 +6,10 @@ import { Subscription } from 'rxjs';
 import { SelectItem } from '../select/select.component';
 import { PotsService } from '../services/pots.service';
 
-export type PaymentDialogData = RecurringPayment & { new: boolean }
+export type PaymentDialogData = RecurringPayment & {
+  new: boolean;
+  delete: boolean;
+};
 
 @Component({
   selector: 'benwainwright-create-payment-dialog',
@@ -14,30 +17,32 @@ export type PaymentDialogData = RecurringPayment & { new: boolean }
   styleUrls: ['./create-payment-dialog.component.css'],
 })
 export class CreatePaymentDialogComponent {
-  public new: boolean
+  public new: boolean;
 
-  public form: FormGroup
+  public form: FormGroup;
   public pots: SelectItem[] = [];
-  public potsSubscription: Subscription | undefined
+  public potsSubscription: Subscription | undefined;
 
   public constructor(
     public dialogRef: MatDialogRef<CreatePaymentDialogComponent>,
     public potsService: PotsService,
     @Inject(MAT_DIALOG_DATA) public data: PaymentDialogData
   ) {
+    this.potsSubscription = this.potsService
+      .getPots()
+      .subscribe(
+        (pots) =>
+          (this.pots = pots.map((pot) => ({ value: pot.id, label: pot.name })))
+      );
 
-  this.potsSubscription = this.potsService
-    .getPots()
-    .subscribe((pots) => (this.pots = pots.map(pot => ({value: pot.id, label: pot.name}))));
+    this.new = data.new;
 
-   this.new = data.new
-
-   this.form = new FormGroup({
-    name: new FormControl<string>(data.name, { nonNullable: true }),
-    amount: new FormControl<number>(data.amount, { nonNullable: true }),
-    when: new FormControl<string>(data.when, { nonNullable: true }),
-    potId: new FormControl<string>(data.potId, { nonNullable: true })
-   })
+    this.form = new FormGroup({
+      name: new FormControl<string>(data.name, { nonNullable: true }),
+      amount: new FormControl<number>(data.amount, { nonNullable: true }),
+      when: new FormControl<string>(data.when, { nonNullable: true }),
+      potId: new FormControl<string>(data.potId, { nonNullable: true }),
+    });
 
     this.form.valueChanges.subscribe((value) => {
       this.data.amount = value.amount ?? 0;
@@ -47,7 +52,13 @@ export class CreatePaymentDialogComponent {
     });
   }
 
-  onSaveClick(): void {
+  onCancelClick(event: Event): void {
     this.dialogRef.close();
+    event?.preventDefault();
+  }
+
+  onDeleteClick(event: Event): void {
+    this.dialogRef.close({ ...this.data, delete: true });
+    event.preventDefault();
   }
 }

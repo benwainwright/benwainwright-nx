@@ -5,7 +5,7 @@ import { DataSeriesService } from './data-series.service';
 import { filterNullish } from '../../lib/filter-nullish';
 import { v4 } from 'uuid';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
-import { query } from 'rx-query';
+import { query, refreshQuery } from 'rx-query';
 
 export class RemoteDataSeriesService<T extends { id: string }>
   implements DataSeriesService<T>
@@ -19,9 +19,11 @@ export class RemoteDataSeriesService<T extends { id: string }>
   insertItem(item: T): Observable<void> {
     return this.auth.getUser().pipe(
       switchMap((user) => {
-        return this.api.post<void>(`${this.resource}/${user?.username}`, {
-          body: { ...item, username: user?.username, id: v4() },
-        });
+        return this.api
+          .post<void>(`${this.resource}/${user?.username}`, {
+            body: { ...item, username: user?.username, id: v4() },
+          })
+          .pipe(map(() => refreshQuery(this.resource, user?.username)));
       }),
       filterNullish()
     );
@@ -58,11 +60,10 @@ export class RemoteDataSeriesService<T extends { id: string }>
   removeItem(_item: T): Observable<void> {
     return this.auth.getUser().pipe(
       switchMap((user) => {
-        return this.api.delete<void>(
-          `${this.resource}/${user?.username}/id/${_item.id}`
-        );
-      }),
-      filterNullish()
+        return this.api
+          .delete<void>(`${this.resource}/${user?.username}/id/${_item.id}`)
+          .pipe(map(() => refreshQuery(this.resource, user?.username)));
+      })
     );
   }
 }

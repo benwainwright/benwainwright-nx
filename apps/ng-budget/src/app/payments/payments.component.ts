@@ -43,6 +43,7 @@ export class PaymentsComponent implements OnInit, OnDestroy {
       when: payment?.when ?? '',
       potId: payment?.potId ?? '',
       new: !payment,
+      delete: false,
     };
 
     const dialogRef = this.dialog.open<
@@ -54,7 +55,10 @@ export class PaymentsComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
-      if (result?.new) {
+      if (result?.delete) {
+        console.log('DELETING');
+        this.paymentsService.removePayment(result).subscribe();
+      } else if (result?.new) {
         this.paymentsService.addPayment(result).subscribe();
       } else if (result && !result.new) {
         this.paymentsService.updatePayment(result).subscribe();
@@ -73,6 +77,9 @@ export class PaymentsComponent implements OnInit, OnDestroy {
 
     this.paymentsSubscription = this.paymentsService
       .getPayments()
-      .subscribe((payments) => (this.payments = payments));
+      .subscribe((payments) => {
+        console.log(payments);
+        return (this.payments = payments);
+      });
   }
 }

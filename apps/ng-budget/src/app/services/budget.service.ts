@@ -54,8 +54,10 @@ export class BudgetService {
         (budget.pots = pots);
       budget.setPayments(payments);
     });
+  }
 
-    this.dataService.setAll(newBudgets);
+  deleteBudget(budget: Budget) {
+    this.dataService.removeItem(budget);
   }
 
   async createBudget() {
@@ -79,6 +81,7 @@ export class BudgetService {
 
     created.setPayments(payments);
     this.dataService.insertItem(created);
+    console.log(JSON.stringify(created, null, 2));
   }
 
   getBudgets(): Observable<Budget[]> {

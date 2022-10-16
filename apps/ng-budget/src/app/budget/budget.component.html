@@ -1,35 +1,46 @@
-<h2>Budget</h2>
+<h2>
+  Budget <button (click)="deleteBudget($event)" mat-button>Delete</button>
+</h2>
 <mat-chip-list>
   <mat-chip *ngFor="let chip of chips">{{ chip }}</mat-chip>
 </mat-chip-list>
 <mat-card class="budget-detail-summary">
   <mat-list class="budget-detail-ul">
     <mat-list-item>
-      <p>From: <strong>{{ budget?.startDate | date: 'mediumDate' }}</strong> to
+      <p>
+        From: <strong>{{ budget?.startDate | date: 'mediumDate' }}</strong> to
         <strong>{{ budget?.endDate | date: 'mediumDate' }}</strong>
       </p>
     </mat-list-item>
     <mat-list-item>
-      <p>Account Balance: <strong>{{ budget?.balance | currency: 'GBP' }}</strong></p>
+      <p>
+        Account Balance:
+        <strong>{{ budget?.balance | currency: 'GBP' }}</strong>
+      </p>
     </mat-list-item>
     <mat-list-item>
-      <p>Pots Balances Total:
+      <p>
+        Pots Balances Total:
         <strong>{{ budget?.potTotals | currency: 'GBP' }}</strong>
       </p>
     </mat-list-item>
     <mat-list-item>
-      <p>Total Available: {{ budget?.balance | currency: 'GBP' }} + ${{
-        budget?.potTotals | currency: 'GBP'
+      <p>
+        Total Available: {{ budget?.balance | currency: 'GBP' }} + ${{
+          budget?.potTotals | currency: 'GBP'
         }}
-        = <strong>{{ availableBalance() | currency: 'GBP' }}</strong></p>
+        = <strong>{{ availableBalance() | currency: 'GBP' }}</strong>
+      </p>
     </mat-list-item>
     <mat-list-item>
-      <p>Allocated Total:
+      <p>
+        Allocated Total:
         <strong>{{ budget?.totalAllocated | currency: 'GBP' }}</strong>
       </p>
     </mat-list-item>
     <mat-list-item>
-      <p>Surplus: {{ availableBalance() | currency: 'GBP' }} -
+      <p>
+        Surplus: {{ availableBalance() | currency: 'GBP' }} -
         {{ budget?.totalAllocated | currency: 'GBP' }} =
         <strong>{{ budget?.surplus | currency: 'GBP' }}</strong>
       </p>
@@ -38,5 +49,8 @@
 </mat-card>
 
 <div class="pots-grid">
-  <benwainwright-pot *ngFor="let pot of budget?.potPlans" [pot]="pot"></benwainwright-pot>
+  <benwainwright-pot
+    *ngFor="let pot of budget?.potPlans"
+    [pot]="pot"
+  ></benwainwright-pot>
 </div>

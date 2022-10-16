@@ -6,24 +6,25 @@
   align-items: stretch;
 }
 
+
 .pot-table {
-    width: 100%;
+  width: 100%;
 }
 
 .pot-content {
-    flex-grow: 2;
+  flex-grow: 2;
 }
 
 .mat-table {
-  background-color: transparent
+  background-color: transparent;
 }
 
 .pot-deficit {
-  background-color: #FA9782
+  background-color: #fa9782;
 }
 
 .pot-surplus {
-  background-color: #DBFFCD
+  background-color: #dbffcd;
 }
 
 ul {

@@ -9,10 +9,21 @@ export class ErrorHandlerService implements ErrorHandler {
 
   handleError(error: unknown): void {
     if (typeof error === 'string') {
-      this.snackBar.open(`Error: ${error}`);
+      this.openSnackBar(`Error: ${error}`);
     } else if (error instanceof Error) {
-      this.snackBar.open(`Error: ${error.message}`);
+      this.openSnackBar(`Error: ${error.message}`);
       console.log(error);
     }
+  }
+
+  private openSnackBar(message: string) {
+    const bar = this.snackBar.open(message, 'Close');
+    bar.onAction().subscribe(() => {
+      bar.dismiss();
+    });
+
+    setInterval(() => {
+      bar.dismiss();
+    }, 5000);
   }
 }

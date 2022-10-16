@@ -1,4 +1,5 @@
-.payments-table td {
+.payments-table td,
+.payments-table th {
   padding: 0 1rem;
 }
 

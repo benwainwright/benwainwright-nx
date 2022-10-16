@@ -11,6 +11,8 @@ export interface PaymentPlan {
 
 export class Budget {
   private potValues: Omit<PotPlan, 'adjustmentAmount'>[];
+  private payments: RecurringPayment[] = [];
+
   public static fromJson(data: Budget) {
     const budget = new Budget(
       data.id,
@@ -92,11 +94,7 @@ export class Budget {
   }
 
   public setPayments(payments: RecurringPayment[]) {
-    this.potValues = this.distributePayments(
-      this.potValues,
-      payments,
-      this.isCurrent()
-    );
+    this.payments = payments;
   }
 
   private distributePayments(
@@ -125,7 +123,12 @@ export class Budget {
   }
 
   public get potPlans(): PotPlan[] {
-    return this.hydratePotplanAdjustments(this.potValues);
+    const values = this.distributePayments(
+      this.pots,
+      this.payments,
+      this.isCurrent()
+    );
+    return this.hydratePotplanAdjustments(values);
   }
 
   public get pots(): Pot[] {

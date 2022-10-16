@@ -81,7 +81,6 @@ export class BudgetService {
 
     created.setPayments(payments);
     this.dataService.insertItem(created);
-    console.log(JSON.stringify(created, null, 2));
   }
 
   getBudgets(): Observable<Budget[]> {

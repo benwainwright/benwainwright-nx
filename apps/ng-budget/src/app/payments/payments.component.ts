@@ -56,7 +56,6 @@ export class PaymentsComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result?.delete) {
-        console.log('DELETING');
         this.paymentsService.removePayment(result).subscribe();
       } else if (result?.new) {
         this.paymentsService.addPayment(result).subscribe();
@@ -78,7 +77,6 @@ export class PaymentsComponent implements OnInit, OnDestroy {
     this.paymentsSubscription = this.paymentsService
       .getPayments()
       .subscribe((payments) => {
-        console.log(payments);
         return (this.payments = payments);
       });
   }

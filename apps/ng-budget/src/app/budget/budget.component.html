@@ -52,5 +52,6 @@
   <benwainwright-pot
     *ngFor="let pot of budget?.potPlans"
     [pot]="pot"
+    [isFuture]="!budget?.isCurrent()"
   ></benwainwright-pot>
 </div>

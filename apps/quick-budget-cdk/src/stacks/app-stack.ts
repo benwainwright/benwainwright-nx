@@ -152,8 +152,6 @@ export class AppStack extends Stack {
         },
       ],
     });
-    // const budgets = makeApi('budgets-api');
-    // const payments = makeApi('payments-api');
 
     const allowedOrigins = [`https://${domainName}`, `http://localhost:4200`];
 

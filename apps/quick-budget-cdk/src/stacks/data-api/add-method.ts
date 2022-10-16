@@ -33,9 +33,9 @@ export const addMethod = (
       selectionPattern: '400',
       statusCode: '400',
       responseTemplates: {
-        'application/json': `{
-            "error": "Bad input!"
-          }`,
+        'application/json': `${getAllowOrigin(allowOrigins)}{
+          "errortype":  "$input.path('$__.type')"
+        }`,
       },
     },
     {

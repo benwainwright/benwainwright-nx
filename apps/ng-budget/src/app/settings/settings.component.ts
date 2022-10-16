@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { lastValueFrom, Subscription, take } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { validateDateString } from '../input/parse-date-validator';
 import { SettingsService } from '../services/settings.service';
 

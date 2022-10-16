@@ -131,6 +131,8 @@ export class DataApi extends Construct {
         allowOrigins
       );
 
+      // const failIfExists = `"ConditionExpression": "attribute_not_exists(id)",`;
+
       addMethod(
         this,
         `${id}-${name}`,
@@ -143,12 +145,14 @@ export class DataApi extends Construct {
         allowOrigins
       );
 
+      const failIfNotExists = `"ConditionExpression": "attribute_exists(id)",`;
+
       addMethod(
         this,
         `${id}-${name}`,
         'PUT',
         'PutItem',
-        makeMappingTemplate(schema, table.tableName),
+        makeMappingTemplate(schema, table.tableName, failIfNotExists),
         allResource,
         table,
         authorizer,

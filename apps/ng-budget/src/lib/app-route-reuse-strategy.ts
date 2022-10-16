@@ -11,22 +11,29 @@ export class AppRouteReuseStrategy implements BaseRouteReuseStrategy {
     return true;
   }
 
+  private key(route: ActivatedRouteSnapshot) {
+    if (!route.paramMap.has('id')) {
+      return route.routeConfig?.path ?? '';
+    }
+
+    return `${route.routeConfig?.path}${route.paramMap.get('id')}`;
+  }
+
   store(
     route: ActivatedRouteSnapshot,
     detachedTree: DetachedRouteHandle
   ): void {
-    this.routes.set(route.routeConfig?.path ?? '', detachedTree);
+    this.routes.set(this.key(route), detachedTree);
   }
 
   shouldAttach(route: ActivatedRouteSnapshot): boolean {
     return (
-      Boolean(route.routeConfig) &&
-      Boolean(this.routes.get(route.routeConfig?.path ?? ''))
+      Boolean(route.routeConfig) && Boolean(this.routes.get(this.key(route)))
     );
   }
 
   retrieve(route: ActivatedRouteSnapshot): DetachedRouteHandle | null {
-    return this.routes.get(route.routeConfig?.path ?? '') ?? null;
+    return this.routes.get(this.key(route)) ?? null;
   }
 
   public shouldReuseRoute(

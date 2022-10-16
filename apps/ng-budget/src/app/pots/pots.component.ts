@@ -47,6 +47,7 @@ export class PotsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((result) => {
+      console.log('AFTER');
       if (result?.delete) {
         this.potsService.removePot(result).subscribe();
       } else if (result?.new) {

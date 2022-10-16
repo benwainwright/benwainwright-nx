@@ -11,14 +11,14 @@ import { BudgetService } from '../services/budget.service';
 export class BudgetComponent implements OnInit {
   public budget: Budget | undefined;
 
-  public chips: string[];
+  public chips: Set<string>;
 
   constructor(
     private budgetService: BudgetService,
     private route: ActivatedRoute,
     private router: Router
   ) {
-    this.chips = [];
+    this.chips = new Set();
   }
 
   availableBalance() {
@@ -28,7 +28,6 @@ export class BudgetComponent implements OnInit {
 
   deleteBudget(event: Event) {
     this.budget && this.budgetService.deleteBudget(this.budget);
-    this.chips = [];
     event.preventDefault();
     this.router.navigate(['/budget-dashboard']);
   }
@@ -37,10 +36,9 @@ export class BudgetComponent implements OnInit {
     this.budgetService.getBudgets().subscribe((budgets) => {
       const id = this.route.snapshot.paramMap.get('id');
       this.budget = budgets.find((budget) => budget.id === id);
-      this.chips = [
-        ...this.chips,
-        this.budget?.isCurrent() ? 'Current' : 'Future',
-      ];
+      this.chips.delete('Current');
+      this.chips.delete('Future');
+      this.chips.add(this.budget?.isCurrent() ? 'Current' : 'Future');
     });
   }
 }

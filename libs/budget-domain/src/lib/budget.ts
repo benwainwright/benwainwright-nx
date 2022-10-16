@@ -112,13 +112,17 @@ export class Budget {
           parseDates(payment.when, {
             from: this.startDate,
             to: this.endDate,
-          }).dates.map((date, index) => ({
-            id: `${payment.id}-${index}`,
-            name: payment.name,
-            when: date,
-            amount: payment.amount,
-          }))
-        ),
+          }).dates.map((date, index) => {
+            return {
+              id: `${payment.id}-${index}`,
+              name: payment.name,
+              when: date,
+              amount: payment.amount,
+            };
+          })
+        )
+        .slice()
+        .sort((a, b) => (a.when > b.when ? 1 : -1)),
     }));
   }
 

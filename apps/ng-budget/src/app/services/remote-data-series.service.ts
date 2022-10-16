@@ -24,8 +24,7 @@ export class RemoteDataSeriesService<T extends { id: string }>
             body: { ...item, username: user?.username, id: v4() },
           })
           .pipe(map(() => refreshQuery(this.resource, user?.username)));
-      }),
-      filterNullish()
+      })
     );
   }
 
@@ -52,9 +51,19 @@ export class RemoteDataSeriesService<T extends { id: string }>
   setAll(_data: T[]): Observable<void> {
     throw new Error('Method not implemented.');
   }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  updateItem(_item: T): Observable<void> {
-    throw new Error('Method not implemented.');
+  updateItem(item: T): Observable<void> {
+    console.log(item);
+    return this.auth.getUser().pipe(
+      switchMap((user) => {
+        return this.api
+          .put<void>(`${this.resource}/${user?.username}`, {
+            body: { ...item, username: user?.username },
+          })
+          .pipe(map(() => refreshQuery(this.resource, user?.username)));
+      })
+    );
   }
 
   removeItem(_item: T): Observable<void> {

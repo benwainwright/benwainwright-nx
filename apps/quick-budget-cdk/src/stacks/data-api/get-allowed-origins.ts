@@ -9,5 +9,5 @@ export const getAllowOrigin = (origins: string[]) => {
 #if($origin == "") #set($origin = $input.params("origin")) #end
 #if(${condition})
   #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)
-#end`;
+#end\n`;
 };

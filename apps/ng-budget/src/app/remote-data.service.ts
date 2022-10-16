@@ -26,7 +26,6 @@ export class RemoteDataService<T> implements DataService<T> {
           this.resource,
           user?.username,
           (username) => {
-            console.log(username);
             return this.api.get<{ Item: T }>(
               `${this.resource}/${username}/id/${username}`
             );

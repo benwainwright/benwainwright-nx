@@ -98,9 +98,11 @@ const makeTemplateRecursive = <T extends z.ZodTypeAny>(
 
 export const makeMappingTemplate = <T extends z.ZodTypeAny>(
   schema: T,
-  tableName: string
+  tableName: string,
+  additional?: string
 ): string => {
-  return `{
+  const add = additional ? `\n${makeIndent(1)}${additional}` : ``;
+  return `{${add}
 ${makeIndent(1)}"Item": ${makeTemplateRecursive(
     schema,
     undefined,

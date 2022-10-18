@@ -24,6 +24,11 @@ export class BudgetDashboardComponent implements OnInit, OnDestroy {
     });
   }
 
+  createBudget(event: Event) {
+    this.budgetService.createBudget().subscribe();
+    event.preventDefault();
+  }
+
   ngOnDestroy(): void {
     this.subscription?.unsubscribe();
   }

@@ -113,8 +113,10 @@ import { ErrorHandlerService } from './error-handler.service';
     BudgetService,
     {
       provide: BUDGET_INJECTION_TOKEN,
-      useFactory: () =>
-        new LocalStorageDataSeriesService('budget', Budget.fromJson),
+      useFactory: (api: ApiService, auth: AuthService) => {
+        return new RemoteDataSeriesService('budgets', api, auth);
+      },
+      deps: [ApiService, AuthService],
     },
     {
       provide: PAYMENTS_DATA_INJECTION_TOKEN,

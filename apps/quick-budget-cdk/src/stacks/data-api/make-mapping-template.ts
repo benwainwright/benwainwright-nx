@@ -1,9 +1,25 @@
-import { z, ZodArray, ZodBoolean, ZodNumber, ZodObject, ZodString } from 'zod';
+import {
+  z,
+  ZodArray,
+  ZodBoolean,
+  ZodDate,
+  ZodNumber,
+  ZodObject,
+  ZodString,
+} from 'zod';
 
 const makeIndent = (indent: number) =>
   Array.from({ length: indent })
     .map(() => '  ')
     .join('');
+
+const makePath = (path?: string, key?: string) => {
+  const theKey = key && key.startsWith('$') ? `"${key}"` : key;
+  return (path ? [path, theKey] : [theKey])
+    .filter((item) => item)
+    .join('.')
+    .replace(/\.\[/g, '[');
+};
 
 const doArray = (
   schema: ZodArray<any, any>,
@@ -12,14 +28,14 @@ const doArray = (
   indentLevel?: number
 ) => {
   const currentIndent = indentLevel ?? 0;
-  const newPath = (path ? [path, key] : [key]).filter((item) => item).join('.');
+  const newPath = makePath(path, key);
   return `{
 ${makeIndent(currentIndent + 1)}"L": [
 ${makeIndent(currentIndent + 2)}#foreach($elem in $input.path('$.${newPath}'))
 ${makeIndent(currentIndent + 2)}${makeTemplateRecursive(
     schema.element,
-    '',
-    `${newPath}[$foreach.index]`,
+    `[$foreach.index]`,
+    newPath,
     currentIndent + 2
   )}
 ${makeIndent(currentIndent + 2)}#if($foreach.hasNext),#end
@@ -35,7 +51,7 @@ const doOther = (
   indentLevel?: number
 ) => {
   const currentIndent = indentLevel ?? 0;
-  const newPath = (path ? [path, key] : [key]).filter((item) => item).join('.');
+  const newPath = makePath(path, key);
   return `{
 ${makeIndent(1 + currentIndent)}"${type}": "$input.path('$.${newPath}')"
 ${makeIndent(currentIndent)}}`;
@@ -48,7 +64,7 @@ const doObject = (
   indentLevel?: number
 ) => {
   const currentIndent = indentLevel ?? 0;
-  const newPath = (path ? [path, key] : [key]).join('.');
+  const newPath = makePath(path, key);
   const entries = Object.entries<z.ZodTypeAny>(schema.shape)
     .map(
       ([key, value]) => `
@@ -63,8 +79,9 @@ ${makeIndent(currentIndent + 2)}"${key}" : ${makeTemplateRecursive(
 
   return key
     ? `{
-${makeIndent(currentIndent + 1)}"M": ${entries}
-${makeIndent(currentIndent + 1)}}`
+${makeIndent(currentIndent + 1)}"M": {${entries}
+${makeIndent(currentIndent + 1)}}
+${makeIndent(currentIndent)}}`
     : `{ ${entries}
 ${makeIndent(currentIndent)}}`;
 };
@@ -94,6 +111,14 @@ const makeTemplateRecursive = <T extends z.ZodTypeAny>(
   if (schema instanceof ZodBoolean) {
     return doOther('BOOL', key, path, indentLevel);
   }
+
+  if (schema instanceof ZodDate) {
+    const dateObject = z.object({
+      $type: z.string(),
+      value: z.string(),
+    });
+    return doObject(dateObject, key, path, indentLevel);
+  }
 };
 
 export const makeMappingTemplate = <T extends z.ZodTypeAny>(
@@ -112,3 +137,25 @@ ${makeIndent(1)}"Item": ${makeTemplateRecursive(
 ${makeIndent(1)}"TableName": "${tableName}"
 }`;
 };
+
+const potPlan = z.object({
+  payments: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      when: z.date(),
+      amount: z.number(),
+    })
+  ),
+});
+
+export const budgetSchema = z.object({
+  username: z.string(),
+  id: z.date(),
+  endDate: z.date(),
+  startDate: z.date(),
+  rawBalance: z.number(),
+  potValues: z.array(potPlan),
+});
+
+console.log(makeMappingTemplate(budgetSchema, 'foo'));

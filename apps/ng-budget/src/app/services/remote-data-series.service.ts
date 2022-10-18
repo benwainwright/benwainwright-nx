@@ -17,6 +17,7 @@ export class RemoteDataSeriesService<T extends { id: string }>
   ) {}
 
   insertItem(item: T): Observable<void> {
+    console.log('inserting');
     return this.auth.getUser().pipe(
       switchMap((user) => {
         return this.api

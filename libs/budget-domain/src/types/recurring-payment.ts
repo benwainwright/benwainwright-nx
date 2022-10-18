@@ -1,7 +1,14 @@
-export interface RecurringPayment {
-  id: string;
-  name: string;
-  when: string;
-  potId: string;
-  amount: number;
-}
+import { z } from 'zod';
+
+export const paymentSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  name: z.string(),
+  when: z.string(),
+  potId: z.string(),
+  amount: z.number(),
+});
+
+export type StoredPot = z.infer<typeof paymentSchema>;
+
+export type RecurringPayment = Omit<StoredPot, 'username'>;

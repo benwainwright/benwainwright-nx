@@ -1,0 +1,74 @@
+{
+  "Item": { 
+      "username" : {
+        "S": "$input.path('$.username')"
+      },
+      "id" : {
+        "M": 
+          "$type" : {
+            "S": "$input.path('$.id.$type')"
+          },
+          "value" : {
+            "S": "$input.path('$.id.value')"
+          }
+        },
+      "endDate" : {
+        "M": 
+          "$type" : {
+            "S": "$input.path('$.endDate.$type')"
+          },
+          "value" : {
+            "S": "$input.path('$.endDate.value')"
+          }
+        },
+      "startDate" : {
+        "M": 
+          "$type" : {
+            "S": "$input.path('$.startDate.$type')"
+          },
+          "value" : {
+            "S": "$input.path('$.startDate.value')"
+          }
+        },
+      "rawBalance" : {
+        "N": "$input.path('$.rawBalance')"
+      },
+      "potValues" : {
+        "L": [
+          #foreach($elem in $input.path('$.potValues'))
+          { 
+              "payments" : {
+                "L": [
+                  #foreach($elem in $input.path('$.potValues[$foreach.index]..payments'))
+                  { 
+                      "id" : {
+                        "S": "$input.path('$.potValues[$foreach.index]..payments[$foreach.index]..id')"
+                      },
+                      "name" : {
+                        "S": "$input.path('$.potValues[$foreach.index]..payments[$foreach.index]..name')"
+                      },
+                      "when" : {
+                        "M": 
+                          "$type" : {
+                            "S": "$input.path('$.potValues[$foreach.index]..payments[$foreach.index]..when.$type')"
+                          },
+                          "value" : {
+                            "S": "$input.path('$.potValues[$foreach.index]..payments[$foreach.index]..when.value')"
+                          }
+                        },
+                      "amount" : {
+                        "N": "$input.path('$.potValues[$foreach.index]..payments[$foreach.index]..amount')"
+                      }
+                  }
+                  #if($foreach.hasNext),#end
+                  #end
+                ]
+              }
+          }
+          #if($foreach.hasNext),#end
+          #end
+        ]
+      }
+  },
+  "TableName": "quick-budget-cdk-prod-settingsapisettingsapibudgetstable33ADDB76-RY7J9TV6KMAO"
+}

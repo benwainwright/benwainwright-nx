@@ -20,4 +20,6 @@ export const budgetSchema = z.object({
   potValues: z.array(potPlan),
 });
 
-export type Budget = z.infer<typeof budgetSchema>;
+export type StoredBudget = z.infer<typeof budgetSchema>;
+
+export type Budget = Omit<StoredBudget, 'username'>;

@@ -1,5 +1,12 @@
 import { Inject, Injectable } from '@angular/core';
-import { lastValueFrom, Observable, take, combineLatestWith, map } from 'rxjs';
+import {
+  lastValueFrom,
+  Observable,
+  take,
+  combineLatestWith,
+  map,
+  switchMap,
+} from 'rxjs';
 import { uuid } from '../../lib/uuid';
 import { getNextParsedDate } from '@benwainwright/nl-dates';
 import { BalanceService } from './balance.service';
@@ -60,27 +67,36 @@ export class BudgetService {
     this.dataService.removeItem(budget);
   }
 
-  async createBudget() {
-    const [payments, settings, pots, balance, budgets] = await lastValueFrom(
-      this.dependentData.pipe(take(1))
+  createBudget() {
+    return this.dependentData.pipe(
+      take(1),
+      switchMap(([payments, settings, pots, balance, budgets]) => {
+        const startDate =
+          budgets.length === 0
+            ? new Date(Date.now())
+            : budgets[budgets.length - 1].endDate;
+
+        const tomorrow = new Date(startDate.valueOf());
+        tomorrow.setDate(startDate.getDate() + 1);
+
+        const endDate = getNextParsedDate(tomorrow, settings.payCycle);
+
+        const last =
+          budgets.length > 0 ? budgets[budgets.length - 1] : undefined;
+
+        const created = new Budget(
+          uuid(),
+          startDate,
+          endDate,
+          pots,
+          balance,
+          last
+        );
+
+        created.setPayments(payments);
+        return this.dataService.insertItem(created);
+      })
     );
-
-    const startDate =
-      budgets.length === 0
-        ? new Date(Date.now())
-        : budgets[budgets.length - 1].endDate;
-
-    const tomorrow = new Date(startDate.valueOf());
-    tomorrow.setDate(startDate.getDate() + 1);
-
-    const endDate = getNextParsedDate(tomorrow, settings.payCycle);
-
-    const last = budgets.length > 0 ? budgets[budgets.length - 1] : undefined;
-
-    const created = new Budget(uuid(), startDate, endDate, pots, balance, last);
-
-    created.setPayments(payments);
-    this.dataService.insertItem(created);
   }
 
   getBudgets(): Observable<Budget[]> {

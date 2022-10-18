@@ -1,7 +1,5 @@
 import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
-import { z } from 'zod';
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
-// import { settingsSchema } from '@benwainwright/budget-domain';
 import {
   Distribution,
   OriginRequestPolicy,
@@ -12,6 +10,14 @@ import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { BackendConfig } from '@benwainwright/types';
+
+import {
+  budgetSchema,
+  settingsSchema,
+  paymentSchema,
+  potSchema,
+} from '@benwainwright/budget-domain';
+
 import {
   CloudFrontTarget,
   UserPoolDomainTarget,
@@ -107,30 +113,6 @@ export class AppStack extends Stack {
       },
     });
 
-    const paymentsSchema = z.object({
-      id: z.string(),
-      username: z.string(),
-      name: z.string(),
-      when: z.string(),
-      potId: z.string(),
-      amount: z.string(),
-    });
-
-    const potsSchema = z.object({
-      id: z.string(),
-      username: z.string(),
-      balance: z.string(),
-      name: z.string(),
-    });
-
-    const settingsSchema = z.object({
-      id: z.string(),
-      username: z.string(),
-      payCycle: z.string(),
-      salary: z.number(),
-      overdraft: z.number(),
-    });
-
     const data = new DataApi(this, 'settings-api', {
       removalPolicy,
       pool,
@@ -139,16 +121,20 @@ export class AppStack extends Stack {
       sortKeyName: 'id',
       resources: [
         {
+          name: 'budgets',
+          schema: budgetSchema,
+        },
+        {
           name: 'settings',
           schema: settingsSchema,
         },
         {
           name: 'payments',
-          schema: paymentsSchema,
+          schema: paymentSchema,
         },
         {
           name: 'pots',
-          schema: potsSchema,
+          schema: potSchema,
         },
       ],
     });

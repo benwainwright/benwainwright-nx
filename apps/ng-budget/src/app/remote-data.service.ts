@@ -34,7 +34,9 @@ export class RemoteDataService<T> implements DataService<T> {
             mutator: (data, { queryParameters }) => {
               return this.api
                 .post<{ Item: T }>(`${this.resource}/${queryParameters}`, {
-                  body: data.Item,
+                  ...data.Item,
+                  id: user?.username,
+                  username: user?.username,
                 })
                 .pipe(map(() => data));
             },

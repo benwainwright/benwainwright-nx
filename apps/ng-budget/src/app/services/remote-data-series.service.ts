@@ -6,6 +6,10 @@ import { filterNullish } from '../../lib/filter-nullish';
 import { v4 } from 'uuid';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { query, refreshQuery } from 'rx-query';
+import {
+  recursivelyDeserialiseDate,
+  SerialisedDate,
+} from '../../lib/recursively-serialise-date';
 
 export class RemoteDataSeriesService<T extends { id: string }>
   implements DataSeriesService<T>
@@ -22,7 +26,9 @@ export class RemoteDataSeriesService<T extends { id: string }>
       switchMap((user) => {
         return this.api
           .post<void>(`${this.resource}/${user?.username}`, {
-            body: { ...item, username: user?.username, id: v4() },
+            ...item,
+            username: user?.username,
+            id: v4(),
           })
           .pipe(map(() => refreshQuery(this.resource, user?.username)));
       })
@@ -33,16 +39,18 @@ export class RemoteDataSeriesService<T extends { id: string }>
     return this.auth.getUser().pipe(
       switchMap((user) =>
         query(this.resource, user?.username, (username) =>
-          this.api.get<{ Count: number; Items: T[]; ScannedCount: number }>(
-            `${this.resource}/${username}`
-          )
+          this.api.get<{
+            Count: number;
+            Items: SerialisedDate<T>[];
+            ScannedCount: number;
+          }>(`${this.resource}/${username}`)
         )
       ),
       filterNullish(),
       filter((response) => response.status === 'success'),
       map((response) => {
-        const result = response.data?.Items.map((item) =>
-          unmarshall(item)
+        const result = response.data?.Items.map((item) => unmarshall(item)).map(
+          (item) => recursivelyDeserialiseDate(item)
         ) as T[];
         return result;
       })
@@ -60,7 +68,8 @@ export class RemoteDataSeriesService<T extends { id: string }>
       switchMap((user) => {
         return this.api
           .put<void>(`${this.resource}/${user?.username}`, {
-            body: { ...item, username: user?.username },
+            ...item,
+            username: user?.username,
           })
           .pipe(map(() => refreshQuery(this.resource, user?.username)));
       })

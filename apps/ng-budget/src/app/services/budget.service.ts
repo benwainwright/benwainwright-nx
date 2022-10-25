@@ -76,6 +76,8 @@ export class BudgetService {
             ? new Date(Date.now())
             : budgets[budgets.length - 1].endDate;
 
+        console.log(balance);
+
         const tomorrow = new Date(startDate.valueOf());
         tomorrow.setDate(startDate.getDate() + 1);
 

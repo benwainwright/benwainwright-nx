@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
 const potPlan = z.object({
+  id: z.string(),
+  name: z.string(),
+  username: z.string(),
+  otherField: z.string(),
   payments: z.array(
     z.object({
       id: z.string(),
@@ -13,7 +17,7 @@ const potPlan = z.object({
 
 export const budgetSchema = z.object({
   username: z.string(),
-  id: z.date(),
+  id: z.string(),
   endDate: z.date(),
   startDate: z.date(),
   rawBalance: z.number(),
@@ -22,4 +26,4 @@ export const budgetSchema = z.object({
 
 export type StoredBudget = z.infer<typeof budgetSchema>;
 
-export type Budget = Omit<StoredBudget, 'username'>;
+export type IBudget = Omit<StoredBudget, 'username'>;

@@ -1,10 +1,14 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { Injectable } from '@angular/core';
 import { timer, debounce, combineLatestWith, of, switchMap, map } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import { AuthService } from './auth.service';
 import { LoggerService } from './logger.service';
+import {
+  recursivelyDeserialiseDate,
+  recursivelySerialiseDate,
+  SerialisedDate,
+} from '../../lib/recursively-serialise-date';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +24,8 @@ export class ApiService {
   private request<R>(
     method: string,
     path: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    body: any | null,
     options: Parameters<typeof this.client.get>[1] | undefined
   ) {
     return this.config.getConfig().pipe(
@@ -33,13 +39,22 @@ export class ApiService {
         const normalisedPath = path.startsWith('/') ? path.slice(1) : path;
         const url = `${config?.apiUrl}/${normalisedPath}`;
 
-
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
           Authorization: user?.session.getIdToken().getJwtToken(),
         });
 
-        const finalOptions = { ...(options ?? {}), withCredentials: true };
+        // const serialisedBody = body
+        //   ? recursivelySerialiseDate(body)
+        //   : undefined;
+
+        const finalOptions = {
+          ...(options ?? {}),
+          withCredentials: true,
+          body,
+        };
+
+        console.log(body);
 
         return this.client.request<R>(method, url, {
           ...finalOptions,
@@ -50,24 +65,29 @@ export class ApiService {
   }
 
   public get<R>(path: string, options?: Parameters<typeof this.client.get>[1]) {
-    return this.request<R>('GET', path, options);
+    return this.request<R>('GET', path, null, options);
   }
 
   public post<R>(
     path: string,
-    options?: Parameters<typeof this.client.post>[1]
+    body?: Parameters<typeof this.client.post>[1],
+    options?: Parameters<typeof this.client.post>[2]
   ) {
-    return this.request<R>('POST', path, options);
+    return this.request<R>('POST', path, body, options);
   }
 
-  public put<R>(path: string, options: Parameters<typeof this.client.post>[1]) {
-    return this.request<R>('PUT', path, options);
+  public put<R>(
+    path: string,
+    body?: Parameters<typeof this.client.put>[1],
+    options?: Parameters<typeof this.client.post>[2]
+  ) {
+    return this.request<R>('PUT', path, body, options);
   }
 
   public delete<R>(
     path: string,
-    options?: Parameters<typeof this.client.post>[1]
+    options?: Parameters<typeof this.client.delete>[1]
   ) {
-    return this.request<R>('DELETE', path, options);
+    return this.request<R>('DELETE', path, null, options);
   }
 }

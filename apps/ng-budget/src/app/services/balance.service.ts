@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, map } from 'rxjs';
+import { SettingsService } from './settings.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BalanceService {
-  private balance = 0;
-
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {}
+  constructor(private settings: SettingsService) {}
 
   getAvailableBalance(): Observable<number> {
-    return of(this.balance);
+    return this.settings
+      .getSettings()
+      .pipe(map((settings) => settings.balance));
   }
 }

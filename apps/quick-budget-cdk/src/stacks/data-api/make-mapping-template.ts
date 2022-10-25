@@ -14,11 +14,11 @@ const makeIndent = (indent: number) =>
     .join('');
 
 const makePath = (path?: string, key?: string) => {
-  const theKey = key && key.startsWith('$') ? `"${key}"` : key;
-  return (path ? [path, theKey] : [theKey])
+  return (path ? [path, key] : [key])
     .filter((item) => item)
     .join('.')
-    .replace(/\.\[/g, '[');
+    .replace(/\.\[/g, '[')
+    .replace(/\$\{d\}/g, '$');
 };
 
 const doArray = (
@@ -66,15 +66,16 @@ const doObject = (
   const currentIndent = indentLevel ?? 0;
   const newPath = makePath(path, key);
   const entries = Object.entries<z.ZodTypeAny>(schema.shape)
-    .map(
-      ([key, value]) => `
-${makeIndent(currentIndent + 2)}"${key}" : ${makeTemplateRecursive(
+    .map(([key, value]) => {
+      const escapedKey = key.replace(/\$/g, '${d}');
+      return `
+${makeIndent(currentIndent + 2)}"${escapedKey}" : ${makeTemplateRecursive(
         value,
-        key,
+        escapedKey,
         newPath,
         currentIndent + 2
-      )}`
-    )
+      )}`;
+    })
     .join();
 
   return key
@@ -127,7 +128,7 @@ export const makeMappingTemplate = <T extends z.ZodTypeAny>(
   additional?: string
 ): string => {
   const add = additional ? `\n${makeIndent(1)}${additional}` : ``;
-  return `{${add}
+  return `{${add}\n#set ( $d = "$")\n
 ${makeIndent(1)}"Item": ${makeTemplateRecursive(
     schema,
     undefined,
@@ -137,25 +138,3 @@ ${makeIndent(1)}"Item": ${makeTemplateRecursive(
 ${makeIndent(1)}"TableName": "${tableName}"
 }`;
 };
-
-const potPlan = z.object({
-  payments: z.array(
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      when: z.date(),
-      amount: z.number(),
-    })
-  ),
-});
-
-export const budgetSchema = z.object({
-  username: z.string(),
-  id: z.date(),
-  endDate: z.date(),
-  startDate: z.date(),
-  rawBalance: z.number(),
-  potValues: z.array(potPlan),
-});
-
-console.log(makeMappingTemplate(budgetSchema, 'foo'));

@@ -15,6 +15,7 @@ export class SettingsComponent implements OnDestroy, OnInit {
 
   public form = new FormGroup({
     overdraft: new FormControl<number>(0, { nonNullable: true }),
+    balance: new FormControl<number>(0, { nonNullable: true }),
     payCycle: new FormControl('', {
       nonNullable: true,
       validators: [validateDateString],
@@ -31,15 +32,17 @@ export class SettingsComponent implements OnDestroy, OnInit {
         this.form.controls.expectedSalary.setValue(settings.salary);
         this.form.controls.overdraft.setValue(settings.overdraft);
         this.form.controls.payCycle.setValue(settings.payCycle);
+        this.form.controls.balance.setValue(settings.balance);
         this.loaded = true;
       });
 
     this.subscription = this.form.valueChanges.subscribe((value) => {
       if (this.loaded) {
         this.settingService.setSettings({
-          salary: value.expectedSalary,
-          overdraft: value.overdraft,
+          salary: value.expectedSalary && Number(value.expectedSalary),
+          overdraft: value.overdraft && Number(value.overdraft),
           payCycle: value.payCycle,
+          balance: value.balance && Number(value.balance),
         });
       }
     });

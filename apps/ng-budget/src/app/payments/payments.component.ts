@@ -1,12 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { Pot, RecurringPayment } from '@benwainwright/budget-domain';
 import { Subscription } from 'rxjs';
-import { v4 } from 'uuid';
-import {
-  CreatePaymentDialogComponent,
-  PaymentDialogData,
-} from '../create-payment-dialog/create-payment-dialog.component';
 import { PotsService } from '../services/pots.service';
 import { RecurringPaymentsService } from '../services/recurring-payments.service';
 
@@ -17,9 +11,8 @@ import { RecurringPaymentsService } from '../services/recurring-payments.service
 })
 export class PaymentsComponent implements OnInit, OnDestroy {
   constructor(
-    private paymentsService: RecurringPaymentsService,
-    private potsService: PotsService,
-    private dialog: MatDialog
+    public paymentsService: RecurringPaymentsService,
+    private potsService: PotsService
   ) {}
 
   public payments: RecurringPayment[] = [];
@@ -33,36 +26,6 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.paymentsSubscription?.unsubscribe();
     this.potsSubscription?.unsubscribe();
-  }
-
-  openCreateEditDialog(payment?: RecurringPayment) {
-    const startingData: PaymentDialogData = {
-      id: payment?.id ?? v4(),
-      name: payment?.name ?? '',
-      amount: payment?.amount ?? 0,
-      when: payment?.when ?? '',
-      potId: payment?.potId ?? '',
-      new: !payment,
-      delete: false,
-    };
-
-    const dialogRef = this.dialog.open<
-      CreatePaymentDialogComponent,
-      PaymentDialogData,
-      PaymentDialogData
-    >(CreatePaymentDialogComponent, {
-      data: startingData,
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result?.delete) {
-        this.paymentsService.removePayment(result).subscribe();
-      } else if (result?.new) {
-        this.paymentsService.addPayment(result).subscribe();
-      } else if (result && !result.new) {
-        this.paymentsService.updatePayment(result).subscribe();
-      }
-    });
   }
 
   getPot(payment: RecurringPayment): Pot | undefined {

@@ -15,6 +15,7 @@ import { RecurringPaymentsService } from './recurring-payments.service';
 import { SettingsService } from './settings.service';
 import {
   Budget,
+  ConcretePayment,
   Pot,
   RecurringPayment,
   Settings,
@@ -55,12 +56,24 @@ export class BudgetService {
   updateBudgets([payments, settings, pots, balance, budgets]: DependentData) {
     const newBudgets = [...budgets];
 
-    newBudgets.forEach((budget) => {
-      (budget.balance = budget.previous ? settings.salary : balance),
-        budget.setPayments(payments),
-        (budget.pots = pots);
+    newBudgets.forEach((budget, index) => {
+      switch (budget.pastPresentOrFuture()) {
+        case 'Current':
+          budget.balance = balance;
+          break;
+        case 'Future':
+          budget.balance = settings.salary;
+          break;
+        case 'Past':
+          budget.balance = 0;
+          break;
+      }
+
+      budget.pots = pots;
       budget.setPayments(payments);
     });
+
+    this.dataService.setAll(newBudgets);
   }
 
   deleteBudget(budget: Budget) {
@@ -75,8 +88,6 @@ export class BudgetService {
           budgets.length === 0
             ? new Date(Date.now())
             : budgets[budgets.length - 1].endDate;
-
-        console.log(balance);
 
         const tomorrow = new Date(startDate.valueOf());
         tomorrow.setDate(startDate.getDate() + 1);
@@ -99,6 +110,11 @@ export class BudgetService {
         return this.dataService.insertItem(created);
       })
     );
+  }
+
+  togglePaymentPaidStatus(budget: Budget, payment: ConcretePayment) {
+    budget.togglePaymentPaidStatus(payment);
+    this.dataService.updateItem(budget);
   }
 
   getBudgets(): Observable<Budget[]> {

@@ -3,4 +3,5 @@ export interface ConcretePayment {
   name: string;
   when: Date;
   amount: number;
+  paid: boolean;
 }

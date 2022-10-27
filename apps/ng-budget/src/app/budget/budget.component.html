@@ -26,10 +26,9 @@
     </mat-list-item>
     <mat-list-item>
       <p>
-        Total Available: {{ budget?.balance | currency: 'GBP' }} + ${{
-          budget?.potTotals | currency: 'GBP'
-        }}
-        = <strong>{{ availableBalance() | currency: 'GBP' }}</strong>
+        Total Available: {{ budget?.balance | currency: 'GBP' }} +
+        {{ budget?.potTotals | currency: 'GBP' }} =
+        <strong>{{ availableBalance() | currency: 'GBP' }}</strong>
       </p>
     </mat-list-item>
     <mat-list-item>
@@ -40,8 +39,8 @@
     </mat-list-item>
     <mat-list-item>
       <p>
-        Surplus: {{ availableBalance() | currency: 'GBP' }} -
-        {{ budget?.totalAllocated | currency: 'GBP' }} =
+        Surplus: {{ budget?.totalAllocated | currency: 'GBP' }} -
+        {{ availableBalance() | currency: 'GBP' }} =
         <strong>{{ budget?.surplus | currency: 'GBP' }}</strong>
       </p>
     </mat-list-item>
@@ -52,6 +51,7 @@
   <benwainwright-pot
     *ngFor="let pot of budget?.potPlans"
     [pot]="pot"
+    [budget]="budget"
     [isFuture]="!budget?.isCurrent()"
   ></benwainwright-pot>
 </div>

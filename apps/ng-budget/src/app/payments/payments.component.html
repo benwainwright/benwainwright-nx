@@ -1,6 +1,10 @@
 <h2>
   Recurring Payments
-  <button (click)="openCreateEditDialog()" mat-button color="primary">
+  <button
+    (click)="paymentsService.openCreateEditDialog()"
+    mat-button
+    color="primary"
+  >
     Create
   </button>
 </h2>
@@ -42,6 +46,6 @@
   <tr
     mat-row
     *matRowDef="let payment; columns: tableColumns"
-    (click)="openCreateEditDialog(payment)"
+    (click)="paymentsService.openCreateEditDialog(payment)"
   ></tr>
 </table>

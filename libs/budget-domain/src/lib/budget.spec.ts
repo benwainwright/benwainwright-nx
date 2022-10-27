@@ -155,6 +155,23 @@ describe('budget', () => {
     expect(budget.totalAllocated).toEqual(325);
   });
 
+  it('provides total paid when payments are marked as paid ', () => {
+    const from = date(1, 6, 2022);
+    const to = date(30, 6, 2022);
+
+    setupDateMocks(from, to);
+    const budget = new Budget('id', from, to, POTS, 1000);
+
+    budget.setPayments(PAYMENTS);
+
+    const second = budget.potPlans[1];
+
+    budget.togglePaymentPaidStatus(second.payments[0]);
+
+    const secondAfter = budget.potPlans[1];
+    expect(secondAfter.totalPaid).toEqual(25);
+  });
+
   it('assumes pot balances are zero if budget is not current', () => {
     const from = date(1, 6, 2022);
     const to = date(30, 6, 2022);
@@ -294,6 +311,19 @@ describe('budget', () => {
     secondBudget.setPayments(PAYMENTS);
 
     expect(secondBudget.surplus).toEqual(2115);
+  });
+
+  it('allows you to mark budget payments as paid', () => {
+    const from = date(1, 6, 2022);
+    const to = date(30, 6, 2022);
+
+    setupDateMocks(from, to);
+    const budget = new Budget('id', from, to, POTS, 1000);
+
+    budget.setPayments(PAYMENTS);
+    budget.togglePaymentPaidStatus(budget.potPlans[0].payments[1]);
+
+    expect(budget.potPlans[0].payments[1].paid).toBeTruthy();
   });
 
   it('correctly marks the budget as current or not depending on the date range and the current date', () => {

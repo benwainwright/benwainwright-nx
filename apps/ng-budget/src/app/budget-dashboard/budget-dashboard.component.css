@@ -10,3 +10,11 @@
   width: 100%;
   max-width: 50rem;
 }
+
+.dash-row.Current {
+  background-color: #dbffcd;
+}
+
+.dash-row.Past td {
+  color: #d3d3d3;
+}

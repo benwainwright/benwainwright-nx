@@ -23,6 +23,7 @@ export class LocalStorageDataSeriesService<T extends { id: string }>
   }
 
   setAll(data: T[]) {
+    console.log(data);
     localStorage.setItem(this.key, JSON.stringify(data));
     this.data.next(data);
     return of(void 0);

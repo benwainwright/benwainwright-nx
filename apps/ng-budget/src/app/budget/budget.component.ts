@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Budget } from '@benwainwright/budget-domain';
+import { combineLatestWith } from 'rxjs';
 import { BudgetService } from '../services/budget.service';
+import { RecurringPaymentsService } from '../services/recurring-payments.service';
 
 @Component({
   selector: 'benwainwright-budget',
@@ -16,6 +18,7 @@ export class BudgetComponent implements OnInit {
   constructor(
     private budgetService: BudgetService,
     private route: ActivatedRoute,
+    private paymentsService: RecurringPaymentsService,
     private router: Router
   ) {
     this.chips = new Set();
@@ -33,12 +36,16 @@ export class BudgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.budgetService.getBudgets().subscribe((budgets) => {
-      const id = this.route.snapshot.paramMap.get('id');
-      this.budget = budgets.find((budget) => budget.id === id);
-      this.chips.delete('Current');
-      this.chips.delete('Future');
-      this.chips.add(this.budget?.isCurrent() ? 'Current' : 'Future');
-    });
+    this.budgetService
+      .getBudgets()
+      .pipe(combineLatestWith(this.paymentsService.getPayments()))
+      .subscribe(([budgets]) => {
+        const id = this.route.snapshot.paramMap.get('id');
+        this.budget = budgets.find((budget) => budget.id === id);
+        this.chips.delete('Current');
+        this.chips.delete('Future');
+        this.chips.delete('Past');
+        this.chips.add(this.budget?.pastPresentOrFuture() as string);
+      });
   }
 }

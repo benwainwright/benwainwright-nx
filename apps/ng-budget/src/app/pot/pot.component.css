@@ -30,3 +30,12 @@ ul {
   margin: 1rem 0 0 1rem;
   padding: 0;
 }
+
+.paid-button:hover {
+  color: var(--colour-dark-green);
+}
+
+.paid-row {
+  text-decoration: line-through;
+  opacity: 0.3;
+}

@@ -6,6 +6,12 @@ body {
   margin: 0;
 }
 
+:root {
+  --colour-light-green: #dbffcd;
+  --colour-light-red: #fa9782;
+  --colour-dark-green: #0e9420;
+}
+
 form {
   display: flex;
   flex-direction: column;
@@ -43,8 +49,10 @@ html {
 }
 
 html {
-    box-sizing: border-box;
-  }
-  *, *:before, *:after {
-    box-sizing: inherit;
-  }
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}

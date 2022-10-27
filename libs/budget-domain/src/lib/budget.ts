@@ -1,4 +1,5 @@
 import { parseDates } from '@benwainwright/nl-dates';
+import { ConcretePayment } from '../types/concrete-payment';
 import { Pot } from '../types/pot';
 import { PotPlan } from '../types/pot-plan';
 import { RecurringPayment } from '../types/recurring-payment';
@@ -12,6 +13,7 @@ export interface PaymentPlan {
 export class Budget {
   private potValues: Omit<PotPlan, 'adjustmentAmount'>[];
   private payments: RecurringPayment[] = [];
+  public paidIds: { [id: string]: boolean } = {};
 
   public static fromJson(data: Budget) {
     const budget = new Budget(
@@ -21,7 +23,9 @@ export class Budget {
       [],
       0
     );
+    budget.paidIds = data.paidIds;
     budget.balance = data.balance;
+
     budget.potValues = data.potValues.map((pot) => ({
       ...pot,
       payments: pot.payments.map((payment) => ({
@@ -46,21 +50,61 @@ export class Budget {
     this.potValues = pots.map((pot) => ({
       ...pot,
       adjustmentAmount: 0,
+      totalPaid: 0,
       payments: [],
     }));
   }
 
   private hydratePotplanAdjustments(
-    potPlans: Omit<PotPlan, 'adjustmentAmount'>[]
+    potPlans: Omit<PotPlan, 'adjustmentAmount' | 'totalPaid'>[]
   ): PotPlan[] {
-    return potPlans.map((plan) => ({
-      adjustmentAmount:
-        plan.payments.reduce(
-          (runningTotal, payment) => runningTotal + payment.amount,
-          0
-        ) - plan.balance,
-      ...plan,
-    }));
+    return potPlans.map((plan) => {
+      const totalPaid = plan.payments.reduce(
+        (runningTotal, payment) =>
+          (payment.paid ? payment.amount : 0) + runningTotal,
+        0
+      );
+
+      const adjustmentAmount =
+        plan.payments.reduce((runningTotal, payment) => {
+          return runningTotal + payment.amount;
+        }, 0) -
+        plan.balance -
+        totalPaid;
+
+      return {
+        totalPaid,
+        adjustmentAmount: parseFloat(adjustmentAmount.toPrecision(2)),
+        ...plan,
+      };
+    });
+  }
+
+  public pastPresentOrFuture(): 'Past' | 'Current' | 'Future' {
+    const now = new Date(Date.now());
+    const start = new Date(this.startDate.valueOf());
+
+    start.setHours(0);
+    start.setMinutes(0);
+    start.setSeconds(0);
+    start.setMilliseconds(0);
+
+    const end = new Date(this.endDate.valueOf());
+
+    end.setHours(0);
+    end.setMinutes(0);
+    end.setSeconds(0);
+    end.setMilliseconds(0);
+
+    if (now > start && now < end) {
+      return 'Current';
+    }
+
+    if (now < start) {
+      return 'Future';
+    }
+
+    return 'Past';
   }
 
   public isCurrent(): boolean {
@@ -84,7 +128,8 @@ export class Budget {
 
   public get totalAllocated(): number {
     return this.potPlans.reduce(
-      (accum, pot) => pot.balance + pot.adjustmentAmount + accum,
+      (accum, pot) =>
+        pot.balance + pot.adjustmentAmount + accum + pot.totalPaid,
       0
     );
   }
@@ -97,11 +142,15 @@ export class Budget {
     this.payments = payments;
   }
 
+  public togglePaymentPaidStatus(payment: ConcretePayment) {
+    this.paidIds[payment.id] = !this.paidIds[payment.id];
+  }
+
   private distributePayments(
     pots: Pot[],
     payments: RecurringPayment[],
     currentBudget: boolean
-  ): Omit<PotPlan, 'adjustmentAmount'>[] {
+  ): Omit<PotPlan, 'adjustmentAmount' | 'totalPaid'>[] {
     return pots.map((pot) => ({
       id: pot.id,
       balance: currentBudget ? pot.balance : 0,
@@ -113,8 +162,10 @@ export class Budget {
             from: this.startDate,
             to: this.endDate,
           }).dates.map((date, index) => {
+            const id = `${payment.id}-${index}`;
             return {
-              id: `${payment.id}-${index}`,
+              id,
+              paid: this.paidIds[id],
               name: payment.name,
               when: date,
               amount: payment.amount,

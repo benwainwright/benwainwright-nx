@@ -1,14 +1,9 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { timer, debounce, combineLatestWith, of, switchMap, map } from 'rxjs';
+import { combineLatestWith, of, switchMap } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import { AuthService } from './auth.service';
 import { LoggerService } from './logger.service';
-import {
-  recursivelyDeserialiseDate,
-  recursivelySerialiseDate,
-  SerialisedDate,
-} from '../../lib/recursively-serialise-date';
 
 @Injectable({
   providedIn: 'root',

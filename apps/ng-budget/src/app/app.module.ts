@@ -28,6 +28,7 @@ import { BudgetComponent } from './budget/budget.component';
 import { PotComponent } from './pot/pot.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatListModule } from '@angular/material/list';
@@ -61,6 +62,7 @@ import { RouteReuseStrategy } from '@angular/router';
 import { AppRouteReuseStrategy } from '../lib/app-route-reuse-strategy';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ErrorHandlerService } from './error-handler.service';
+import { MenuComponent } from './menu/menu.component';
 
 @NgModule({
   declarations: [
@@ -80,6 +82,7 @@ import { ErrorHandlerService } from './error-handler.service';
     PotsComponent,
     PotDialogComponent,
     SelectComponent,
+    MenuComponent,
   ],
   imports: [
     BrowserModule,
@@ -89,6 +92,7 @@ import { ErrorHandlerService } from './error-handler.service';
     BrowserAnimationsModule,
     MatToolbarModule,
     MatSnackBarModule,
+    MatMenuModule,
     MatSidenavModule,
     MatListModule,
     MatDialogModule,

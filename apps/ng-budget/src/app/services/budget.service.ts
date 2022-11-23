@@ -49,35 +49,6 @@ export class BudgetService {
           this.getBudgets()
         )
       );
-
-    this.dependentData.subscribe(this.updateBudgets.bind(this));
-  }
-
-  updateBudgets([payments, settings, pots, balance, budgets]: DependentData) {
-    const newBudgets = [...budgets];
-
-    newBudgets.forEach((budget, index) => {
-      switch (budget.pastPresentOrFuture()) {
-        case 'Current':
-          budget.balance = balance;
-          break;
-        case 'Future':
-          budget.balance = settings.salary;
-          break;
-        case 'Past':
-          budget.balance = 0;
-          break;
-      }
-
-      budget.pots = pots;
-      budget.setPayments(payments);
-    });
-
-    this.dataService.setAll(newBudgets);
-  }
-
-  deleteBudget(budget: Budget) {
-    this.dataService.removeItem(budget);
   }
 
   createBudget() {
@@ -117,15 +88,46 @@ export class BudgetService {
     this.dataService.updateItem(budget);
   }
 
+  deleteBudget(budget: Budget) {
+    this.dataService.removeItem(budget);
+  }
+
   getBudgets(): Observable<Budget[]> {
     return this.dataService.getAll().pipe(
-      map((value) =>
-        value.map((budget, index, collection) => {
+      combineLatestWith(
+        this.settings.getSettings(),
+        this.pots.getPots(),
+        this.balance.getAvailableBalance(),
+        this.recurringPayments.getPayments()
+      ),
+      map(([budgets, settings, pots, balance, payments]) => {
+        const newBudgets = [...budgets];
+
+        newBudgets.forEach((budget) => {
+          switch (budget.pastPresentOrFuture()) {
+            case 'Current':
+              budget.balance = balance;
+              break;
+            case 'Future':
+              budget.balance = settings.salary;
+              break;
+            case 'Past':
+              budget.balance = 0;
+              break;
+          }
+
+          budget.pots = pots;
+          budget.setPayments(payments);
+        });
+
+        newBudgets.map((budget, index, collection) => {
           const prev = index !== 0 ? collection[index - 1] : undefined;
           budget.previous = prev;
           return budget;
-        })
-      )
+        });
+
+        return newBudgets;
+      })
     );
   }
 }

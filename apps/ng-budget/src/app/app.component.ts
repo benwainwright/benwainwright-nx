@@ -1,5 +1,5 @@
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { menuItems, routes } from './app-routing.module';
 
 @Component({
   selector: 'benwainwright-root',
@@ -9,18 +9,8 @@ import { Component } from '@angular/core';
 export class AppComponent {
   title = 'budget';
 
-  public constructor(private breakpointObserver: BreakpointObserver) {}
-  public mobile = false;
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public constructor() {}
 
-  toggleNav() {
-    this.mobile = !this.mobile;
-  }
-
-  ngOnInit(): void {
-    this.breakpointObserver
-      .observe('(max-width: 599px)')
-      .subscribe((observer) => {
-        this.mobile = observer.matches;
-      });
-  }
+  public menuItems = menuItems;
 }

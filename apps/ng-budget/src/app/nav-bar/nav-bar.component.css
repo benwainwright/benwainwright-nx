@@ -14,9 +14,7 @@ nav li a:hover {
 }
 
 @media only screen and (max-width: 599px) {
-  nav a,
-  nav button {
-    font-size: 2rem;
-    margin: 1rem;
+  nav {
+    display: none;
   }
 }

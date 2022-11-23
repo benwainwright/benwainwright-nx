@@ -1,9 +1,11 @@
 <h2>
   Budget <button (click)="deleteBudget($event)" mat-button>Delete</button>
 </h2>
-<mat-chip-list>
-  <mat-chip *ngFor="let chip of chips">{{ chip }}</mat-chip>
-</mat-chip-list>
+<div class="chips">
+  <mat-chip-list>
+    <mat-chip *ngFor="let chip of chips">{{ chip }}</mat-chip>
+  </mat-chip-list>
+</div>
 <mat-card class="budget-detail-summary">
   <mat-list class="budget-detail-ul">
     <mat-list-item>

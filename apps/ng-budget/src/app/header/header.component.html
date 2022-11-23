@@ -1,6 +1,22 @@
 <mat-toolbar color="primary">
-  <button mat-icon-button aria-label="Example icon button with a menu icon">
+  <button
+    mat-icon-button
+    aria-label="Menu"
+    [matMenuTriggerFor]="menu"
+    class="menu-button"
+  >
     <mat-icon>menu</mat-icon>
   </button>
-  NG Budget
+  Quickbudget.co.uk
 </mat-toolbar>
+<mat-menu #menu="matMenu">
+  <a mat-menu-item *ngFor="let item of items" href="/{{ item.path }}">
+    <mat-icon *ngIf="item.icon">{{ item.icon }}</mat-icon>
+    <span>{{ item.navLabel }}</span>
+  </a>
+
+  <button mat-menu-item (click)="logout()">
+    <mat-icon mat-list-icon>power_settings_new</mat-icon>
+    Logout
+  </button>
+</mat-menu>

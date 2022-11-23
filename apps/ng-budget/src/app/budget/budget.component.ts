@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Budget } from '@benwainwright/budget-domain';
-import { combineLatestWith } from 'rxjs';
+import { take, combineLatestWith } from 'rxjs';
 import { BudgetService } from '../services/budget.service';
 import { RecurringPaymentsService } from '../services/recurring-payments.service';
 
@@ -38,7 +38,7 @@ export class BudgetComponent implements OnInit {
   ngOnInit(): void {
     this.budgetService
       .getBudgets()
-      .pipe(combineLatestWith(this.paymentsService.getPayments()))
+      .pipe(combineLatestWith(this.paymentsService.getPayments()), take(1))
       .subscribe(([budgets]) => {
         const id = this.route.snapshot.paramMap.get('id');
         this.budget = budgets.find((budget) => budget.id === id);

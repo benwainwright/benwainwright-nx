@@ -28,6 +28,7 @@ interface DataApiProps {
   domainName?: string;
   primaryKeyName?: string;
   sortKeyName?: string;
+  allowOrigins: string[];
 }
 
 export class DataApi extends Construct {
@@ -42,10 +43,7 @@ export class DataApi extends Construct {
       cognitoUserPools: [props.pool],
     });
 
-    const allowOrigins = [
-      `https://${props.domainName}`,
-      `http://localhost:4200`,
-    ];
+    const allowOrigins = props.allowOrigins;
 
     this.api = new RestApi(this, `${id}-api`, {
       defaultCorsPreflightOptions: {

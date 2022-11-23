@@ -113,12 +113,19 @@ export class AppStack extends Stack {
       },
     });
 
+    const allowedOrigins = [
+      `https://${domainName}`,
+      `http://localhost:4200`,
+      `http://192.168.1.102:4200`,
+    ];
+
     const data = new DataApi(this, 'settings-api', {
       removalPolicy,
       pool,
       domainName,
       primaryKeyName: 'username',
       sortKeyName: 'id',
+      allowOrigins: allowedOrigins,
       resources: [
         {
           name: 'budgets',
@@ -138,8 +145,6 @@ export class AppStack extends Stack {
         },
       ],
     });
-
-    const allowedOrigins = [`https://${domainName}`, `http://localhost:4200`];
 
     const assetsBucket = new Bucket(this, 'assets-bucket', {
       bucketName: domainName,

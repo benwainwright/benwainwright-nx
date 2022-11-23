@@ -74,7 +74,7 @@ export class Budget {
 
       return {
         totalPaid,
-        adjustmentAmount: parseFloat(adjustmentAmount.toPrecision(2)),
+        adjustmentAmount: parseFloat(adjustmentAmount.toFixed(2)),
         ...plan,
       };
     });
@@ -168,6 +168,7 @@ export class Budget {
               paid: this.paidIds[id],
               name: payment.name,
               when: date,
+              originalPayment: payment,
               amount: payment.amount,
             };
           })

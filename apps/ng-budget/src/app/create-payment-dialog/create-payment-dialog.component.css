@@ -1,6 +1,12 @@
 .create-payment-dialog {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 599px) {
+  .mat-dialog-content {
+    width: 80vw;
+  }
 }
 
 form {

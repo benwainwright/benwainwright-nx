@@ -1,11 +1,17 @@
 <nav>
   <mat-nav-list>
-    <a class="nav-button" mat-list-item routerLink="/budget-dashboard"
-      >Dashboard</a
+    <a
+      *ngFor="let item of items"
+      class="nav-button"
+      mat-list-item
+      routerLink="/{{ item.path }}"
     >
-    <a mat-list-item routerLink="/settings">Settings</a>
-    <a mat-list-item routerLink="/payments">Payments</a>
-    <a mat-list-item routerLink="/pots">Pots</a>
-    <button mat-list-item (click)="logout()">Logout</button>
+      <mat-icon *ngIf="item.icon" mat-list-icon>{{ item.icon }}</mat-icon>
+      {{ item.navLabel }}</a
+    >
+    <button mat-list-item (click)="logout()">
+      <mat-icon mat-list-icon>power_settings_new</mat-icon>
+      Logout
+    </button>
   </mat-nav-list>
 </nav>

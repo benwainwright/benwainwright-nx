@@ -45,6 +45,10 @@ export class PotComponent {
     return '';
   }
 
+  public editPayment(payment: ConcretePayment) {
+    this.paymentsService.openCreateEditDialog(payment.originalPayment);
+  }
+
   public togglePaymentPaidStatus(payment: ConcretePayment) {
     if (this.budget) {
       this.budgets.togglePaymentPaidStatus(this.budget, payment);

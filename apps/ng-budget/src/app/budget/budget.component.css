@@ -5,6 +5,10 @@
   gap: 2rem;
 }
 
+.chips {
+  width: 99%;
+}
+
 @media screen and (max-width: 599px) {
   .pots-grid {
     display: flex;

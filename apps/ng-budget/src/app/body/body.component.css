@@ -5,3 +5,7 @@
 .body {
   padding: 1rem;
 }
+
+.mat-drawer-container {
+  padding: 0 1rem;
+}

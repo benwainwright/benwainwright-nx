@@ -18,17 +18,12 @@
   gap: 2rem;
 }
 
-.mat-list-item {
-  height: 2.5rem !important;
-}
+/* .mat-list-item { */
+/*   height: 2.5rem !important; */
+/* } */
 
-:host /deep/ .mat-list-item-content {
-  padding: 0 !important;
-  margin: 0 !important;
-  height: 1rem;
-}
-
-.meta ul {
-  margin: 0;
-  padding: 0;
-}
+/* :host /deep/ .mat-list-item-content { */
+/*   padding: 0 !important; */
+/*   margin: 0 !important; */
+/*   height: 1rem; */
+/* } */

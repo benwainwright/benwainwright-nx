@@ -38,9 +38,9 @@ $my-theme: mat.define-light-theme(
 
 $my-typography: mat.define-typography-config();
 
-h2 {
-  @include mat.typography-level($my-typography, 'headline');
-}
+// h2 {
+//   @include mat.typography-level($my-typography, 'headline');
+// }
 
 body,
 html {

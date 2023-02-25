@@ -7,11 +7,8 @@
     [placeholder]="placeholder"
     [formControlName]="control"
   />
-  <mat-hint align="start" *ngIf="result && result.type !== 'None'"
-    >Date parsed!</mat-hint
-  >
   <mat-hint align="end" *ngIf="result && result.type !== 'None'"
-    >Next: <strong>{{ next | date: 'mediumDate' }}</strong></mat-hint
+    >Next: {{ next | date: 'mediumDate' }}</mat-hint
   >
   <mat-hint *ngIf="result && result?.type === 'None'"
     >Failed to parse date</mat-hint

@@ -212,6 +212,10 @@ export class Budget {
     this.rawBalance = balance;
   }
 
+  public get totalPaid(): number {
+    return this.potPlans.reduce((accum, pot) => pot.totalPaid + accum, 0);
+  }
+
   public get surplus(): number {
     return this.potPlans.reduce(
       (runningBalance, plan) => runningBalance - plan.adjustmentAmount,

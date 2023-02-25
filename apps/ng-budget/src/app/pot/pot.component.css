@@ -18,12 +18,18 @@
   background-color: transparent;
 }
 
-.pot-deficit {
+.pot-deficit,
+.pot-deficit table {
   background-color: #fa9782;
 }
 
-.pot-surplus {
+.pot-surplus,
+.pot-surplus table {
   background-color: #dbffcd;
+}
+
+table td {
+  overflow: hidden;
 }
 
 ul {

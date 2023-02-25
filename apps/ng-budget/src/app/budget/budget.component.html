@@ -2,51 +2,74 @@
   Budget <button (click)="deleteBudget($event)" mat-button>Delete</button>
 </h2>
 <div class="chips">
-  <mat-chip-list>
+  <mat-chip-listbox>
     <mat-chip *ngFor="let chip of chips">{{ chip }}</mat-chip>
-  </mat-chip-list>
+  </mat-chip-listbox>
 </div>
 <mat-card class="budget-detail-summary">
-  <mat-list class="budget-detail-ul">
-    <mat-list-item>
-      <p>
-        From: <strong>{{ budget?.startDate | date: 'mediumDate' }}</strong> to
-        <strong>{{ budget?.endDate | date: 'mediumDate' }}</strong>
-      </p>
-    </mat-list-item>
-    <mat-list-item>
-      <p>
-        Account Balance:
-        <strong>{{ budget?.balance | currency: 'GBP' }}</strong>
-      </p>
-    </mat-list-item>
-    <mat-list-item>
-      <p>
-        Pots Balances Total:
-        <strong>{{ budget?.potTotals | currency: 'GBP' }}</strong>
-      </p>
-    </mat-list-item>
-    <mat-list-item>
-      <p>
-        Total Available: {{ budget?.balance | currency: 'GBP' }} +
-        {{ budget?.potTotals | currency: 'GBP' }} =
-        <strong>{{ availableBalance() | currency: 'GBP' }}</strong>
-      </p>
-    </mat-list-item>
-    <mat-list-item>
-      <p>
-        Allocated Total:
-        <strong>{{ budget?.totalAllocated | currency: 'GBP' }}</strong>
-      </p>
-    </mat-list-item>
-    <mat-list-item>
-      <p>
-        Surplus: {{ budget?.totalAllocated | currency: 'GBP' }} -
-        {{ availableBalance() | currency: 'GBP' }} =
-        <strong>{{ budget?.surplus | currency: 'GBP' }}</strong>
-      </p>
-    </mat-list-item>
-  </mat-list>
+  <mat-card-content>
+    <mat-list>
+      <mat-list-item>
+        <mat-icon matListItemIcon>info</mat-icon>
+        <h2 matListItemTitle>From</h2>
+        <p matListItemLine>{{ budget?.startDate | date: 'mediumDate' }}</p>
+      </mat-list-item>
+
+      <mat-list-item>
+        <mat-icon matListItemIcon>info</mat-icon>
+        <h2 matListItemTitle>To</h2>
+        <p matListItemLine>{{ budget?.endDate | date: 'mediumDate' }}</p>
+      </mat-list-item>
+
+      <mat-list-item>
+        <mat-icon matListItemIcon>info</mat-icon>
+        <h2 matListItemTitle>Account Balance</h2>
+        <p matListItemLine>{{ budget?.balance | currency: 'GBP' }}</p>
+      </mat-list-item>
+
+      <mat-list-item>
+        <mat-icon matListItemIcon>info</mat-icon>
+        <h2 matListItemTitle>Pot Balances Total</h2>
+        <p matListItemLine>{{ budget?.potTotals | currency: 'GBP' }}</p>
+      </mat-list-item>
+
+      <mat-list-item>
+        <mat-icon matListItemIcon>info</mat-icon>
+        <h2 matListItemTitle>Total Available</h2>
+        <p matListItemLine>
+          {{ budget?.balance | currency: 'GBP' }} +
+          {{ budget?.potTotals | currency: 'GBP' }}
+        </p>
+      </mat-list-item>
+
+      <mat-list-item>
+        <mat-icon matListItemIcon>info</mat-icon>
+        <h2 matListItemTitle>Allocated Total</h2>
+        <p matListItemLine>
+          {{ budget?.totalAllocated | currency: 'GBP' }}
+        </p>
+      </mat-list-item>
+
+      <mat-list-item>
+        <mat-icon matListItemIcon>info</mat-icon>
+        <h2 matListItemTitle>Paid</h2>
+        <p matListItemLine>
+          {{ budget?.totalPaid | currency: 'GBP' }}
+        </p>
+      </mat-list-item>
+
+      <mat-list-item>
+        <mat-icon matListItemIcon>info</mat-icon>
+        <h2 matListItemTitle>Surplus</h2>
+        <p matListItemLine>
+          {{ availableBalance() | currency: 'GBP' }} -
+          {{ budget?.totalAllocated | currency: 'GBP' }} +
+          {{ budget?.totalPaid | currency: 'GBP' }} =
+          <strong>{{ budget?.surplus | currency: 'GBP' }}</strong>
+        </p>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
 </mat-card>
 
 <div class="pots-grid">

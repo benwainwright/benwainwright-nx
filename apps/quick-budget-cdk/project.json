@@ -23,29 +23,20 @@
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "apps/quick-budget-cdk/**/*.ts"
-        ]
+        "lintFilePatterns": ["apps/quick-budget-cdk/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "coverage/apps/quick-budget-cdk"
-      ],
+      "outputs": ["coverage/apps/quick-budget-cdk"],
       "options": {
         "jestConfig": "apps/quick-budget-cdk/jest.config.ts",
         "passWithNoTests": true
       }
     }
   },
-  "implicitDependencies": [
-    "ng-budget",
-    "budget-domain"
-  ],
+  "implicitDependencies": ["ng-budget", "budget-domain"],
   "tags": []
 }

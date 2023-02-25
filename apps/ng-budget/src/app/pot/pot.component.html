@@ -1,5 +1,5 @@
 <mat-card class="pot-card" color="secondary" [ngClass]="backgroundClass">
-  <mat-card-title-group>
+  <mat-card-header>
     <mat-card-title>{{ pot?.name | titlecase }}</mat-card-title>
     <mat-card-subtitle>
       <ul>
@@ -11,7 +11,7 @@
         <li>Paid: {{ pot?.totalPaid | currency: 'GBP' }}</li>
       </ul>
     </mat-card-subtitle>
-  </mat-card-title-group>
+  </mat-card-header>
   <mat-card-content class="pot-content">
     <p *ngIf="pot?.payments?.length === 0"><em>No payments</em></p>
     <table

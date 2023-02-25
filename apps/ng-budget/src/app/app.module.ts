@@ -31,7 +31,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatListModule } from '@angular/material/list';
+import { MatListModule, MAT_LIST_CONFIG } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -106,6 +106,10 @@ import { MenuComponent } from './menu/menu.component';
     MatChipsModule,
   ],
   providers: [
+    {
+      provide: MAT_LIST_CONFIG,
+      useValue: { hideSingleSelectionIndicator: true },
+    },
     { provide: RouteReuseStrategy, useClass: AppRouteReuseStrategy },
     { provide: ErrorHandler, useClass: ErrorHandlerService },
     SettingsService,

@@ -3,9 +3,7 @@
   "output": "../../dist/apps/quick-budget-cdk",
   "requireApproval": "never",
   "watch": {
-    "include": [
-      "**"
-    ],
+    "include": ["**", "../ng-budget/src/backend/**"],
     "exclude": [
       "README.md",
       "cdk*.json",
@@ -28,9 +26,6 @@
     "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/aws-iam:minimizePolicies": true,
-    "@aws-cdk/core:target-partitions": [
-      "aws",
-      "aws-cn"
-    ]
+    "@aws-cdk/core:target-partitions": ["aws", "aws-cn"]
   }
 }

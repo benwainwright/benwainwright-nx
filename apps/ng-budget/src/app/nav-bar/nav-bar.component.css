@@ -2,6 +2,10 @@ nav li {
   list-style: none;
 }
 
+nav {
+  height: 100vh;
+}
+
 nav ul {
   display: flex;
   gap: 1rem;

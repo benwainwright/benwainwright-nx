@@ -16,6 +16,9 @@
     "baseUrl": ".",
     "paths": {
       "@benwainwright/budget-domain": ["libs/budget-domain/src/index.ts"],
+      "@benwainwright/cognito": ["libs/cognito/src/index.ts"],
+      "@benwainwright/constants": ["libs/constants/src/index.ts"],
+      "@benwainwright/jwt-verify": ["libs/jwt-verify/src/index.ts"],
       "@benwainwright/nl-dates": ["libs/nl-dates/src/index.ts"],
       "@benwainwright/schema": ["libs/schema/src/index.ts"],
       "@benwainwright/test-helpers": ["libs/test-helpers/src/index.ts"],

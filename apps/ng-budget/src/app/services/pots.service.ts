@@ -1,7 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import { Pot } from '@benwainwright/budget-domain';
-import { map, Observable } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { DataSeriesService } from './data-series.service';
+import { MonzoAccountsService } from './monzo-accounts-service.ts.service';
+import { MonzoService } from './monzo.service';
 
 export const POTS_INJECTION_TOKEN = 'pots-data-service';
 
@@ -10,31 +12,26 @@ export const POTS_INJECTION_TOKEN = 'pots-data-service';
 })
 export class PotsService {
   constructor(
-    @Inject(POTS_INJECTION_TOKEN) private dataService: DataSeriesService<Pot>
+    private accounts: MonzoAccountsService,
+    private monzo: MonzoService
   ) {}
   getPots(): Observable<Pot[]> {
-    return this.dataService
-      .getAll()
-      .pipe(
-        map((pots) =>
-          pots.map((item) => ({ ...item, balance: Number(item.balance) }))
-        )
-      );
-  }
-
-  setPots(pots: Pot[]) {
-    return this.dataService.setAll(pots);
-  }
-
-  updatePot(pot: Pot) {
-    return this.dataService.updateItem(pot);
-  }
-
-  addPot(pot: Pot) {
-    return this.dataService.insertItem(pot);
-  }
-
-  removePot(pot: Pot) {
-    return this.dataService.removeItem(pot);
+    return this.accounts.loaded().pipe(
+      switchMap(() => {
+        return this.monzo
+          .pots(this.accounts.getMainAccountDetails()?.id ?? '')
+          .pipe(
+            map((response) => {
+              if (response) {
+                return response.data.map((pot) => ({
+                  ...pot,
+                  balance: pot.balance / 100,
+                }));
+              }
+              return [];
+            })
+          );
+      })
+    );
   }
 }

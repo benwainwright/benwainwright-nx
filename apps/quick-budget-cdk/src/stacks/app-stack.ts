@@ -1,4 +1,4 @@
-import { Stack, App, StackProps, RemovalPolicy } from 'aws-cdk-lib';
+import { Stack, App, StackProps, RemovalPolicy, Duration } from 'aws-cdk-lib';
 import { DnsValidatedCertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import {
   Distribution,
@@ -7,7 +7,11 @@ import {
   ViewerProtocolPolicy,
 } from 'aws-cdk-lib/aws-cloudfront';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
-import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
+import {
+  StringAttribute,
+  UserPool,
+  UserPoolClient,
+} from 'aws-cdk-lib/aws-cognito';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { BackendConfig } from '@benwainwright/types';
 
@@ -29,6 +33,11 @@ import * as path from 'node:path';
 import { Environment } from './environment';
 import { getDomainName } from './get-domain-name';
 import { DataApi } from './data-api';
+import { COGNITO, IAM } from '@benwainwright/constants';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 const PACKAGE_DIR = path.join(__dirname, '..', '..');
 const ROOT_DIR = path.join(PACKAGE_DIR, '..', '..');
@@ -50,6 +59,35 @@ export class AppStack extends Stack {
 
     const pool = new UserPool(this, 'user-pool', {
       removalPolicy,
+
+      customAttributes: {
+        [`custom:${COGNITO.customFields.userId}`]: new StringAttribute({
+          mutable: true,
+        }),
+        [`custom:${COGNITO.customFields.accessToken}`]: new StringAttribute({
+          mutable: true,
+        }),
+        [`custom:${COGNITO.customFields.expiresIn}`]: new StringAttribute({
+          mutable: true,
+        }),
+        [`custom:${COGNITO.customFields.refreshToken}`]: new StringAttribute({
+          mutable: true,
+        }),
+        ['dummy']: new StringAttribute({ mutable: true }),
+        [COGNITO.customFields.userId]: new StringAttribute({ mutable: true }),
+        [COGNITO.customFields.accessToken]: new StringAttribute({
+          mutable: true,
+        }),
+        [COGNITO.customFields.expiresIn]: new StringAttribute({
+          mutable: true,
+        }),
+        [COGNITO.customFields.expiresAt]: new StringAttribute({
+          mutable: true,
+        }),
+        [COGNITO.customFields.refreshToken]: new StringAttribute({
+          mutable: true,
+        }),
+      },
 
       selfSignUpEnabled: true,
       passwordPolicy: {
@@ -119,7 +157,92 @@ export class AppStack extends Stack {
       `http://192.168.1.102:4200`,
     ];
 
-    const data = new DataApi(this, 'settings-api', {
+    const clientIdSecret = new Secret(this, `clientid`);
+    const clientSecretSecret = new Secret(this, `clientSecret`);
+    const redirectUriSecret = new Secret(this, `redirectUri`);
+
+    const accountsFunction = new NodejsFunction(this, 'accounts-function', {
+      environment: {
+        MONZO_CLIENT_ID_SECRET: clientIdSecret.secretName,
+        MONZO_CLIENT_SECRET_SECRET: clientSecretSecret.secretName,
+        MONZO_REDIRECT_URI_SECRET: redirectUriSecret.secretName,
+        ADD_ENV: 'string',
+        USER_POOL_ID: pool.userPoolId,
+        NODE_OPTIONS: '--enable-source-maps',
+      },
+      timeout: Duration.minutes(5),
+      bundling: {
+        sourceMap: true,
+      },
+      entry: path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'ng-budget',
+        'src',
+        'backend',
+        'lambda-handlers',
+        'monzo',
+        'accounts.ts'
+      ),
+    });
+
+    const potsFunction = new NodejsFunction(this, 'pots-function', {
+      environment: {
+        MONZO_CLIENT_ID_SECRET: clientIdSecret.secretName,
+        MONZO_CLIENT_SECRET_SECRET: clientSecretSecret.secretName,
+        MONZO_REDIRECT_URI_SECRET: redirectUriSecret.secretName,
+        ADD_ENV: 'string',
+        USER_POOL_ID: pool.userPoolId,
+        NODE_OPTIONS: '--enable-source-maps',
+      },
+      timeout: Duration.minutes(5),
+      bundling: {
+        sourceMap: true,
+      },
+      entry: path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'ng-budget',
+        'src',
+        'backend',
+        'lambda-handlers',
+        'monzo',
+        'pots.ts'
+      ),
+    });
+
+    const balanceFunction = new NodejsFunction(this, 'balance-function', {
+      environment: {
+        MONZO_CLIENT_ID_SECRET: clientIdSecret.secretName,
+        MONZO_CLIENT_SECRET_SECRET: clientSecretSecret.secretName,
+        MONZO_REDIRECT_URI_SECRET: redirectUriSecret.secretName,
+        USER_POOL_ID: pool.userPoolId,
+        ADD_ENV: 'string',
+        NODE_OPTIONS: '--enable-source-maps',
+      },
+      bundling: {
+        sourceMap: true,
+      },
+      timeout: Duration.minutes(5),
+      entry: path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'ng-budget',
+        'src',
+        'backend',
+        'lambda-handlers',
+        'monzo',
+        'balance.ts'
+      ),
+    });
+
+    const api = new DataApi(this, 'settings-api', {
       removalPolicy,
       pool,
       domainName,
@@ -145,6 +268,63 @@ export class AppStack extends Stack {
         },
       ],
     });
+
+    const monzoApi = api.api.root.addResource('monzo');
+    const accountsResource = monzoApi.addResource('accounts');
+    accountsResource.addMethod('GET', new LambdaIntegration(accountsFunction));
+    accountsFunction.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          IAM.actions.cognito.adminUpdateUserAttributes,
+          IAM.actions.cognito.adminGetUser,
+        ],
+        resources: [pool.userPoolArn],
+      })
+    );
+
+    const potsResource = monzoApi
+      .addResource('pots')
+      .addResource('{accountId}');
+
+    potsResource.addMethod('GET', new LambdaIntegration(potsFunction));
+
+    potsFunction.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          IAM.actions.cognito.adminUpdateUserAttributes,
+          IAM.actions.cognito.adminGetUser,
+        ],
+        resources: [pool.userPoolArn],
+      })
+    );
+
+    clientSecretSecret.grantRead(accountsFunction);
+    clientSecretSecret.grantRead(potsFunction);
+    clientSecretSecret.grantRead(balanceFunction);
+    clientIdSecret.grantRead(accountsFunction);
+    clientIdSecret.grantRead(potsFunction);
+    clientIdSecret.grantRead(balanceFunction);
+    redirectUriSecret.grantRead(accountsFunction);
+    redirectUriSecret.grantRead(balanceFunction);
+    redirectUriSecret.grantRead(potsFunction);
+
+    const balanceResource = monzoApi
+      .addResource('balance')
+      .addResource('{accountId}');
+
+    balanceResource.addMethod('GET', new LambdaIntegration(balanceFunction));
+    balanceFunction.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          IAM.actions.cognito.adminGetUser,
+          IAM.actions.cognito.adminUpdateUserAttributes,
+        ],
+        resources: [pool.userPoolArn],
+      })
+    );
 
     const assetsBucket = new Bucket(this, 'assets-bucket', {
       bucketName: domainName,

@@ -35,6 +35,17 @@ export class BudgetComponent implements OnInit {
     this.router.navigate(['/budget-dashboard']);
   }
 
+  pots() {
+    return this.budget?.potPlans?.filter((pot) => {
+      return !(
+        pot.balance === 0 &&
+        pot.payments.length === 0 &&
+        pot.totalPaid === 0 &&
+        pot.adjustmentAmount === 0
+      );
+    });
+  }
+
   ngOnInit(): void {
     this.budgetService
       .getBudgets()

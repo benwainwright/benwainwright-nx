@@ -3,6 +3,9 @@
   "version": 2,
   "projects": {
     "budget-domain": "libs/budget-domain",
+    "cognito": "libs/cognito",
+    "constants": "libs/constants",
+    "jwt-verify": "libs/jwt-verify",
     "ng-budget": "apps/ng-budget",
     "ng-budget-e2e": "apps/ng-budget-e2e",
     "nl-dates": "libs/nl-dates",

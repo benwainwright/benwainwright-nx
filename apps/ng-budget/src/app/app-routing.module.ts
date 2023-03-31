@@ -4,7 +4,6 @@ import { BudgetDashboardComponent } from './budget-dashboard/budget-dashboard.co
 import { BudgetComponent } from './budget/budget.component';
 import { AuthorisedGuard } from './guards/authorised.guard';
 import { PaymentsComponent } from './payments/payments.component';
-import { PotsComponent } from './pots/pots.component';
 import { SettingsComponent } from './settings/settings.component';
 
 export const routes: (Route & { navLabel?: string; icon?: string })[] = [
@@ -41,13 +40,6 @@ export const routes: (Route & { navLabel?: string; icon?: string })[] = [
   {
     path: 'budget/:id',
     component: BudgetComponent,
-    canActivate: [AuthorisedGuard],
-  },
-  {
-    path: 'pots',
-    icon: 'account_balance',
-    navLabel: 'Pots',
-    component: PotsComponent,
     canActivate: [AuthorisedGuard],
   },
 ];

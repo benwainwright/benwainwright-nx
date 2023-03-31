@@ -74,7 +74,7 @@
 
 <div class="pots-grid">
   <benwainwright-pot
-    *ngFor="let pot of budget?.potPlans"
+    *ngFor="let pot of pots()"
     [pot]="pot"
     [budget]="budget"
     [isFuture]="!budget?.isCurrent()"

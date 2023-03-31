@@ -10,6 +10,7 @@ export class ErrorHandlerService implements ErrorHandler {
   handleError(error: unknown): void {
     if (typeof error === 'string') {
       this.openSnackBar(`Error: ${error}`);
+      console.log(error);
     } else if (error instanceof Error) {
       this.openSnackBar(`Error: ${error.message}`);
       console.log(error);

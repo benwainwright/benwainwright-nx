@@ -44,7 +44,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 
 import { DateStringInputComponent } from './date-string-input/date-string-input.component';
 import { CreatePaymentDialogComponent } from './create-payment-dialog/create-payment-dialog.component';
-import { PotsComponent } from './pots/pots.component';
 import { PotDialogComponent } from './pot-dialog/pot-dialog.component';
 import { SelectComponent } from './select/select.component';
 import { MatSelectModule } from '@angular/material/select';
@@ -79,7 +78,6 @@ import { MenuComponent } from './menu/menu.component';
     InputComponent,
     DateStringInputComponent,
     CreatePaymentDialogComponent,
-    PotsComponent,
     PotDialogComponent,
     SelectComponent,
     MenuComponent,

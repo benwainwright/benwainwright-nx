@@ -11,3 +11,13 @@ export interface BackendConfig {
   authSignUpUrlForLocal: string;
   authSignUpUrl: string;
 }
+
+export interface MonzoRedirectResponse {
+  redirectUrl: string;
+}
+
+export interface MonzoDataResponse<T> {
+  data: T;
+}
+
+export type MonzoResponse<T> = MonzoRedirectResponse | MonzoDataResponse<T>;

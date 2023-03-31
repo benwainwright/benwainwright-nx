@@ -1,6 +1,12 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+  HttpParams,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatestWith, of, switchMap } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, combineLatestWith, of, switchMap, throwError } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import { AuthService } from './auth.service';
 import { LoggerService } from './logger.service';
@@ -13,10 +19,22 @@ export class ApiService {
     private client: HttpClient,
     private config: AppConfigService,
     private auth: AuthService,
-    private logger: LoggerService
+    private logger: LoggerService,
+    private snackBar: MatSnackBar
   ) {}
 
-  private request<R>(
+  private openSnackBar(message: string) {
+    const bar = this.snackBar.open(message, 'Close');
+    bar.onAction().subscribe(() => {
+      bar.dismiss();
+    });
+
+    setInterval(() => {
+      bar.dismiss();
+    }, 5000);
+  }
+
+  public request<R>(
     method: string,
     path: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,22 +57,24 @@ export class ApiService {
           Authorization: user?.session.getIdToken().getJwtToken(),
         });
 
-        // const serialisedBody = body
-        //   ? recursivelySerialiseDate(body)
-        //   : undefined;
-
         const finalOptions = {
           ...(options ?? {}),
           withCredentials: true,
           body,
         };
 
-        console.log(body);
-
-        return this.client.request<R>(method, url, {
-          ...finalOptions,
-          headers,
-        });
+        return this.client
+          .request<R>(method, url, {
+            ...finalOptions,
+            headers,
+          })
+          .pipe(
+            catchError((error: HttpErrorResponse) => {
+              const message = error.error.error ?? error.message;
+              this.openSnackBar(message);
+              return throwError(() => error);
+            })
+          );
       })
     );
   }

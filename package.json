@@ -39,6 +39,7 @@
     "aws-cdk": "^2.44.0",
     "aws-cdk-lib": "^2.44.0",
     "aws-lambda": "^1.0.7",
+    "axios": "^1.3.4",
     "constructs": "^10.0.0",
     "jest-date": "^1.1.4",
     "jest-mock-extended": "^2.0.6",

@@ -70,7 +70,8 @@ export class ApiService {
           })
           .pipe(
             catchError((error: HttpErrorResponse) => {
-              const message = error.error.error ?? error.message;
+              console.log(error);
+              const message = error.error.message ?? error.message;
               this.openSnackBar(message);
               return throwError(() => error);
             })

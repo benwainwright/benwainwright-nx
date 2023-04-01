@@ -47,6 +47,7 @@ import { CreatePaymentDialogComponent } from './create-payment-dialog/create-pay
 import { PotDialogComponent } from './pot-dialog/pot-dialog.component';
 import { SelectComponent } from './select/select.component';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LocalStorageDataSeriesService } from './services/local.storage.data-series.service';
 import { POTS_INJECTION_TOKEN } from './services/pots.service';
 import { Budget } from '@benwainwright/budget-domain';
@@ -62,6 +63,7 @@ import { AppRouteReuseStrategy } from '../lib/app-route-reuse-strategy';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ErrorHandlerService } from './error-handler.service';
 import { MenuComponent } from './menu/menu.component';
+import { BalancePotsDialogComponent } from './balance-pots-dialog/balance-pots-dialog.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +83,7 @@ import { MenuComponent } from './menu/menu.component';
     PotDialogComponent,
     SelectComponent,
     MenuComponent,
+    BalancePotsDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -99,6 +102,7 @@ import { MenuComponent } from './menu/menu.component';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     MatCardModule,
     MatSelectModule,
     MatChipsModule,

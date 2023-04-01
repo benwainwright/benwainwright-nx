@@ -166,7 +166,7 @@ export class AppStack extends Stack {
         MONZO_CLIENT_ID_SECRET: clientIdSecret.secretName,
         MONZO_CLIENT_SECRET_SECRET: clientSecretSecret.secretName,
         MONZO_REDIRECT_URI_SECRET: redirectUriSecret.secretName,
-        ADD_ENV: 'string',
+        ADD_ENV: 'stri',
         USER_POOL_ID: pool.userPoolId,
         NODE_OPTIONS: '--enable-source-maps',
       },
@@ -184,7 +184,7 @@ export class AppStack extends Stack {
         'backend',
         'lambda-handlers',
         'monzo',
-        'accounts.ts'
+        'get-accounts.ts'
       ),
     });
 
@@ -193,7 +193,7 @@ export class AppStack extends Stack {
         MONZO_CLIENT_ID_SECRET: clientIdSecret.secretName,
         MONZO_CLIENT_SECRET_SECRET: clientSecretSecret.secretName,
         MONZO_REDIRECT_URI_SECRET: redirectUriSecret.secretName,
-        ADD_ENV: 'string',
+        ADD_ENV: 'stri',
         USER_POOL_ID: pool.userPoolId,
         NODE_OPTIONS: '--enable-source-maps',
       },
@@ -211,9 +211,71 @@ export class AppStack extends Stack {
         'backend',
         'lambda-handlers',
         'monzo',
-        'pots.ts'
+        'get-pots.ts'
       ),
     });
+
+    const depositPotFunction = new NodejsFunction(
+      this,
+      'deposit-pot-function',
+      {
+        environment: {
+          MONZO_CLIENT_ID_SECRET: clientIdSecret.secretName,
+          MONZO_CLIENT_SECRET_SECRET: clientSecretSecret.secretName,
+          MONZO_REDIRECT_URI_SECRET: redirectUriSecret.secretName,
+          ADD_ENV: 'stri',
+          USER_POOL_ID: pool.userPoolId,
+          NODE_OPTIONS: '--enable-source-maps',
+        },
+        timeout: Duration.minutes(5),
+        bundling: {
+          sourceMap: true,
+        },
+        entry: path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'ng-budget',
+          'src',
+          'backend',
+          'lambda-handlers',
+          'monzo',
+          'deposit-into-pot.ts'
+        ),
+      }
+    );
+
+    const withDrawFromPotFunction = new NodejsFunction(
+      this,
+      'withdraw-pot-function',
+      {
+        environment: {
+          MONZO_CLIENT_ID_SECRET: clientIdSecret.secretName,
+          MONZO_CLIENT_SECRET_SECRET: clientSecretSecret.secretName,
+          MONZO_REDIRECT_URI_SECRET: redirectUriSecret.secretName,
+          ADD_ENV: 'strin',
+          USER_POOL_ID: pool.userPoolId,
+          NODE_OPTIONS: '--enable-source-maps',
+        },
+        timeout: Duration.minutes(5),
+        bundling: {
+          sourceMap: true,
+        },
+        entry: path.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'ng-budget',
+          'src',
+          'backend',
+          'lambda-handlers',
+          'monzo',
+          'withdraw-from-pot.ts'
+        ),
+      }
+    );
 
     const balanceFunction = new NodejsFunction(this, 'balance-function', {
       environment: {
@@ -221,7 +283,7 @@ export class AppStack extends Stack {
         MONZO_CLIENT_SECRET_SECRET: clientSecretSecret.secretName,
         MONZO_REDIRECT_URI_SECRET: redirectUriSecret.secretName,
         USER_POOL_ID: pool.userPoolId,
-        ADD_ENV: 'string',
+        ADD_ENV: 'stri',
         NODE_OPTIONS: '--enable-source-maps',
       },
       bundling: {
@@ -238,7 +300,7 @@ export class AppStack extends Stack {
         'backend',
         'lambda-handlers',
         'monzo',
-        'balance.ts'
+        'get-balance.ts'
       ),
     });
 
@@ -270,6 +332,47 @@ export class AppStack extends Stack {
     });
 
     const monzoApi = api.api.root.addResource('monzo');
+
+    const potResource = monzoApi.addResource('pot');
+
+    const depositIntoPotResource = potResource
+      .addResource('deposit')
+      .addResource('{potId}');
+
+    const withdrawPotResource = potResource
+      .addResource('withdraw')
+      .addResource('{potId}');
+
+    withdrawPotResource.addMethod(
+      'POST',
+      new LambdaIntegration(withDrawFromPotFunction)
+    );
+    withDrawFromPotFunction.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          IAM.actions.cognito.adminUpdateUserAttributes,
+          IAM.actions.cognito.adminGetUser,
+        ],
+        resources: [pool.userPoolArn],
+      })
+    );
+
+    depositIntoPotResource.addMethod(
+      'POST',
+      new LambdaIntegration(depositPotFunction)
+    );
+    depositPotFunction.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          IAM.actions.cognito.adminUpdateUserAttributes,
+          IAM.actions.cognito.adminGetUser,
+        ],
+        resources: [pool.userPoolArn],
+      })
+    );
+
     const accountsResource = monzoApi.addResource('accounts');
     accountsResource.addMethod('GET', new LambdaIntegration(accountsFunction));
     accountsFunction.addToRolePolicy(
@@ -301,14 +404,20 @@ export class AppStack extends Stack {
     );
 
     clientSecretSecret.grantRead(accountsFunction);
+    clientSecretSecret.grantRead(depositPotFunction);
     clientSecretSecret.grantRead(potsFunction);
+    clientSecretSecret.grantRead(withDrawFromPotFunction);
     clientSecretSecret.grantRead(balanceFunction);
     clientIdSecret.grantRead(accountsFunction);
+    clientIdSecret.grantRead(depositPotFunction);
     clientIdSecret.grantRead(potsFunction);
+    clientIdSecret.grantRead(withDrawFromPotFunction);
     clientIdSecret.grantRead(balanceFunction);
     redirectUriSecret.grantRead(accountsFunction);
+    redirectUriSecret.grantRead(depositPotFunction);
     redirectUriSecret.grantRead(balanceFunction);
     redirectUriSecret.grantRead(potsFunction);
+    redirectUriSecret.grantRead(withDrawFromPotFunction);
 
     const balanceResource = monzoApi
       .addResource('balance')

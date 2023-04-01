@@ -1,14 +1,18 @@
 <h2>
-  Budget <button (click)="deleteBudget($event)" mat-button>Delete</button>
+  Budget <button (click)="deleteBudget($event)" mat-button>Delete</button
+  ><button (click)="balancePots()" mat-button>Balance Pots</button>
 </h2>
 <div class="chips">
-  <mat-chip-listbox>
+  <mat-chip-listbox *ngIf="budgetObservable | async as budget; else loading">
     <mat-chip *ngFor="let chip of chips">{{ chip }}</mat-chip>
   </mat-chip-listbox>
 </div>
+<ng-template #loading>
+  <mat-spinner [diameter]="20"></mat-spinner>
+</ng-template>
 <mat-card class="budget-detail-summary">
   <mat-card-content>
-    <mat-list>
+    <mat-list *ngIf="budgetObservable | async as budget; else loadingStats">
       <mat-list-item>
         <mat-icon matListItemIcon>info</mat-icon>
         <h2 matListItemTitle>From</h2>
@@ -62,7 +66,7 @@
         <mat-icon matListItemIcon>info</mat-icon>
         <h2 matListItemTitle>Surplus</h2>
         <p matListItemLine>
-          {{ availableBalance() | currency: 'GBP' }} -
+          {{ availableBalance | async | currency: 'GBP' }} -
           {{ budget?.totalAllocated | currency: 'GBP' }} +
           {{ budget?.totalPaid | currency: 'GBP' }} =
           <strong>{{ budget?.surplus | currency: 'GBP' }}</strong>
@@ -72,11 +76,18 @@
   </mat-card-content>
 </mat-card>
 
-<div class="pots-grid">
+<ng-template #loadingStats>
+  <mat-spinner [diameter]="30"></mat-spinner>
+</ng-template>
+
+<div class="pots-grid" *ngIf="potPlans | async as plans; else loading">
   <benwainwright-pot
-    *ngFor="let pot of pots()"
+    *ngFor="let pot of plans"
     [pot]="pot"
     [budget]="budget"
     [isFuture]="!budget?.isCurrent()"
   ></benwainwright-pot>
 </div>
+<ng-template #loading>
+  <mat-spinner></mat-spinner>
+</ng-template>

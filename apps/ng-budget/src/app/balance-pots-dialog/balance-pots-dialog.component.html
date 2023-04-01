@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>Balance Pots</h2>
+<div mat-dialog-content>
+  <table mat-table [dataSource]="adjustments">
+    <ng-container matColumnDef="pot">
+      <th mat-header-cell *matHeaderCellDef>Pot</th>
+      <td mat-cell *matCellDef="let adjustment">
+        {{ adjustment.pot.name }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef>Amount</th>
+      <td mat-cell *matCellDef="let adjustment">
+        {{ adjustment.pot.adjustmentAmount | currency: 'GBP' }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="complete">
+      <th mat-header-cell *matHeaderCellDef>Completed</th>
+      <td mat-cell *matCellDef="let adjustment">
+        <div class="check-cell">
+          <mat-icon *ngIf="!adjustment.complete && !adjustment.started"
+            >radio_button_unchecked</mat-icon
+          >
+          <mat-spinner
+            *ngIf="adjustment.started && !this.adjustment.complete"
+            [diameter]="20"
+          ></mat-spinner>
+          <mat-icon *ngIf="adjustment.complete">check_circle</mat-icon>
+        </div>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+    <tr mat-row *matRowDef="let myRowData; columns: tableColumns"></tr>
+  </table>
+  <div mat-dialog-actions>
+    <button
+      *ngIf="!complete"
+      mat-button
+      color="primary"
+      (click)="balancePots()"
+    >
+      Start
+    </button>
+    <button mat-button (click)="close()">Close</button>
+  </div>
+</div>

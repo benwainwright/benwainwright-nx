@@ -1,6 +1,7 @@
 import { HTTP } from '@benwainwright/constants';
 import { allowHeaders } from './allow-headers';
 import { HttpError } from './http-error';
+import { isAxiosError } from 'axios';
 
 const buildStack = (error: unknown) => {
   if (error instanceof Error) {
@@ -21,18 +22,39 @@ const buildStack = (error: unknown) => {
   return {};
 };
 
+const getStatusCode = (error: Error | unknown) => {
+  if (error instanceof HttpError) {
+    return error.statusCode;
+  }
+
+  if (isAxiosError(error)) {
+    return error.response?.status;
+  }
+
+  return HTTP.statusCodes.InternalServerError;
+};
+
+const getData = (error: Error | unknown) => {
+  if (isAxiosError(error)) {
+    return {
+      message: error.response?.data.message,
+      code: error.response?.data.code,
+      params: error.response?.data.params,
+    };
+  }
+
+  if (error instanceof Error) {
+    return { message: error.message };
+  }
+
+  return {};
+};
+
 export const returnErrorResponse = (error?: Error | unknown) => {
   const stack = buildStack(error);
-
-  const statusCode =
-    error instanceof HttpError
-      ? error.statusCode
-      : HTTP.statusCodes.InternalServerError;
-
+  const statusCode = getStatusCode(error);
   console.log(error);
-
-  const errorObj =
-    error && error instanceof Error ? { error: error.message } : {};
+  const errorObj = getData(error);
 
   return {
     body: JSON.stringify({ ...errorObj, ...stack }),

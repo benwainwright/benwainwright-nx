@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@angular/core';
 import {
-  lastValueFrom,
-  Observable,
   take,
   combineLatestWith,
   map,
   switchMap,
+  firstValueFrom,
+  Observable,
 } from 'rxjs';
 import { uuid } from '../../lib/uuid';
 import { getNextParsedDate } from '@benwainwright/nl-dates';
@@ -17,10 +17,18 @@ import {
   Budget,
   ConcretePayment,
   Pot,
+  PotPlan,
   RecurringPayment,
   Settings,
 } from '@benwainwright/budget-domain';
 import { DataSeriesService } from './data-series.service';
+import { MonzoAccountsService } from './monzo-accounts-service.ts.service';
+import { MonzoService } from './monzo.service';
+import { MatDialog } from '@angular/material/dialog';
+import {
+  BalancePotsDialogComponent,
+  BalancePotsDialogData,
+} from '../balance-pots-dialog/balance-pots-dialog.component';
 
 export const BUDGET_INJECTION_TOKEN = 'budget-service-data';
 
@@ -37,7 +45,11 @@ export class BudgetService {
     private balance: BalanceService,
     private settings: SettingsService,
     @Inject(BUDGET_INJECTION_TOKEN)
-    private dataService: DataSeriesService<Budget>
+    private dataService: DataSeriesService<Budget>,
+    private account: MonzoAccountsService,
+    private potsService: PotsService,
+    private monzo: MonzoService,
+    private dialog: MatDialog
   ) {
     this.dependentData = this.recurringPayments
       .getPayments()
@@ -49,6 +61,96 @@ export class BudgetService {
           this.getBudgets()
         )
       );
+  }
+
+  openBalancePotsDialog(budget: Budget) {
+    const deposits = budget.potPlans.filter((pot) => pot.adjustmentAmount > 0);
+
+    const withdrawals = budget.potPlans.filter(
+      (pot) => pot.adjustmentAmount < 0
+    );
+
+    const data = {
+      withdrawals,
+      deposits,
+    };
+
+    this.dialog.open<BalancePotsDialogComponent, BalancePotsDialogData>(
+      BalancePotsDialogComponent,
+      {
+        data,
+      }
+    );
+  }
+
+  async balancePot(pot: PotPlan) {
+    const mainAccountId = this.account.getMainAccountDetails()?.id;
+    if (pot.adjustmentAmount < 0) {
+      const resultingPot = await firstValueFrom(
+        this.monzo.withDrawFromPot({
+          potId: pot.id,
+          destinationAccount: mainAccountId ?? '',
+          amount: Math.round(Math.abs(pot.adjustmentAmount) * 100),
+        })
+      );
+
+      console.log(resultingPot);
+
+      if (resultingPot) {
+        this.potsService.updatePot(resultingPot.data);
+      }
+    }
+
+    if (pot.adjustmentAmount > 0) {
+      const resultingPot = await firstValueFrom(
+        this.monzo.depositIntoPot({
+          potId: pot.id,
+          sourceAccount: mainAccountId ?? '',
+          amount: Math.round(Math.abs(pot.adjustmentAmount) * 100),
+        })
+      );
+
+      console.log(resultingPot);
+
+      if (resultingPot) {
+        this.potsService.updatePot(resultingPot.data);
+      }
+    }
+  }
+
+  async balancePots(budget: Budget) {
+    const mainAccountId = this.account.getMainAccountDetails()?.id;
+    await budget.potPlans
+      .filter((pot) => pot.adjustmentAmount < 0)
+      .reduce(async (promise, nextPot) => {
+        await promise;
+        const pot = await firstValueFrom(
+          this.monzo.withDrawFromPot({
+            potId: nextPot.id,
+            destinationAccount: mainAccountId ?? '',
+            amount: Math.round(Math.abs(nextPot.adjustmentAmount) * 100),
+          })
+        );
+        if (pot) {
+          this.potsService.updatePot(pot.data);
+        }
+      }, Promise.resolve());
+
+    await budget.potPlans
+      .filter((pot) => pot.adjustmentAmount > 0)
+      .reduce(async (promise, nextPot) => {
+        await promise;
+        const pot = await firstValueFrom(
+          this.monzo.depositIntoPot({
+            potId: nextPot.id,
+            sourceAccount: mainAccountId ?? '',
+            amount: Math.round(Math.abs(nextPot.adjustmentAmount) * 100),
+          })
+        );
+        if (pot) {
+          this.potsService.updatePot(pot.data);
+        }
+      }, Promise.resolve());
   }
 
   createBudget() {
@@ -101,6 +203,7 @@ export class BudgetService {
         this.recurringPayments.getPayments()
       ),
       map(([budgets, settings, pots, balance, payments]) => {
+        console.log('triggered');
         const newBudgets = [...budgets];
 
         newBudgets.forEach((budget) => {

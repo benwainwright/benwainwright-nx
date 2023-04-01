@@ -20,7 +20,7 @@ const REGEXES = {
 export const specificDateOfAnyYear = (
   text: string,
   from: Date,
-  to: Date
+  to?: Date
 ): SpecificDateResult | undefined => {
   const result =
     new RegExp(REGEXES.thOfMonth, 'gi').exec(text) ??
@@ -47,7 +47,10 @@ export const specificDateOfAnyYear = (
 
   const parsedYear = year ? Number(year) : undefined;
 
-  const dates = getDaysInBetween(from, to).filter((date) => {
+  const realYear =
+    to ?? new Date(new Date().setFullYear(new Date().getFullYear() + 10));
+
+  const dates = getDaysInBetween(from, realYear).filter((date) => {
     return (
       date.getDate() === parsedDay &&
       (parsedMonth === undefined || date.getMonth() === parsedMonth) &&

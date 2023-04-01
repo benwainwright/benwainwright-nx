@@ -35,6 +35,7 @@ export class RecurringPaymentsService {
   openCreateEditDialog(payment?: RecurringPayment, startingPot?: string) {
     const startingData: PaymentDialogData = {
       id: payment?.id ?? v4(),
+      end: payment?.end,
       name: payment?.name ?? '',
       amount: payment?.amount ?? 0,
       when: payment?.when ?? '',

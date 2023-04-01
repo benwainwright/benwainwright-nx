@@ -7,6 +7,7 @@ export const paymentSchema = z.object({
   when: z.string(),
   potId: z.string(),
   amount: z.number(),
+  end: z.string().optional(),
 });
 
 export type StoredPot = z.infer<typeof paymentSchema>;

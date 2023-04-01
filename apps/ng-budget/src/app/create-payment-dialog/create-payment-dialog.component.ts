@@ -41,12 +41,14 @@ export class CreatePaymentDialogComponent {
       name: new FormControl<string>(data.name, { nonNullable: true }),
       amount: new FormControl<number>(data.amount, { nonNullable: true }),
       when: new FormControl<string>(data.when, { nonNullable: true }),
+      end: new FormControl<string>(data.end ?? '', { nonNullable: true }),
       potId: new FormControl<string>(data.potId, { nonNullable: true }),
     });
 
     this.form.valueChanges.subscribe((value) => {
       this.data.amount = value.amount ?? 0;
       this.data.name = value.name ?? '';
+      this.data.end = value.name ?? '';
       this.data.when = value.when ?? '';
       this.data.potId = value.potId ?? '';
     });

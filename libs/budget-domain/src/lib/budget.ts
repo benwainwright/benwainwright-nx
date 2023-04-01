@@ -1,4 +1,4 @@
-import { parseDates } from '@benwainwright/nl-dates';
+import { parseDates, ParseDatesMode } from '@benwainwright/nl-dates';
 import { ConcretePayment } from '../types/concrete-payment';
 import { Pot } from '../types/pot';
 import { PotPlan } from '../types/pot-plan';
@@ -167,10 +167,26 @@ export class Budget {
       name: pot.name,
       payments: payments
         .filter((payment) => payment.potId === pot.id)
-        .flatMap((payment) =>
-          parseDates(payment.when, {
+        .flatMap((payment) => {
+          const end = payment.end
+            ? parseDates(payment.end, {
+                mode: ParseDatesMode.SingleDateOnly,
+              })
+            : undefined;
+
+          if (end && end.dates.length > 0 && end.dates[0] < this.endDate) {
+            return [];
+          }
+
+          const to =
+            end && end.dates.length > 0 && end.dates[0] < this.endDate
+              ? end.dates[0]
+              : this.endDate;
+
+          return parseDates(payment.when, {
             from: this.startDate,
-            to: this.endDate,
+            to,
+            mode: ParseDatesMode.Normal,
           }).dates.map((date, index) => {
             const id = `${payment.id}-${index}`;
             const edited = this.editedConcretePayments[id];
@@ -185,8 +201,8 @@ export class Budget {
                   originalPayment: payment,
                   amount: payment.amount,
                 };
-          })
-        )
+          });
+        })
         .slice()
         .sort((a, b) => (a.when > b.when ? 1 : -1)),
     }));

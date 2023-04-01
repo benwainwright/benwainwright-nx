@@ -6,16 +6,38 @@ import { specificDateOfAnyMonth } from './strategies/specific-date-of-any-month'
 import { GetDatesResult } from './types/get-dates-result';
 import { now } from '@benwainwright/utils';
 
-interface GetDatesOptions {
-  from?: Date;
-  to: Date;
-  max?: number;
+export enum ParseDatesMode {
+  Normal = 'Normal',
+  SingleDateOnly = 'SingleDateOnly',
 }
 
-const dates = (options?: GetDatesOptions): [Date, Date] => {
+interface GetDatesOptionsNormal {
+  from?: Date;
+  to?: Date;
+  max?: number;
+  mode: ParseDatesMode.Normal;
+}
+
+interface GetDatesOptionsSingleDateOnly {
+  mode: ParseDatesMode.SingleDateOnly;
+}
+
+export type GetDatesOptions =
+  | GetDatesOptionsNormal
+  | GetDatesOptionsSingleDateOnly;
+
+const dates = (
+  options: GetDatesOptions = { mode: ParseDatesMode.Normal }
+): [Date, Date | undefined] => {
+  if (options?.mode === ParseDatesMode.Normal) {
+    const nextMonth = now();
+    nextMonth.setMonth(now().getMonth() + 1);
+    return [options?.from ?? now(), options?.to ?? nextMonth];
+  }
+  const start = new Date(0);
   const nextMonth = now();
   nextMonth.setMonth(now().getMonth() + 1);
-  return [options?.from ?? now(), options?.to ?? nextMonth];
+  return [start, undefined];
 };
 
 export const parseDates = (
@@ -24,16 +46,18 @@ export const parseDates = (
 ): GetDatesResult => {
   const [from, to] = dates(options);
 
-  const everyWeekResult = everyWeek(text, from, to);
+  if (from && to) {
+    const everyWeekResult = everyWeek(text, from, to);
 
-  if (everyWeekResult) {
-    return everyWeekResult;
-  }
+    if (everyWeekResult) {
+      return everyWeekResult;
+    }
 
-  const numberedWeekdayResult = numberedWeekday(text, from, to);
+    const numberedWeekdayResult = numberedWeekday(text, from, to);
 
-  if (numberedWeekdayResult) {
-    return numberedWeekdayResult;
+    if (numberedWeekdayResult) {
+      return numberedWeekdayResult;
+    }
   }
 
   const specificDateOfAnyYearResult = specificDateOfAnyYear(text, from, to);
@@ -42,10 +66,12 @@ export const parseDates = (
     return specificDateOfAnyYearResult;
   }
 
-  const specificDateOfAnyMonthResult = specificDateOfAnyMonth(text, from, to);
+  if (from && to) {
+    const specificDateOfAnyMonthResult = specificDateOfAnyMonth(text, from, to);
 
-  if (specificDateOfAnyMonthResult) {
-    return specificDateOfAnyMonthResult;
+    if (specificDateOfAnyMonthResult) {
+      return specificDateOfAnyMonthResult;
+    }
   }
 
   return {

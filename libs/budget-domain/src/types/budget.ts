@@ -10,6 +10,7 @@ const potPlan = z.object({
       id: z.string(),
       name: z.string(),
       when: z.date(),
+      end: z.date(),
       amount: z.number(),
     })
   ),

@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>Edit Payment</h2>
+<div mat-dialog-content class="create-payment-dialog">
+  <form>
+    <benwainwright-input
+      [formGroup]="form"
+      id="name"
+      label="Name"
+      type="text"
+      control="name"
+    ></benwainwright-input>
+
+    <benwainwright-input
+      [formGroup]="form"
+      id="amount"
+      label="Amount"
+      type="number"
+      control="amount"
+    >
+    </benwainwright-input>
+
+    <benwainwright-date-picker
+      [formGroup]="form"
+      id="when"
+      label="Date"
+      control="when"
+    >
+    </benwainwright-date-picker>
+
+    <div mat-dialog-actions>
+      <button mat-button color="primary" [mat-dialog-close]="data">Save</button>
+      <button mat-button (click)="onCancelClick($event)">Cancel</button>
+    </div>
+  </form>
+</div>

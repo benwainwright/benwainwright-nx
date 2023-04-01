@@ -1,3 +1,6 @@
+.tab-content {
+  padding: 1rem 0;
+}
 .pots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
@@ -20,4 +23,17 @@
 .budget-detail-summary {
   margin-top: 2rem;
   margin-bottom: 2rem;
+}
+
+.paid-row {
+  text-decoration: line-through;
+  opacity: 0.3;
+}
+
+.pointer-row {
+  cursor: pointer;
+}
+
+.pointer-row:hover {
+  background-color: #f1f1f1;
 }

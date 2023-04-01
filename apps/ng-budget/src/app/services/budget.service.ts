@@ -29,6 +29,10 @@ import {
   BalancePotsDialogComponent,
   BalancePotsDialogData,
 } from '../balance-pots-dialog/balance-pots-dialog.component';
+import {
+  EditConcretePaymentDialogComponent,
+  EditConcretePaymentDialogData,
+} from '../edit-concrete-payment/edit-concrete-payment.component';
 
 export const BUDGET_INJECTION_TOKEN = 'budget-service-data';
 
@@ -192,6 +196,34 @@ export class BudgetService {
     this.dataService.removeItem(budget);
   }
 
+  editConcretePayment(payment: ConcretePayment, budget: Budget) {
+    const startingData: EditConcretePaymentDialogData = {
+      ...payment,
+      new: false,
+      delete: false,
+    };
+
+    const dialogRef = this.dialog.open<
+      EditConcretePaymentDialogComponent,
+      EditConcretePaymentDialogData,
+      EditConcretePaymentDialogData
+    >(EditConcretePaymentDialogComponent, {
+      data: startingData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        budget.editConcretePayment(result);
+      }
+      this.dataService.updateItem(budget);
+    });
+  }
+
+  resetConcretePayment(id: string, budget: Budget) {
+    budget.resetConcretePayment(id);
+    this.dataService.updateItem(budget);
+  }
+
   getBudgets(): Observable<Budget[]> {
     return this.dataService.getAll().pipe(
       combineLatestWith(
@@ -201,7 +233,6 @@ export class BudgetService {
         this.recurringPayments.getPayments()
       ),
       map(([budgets, settings, pots, balance, payments]) => {
-        console.log('triggered');
         const newBudgets = [...budgets];
 
         newBudgets.forEach((budget) => {

@@ -1,0 +1,33 @@
+<mat-nav-list>
+  <mat-list-item (click)="editOccurrence($event)">
+    <span matListItemTitle>Edit Occurrence</span>
+    <span matListItemLine
+      >Edit a single occurrence and detach it from its series</span
+    >
+  </mat-list-item>
+
+  <mat-list-item (click)="editSeries($event)">
+    <span matListItemTitle>Edit Series</span>
+    <span matListItemLine
+      >Edit the payment details of the series attached to this payment</span
+    >
+  </mat-list-item>
+
+  <mat-list-item *ngIf="data.payment.edited" (click)="resetSeries($event)">
+    <span matListItemTitle>Reset Payment</span>
+    <span matListItemLine
+      >Reset previously edited payment to match the payment series that
+      generated it</span
+    >
+  </mat-list-item>
+
+  <mat-list-item *ngIf="data.payment.paid" (click)="togglePaid($event)">
+    <span matListItemTitle>Toggle paid status</span>
+    <span matListItemLine>Mark this payment as unpaid</span>
+  </mat-list-item>
+
+  <mat-list-item *ngIf="!data.payment.paid" (click)="togglePaid($event)">
+    <span matListItemTitle>Toggle paid status</span>
+    <span matListItemLine>Mark this payment as paid</span>
+  </mat-list-item>
+</mat-nav-list>

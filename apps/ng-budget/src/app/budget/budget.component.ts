@@ -1,8 +1,13 @@
 import { Component } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Budget } from '@benwainwright/budget-domain';
+import { Budget, ConcretePayment } from '@benwainwright/budget-domain';
 import { combineLatestWith, firstValueFrom, map } from 'rxjs';
 import { filterNullish } from '../../lib/filter-nullish';
+import {
+  EditPaymentSheetCompoentData,
+  EditPaymentSheetComponent,
+} from '../edit-payment-sheet/edit-payment-sheet.component';
 import { BudgetService } from '../services/budget.service';
 import { RecurringPaymentsService } from '../services/recurring-payments.service';
 
@@ -24,6 +29,8 @@ export class BudgetComponent {
 
   public budget: Budget | undefined;
 
+  public plannedTransactionsCols = ['name', 'amount', 'date', 'pot'];
+
   public potPlans = this.budgetObservable.pipe(
     map((budget) => {
       return budget.potPlans.filter((pot) => {
@@ -34,6 +41,17 @@ export class BudgetComponent {
           pot.adjustmentAmount === 0
         );
       });
+    })
+  );
+
+  public plannedTransactions = this.potPlans.pipe(
+    map((potPlan) => {
+      return potPlan
+        .flatMap((potPlan) =>
+          potPlan.payments.map((payment) => ({ ...payment, pot: potPlan }))
+        )
+        .slice()
+        .sort((a, b) => (a.when > b.when ? 1 : -1));
     })
   );
 
@@ -52,7 +70,8 @@ export class BudgetComponent {
     private budgetService: BudgetService,
     private route: ActivatedRoute,
     private paymentsService: RecurringPaymentsService,
-    private router: Router
+    private router: Router,
+    private bottomSheet: MatBottomSheet
   ) {
     this.chips = new Set();
     this.budgetObservable.subscribe((budget) => {
@@ -62,6 +81,28 @@ export class BudgetComponent {
       this.chips.delete('Past');
       this.chips.add(budget?.pastPresentOrFuture() as string);
     });
+  }
+
+  public openEditSheet(payment: ConcretePayment) {
+    if (this.budget) {
+      const data: EditPaymentSheetCompoentData = {
+        payment,
+        budget: this.budget,
+      };
+      this.bottomSheet.open(EditPaymentSheetComponent, { data });
+    }
+  }
+
+  public togglePaymentPaidStatus(payment: ConcretePayment) {
+    if (this.budget) {
+      this.budgetService.togglePaymentPaidStatus(this.budget, payment);
+    }
+  }
+
+  public editPayment(payment: ConcretePayment) {
+    if (this.budget) {
+      this.paymentsService.openCreateEditDialog(payment.originalPayment);
+    }
   }
 
   async balancePots() {

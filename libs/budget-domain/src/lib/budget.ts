@@ -14,6 +14,7 @@ export class Budget {
   private potValues: Omit<PotPlan, 'adjustmentAmount'>[];
   private payments: RecurringPayment[] = [];
   public paidIds: { [id: string]: boolean } = {};
+  private editedConcretePayments: { [id: string]: ConcretePayment } = {};
 
   public static fromJson(data: Budget) {
     const budget = new Budget(
@@ -24,6 +25,7 @@ export class Budget {
       0
     );
     budget.paidIds = data.paidIds;
+    budget.editedConcretePayments = data.editedConcretePayments ?? {};
     budget.balance = data.balance;
 
     budget.potValues = data.potValues.map((pot) => ({
@@ -142,6 +144,14 @@ export class Budget {
     this.payments = payments;
   }
 
+  public editConcretePayment(payment: ConcretePayment) {
+    this.editedConcretePayments[payment.id] = { ...payment, edited: true };
+  }
+
+  public resetConcretePayment(id: string) {
+    delete this.editedConcretePayments[id];
+  }
+
   public togglePaymentPaidStatus(payment: ConcretePayment) {
     this.paidIds[payment.id] = !this.paidIds[payment.id];
   }
@@ -163,14 +173,18 @@ export class Budget {
             to: this.endDate,
           }).dates.map((date, index) => {
             const id = `${payment.id}-${index}`;
-            return {
-              id,
-              paid: this.paidIds[id],
-              name: payment.name,
-              when: date,
-              originalPayment: payment,
-              amount: payment.amount,
-            };
+            const edited = this.editedConcretePayments[id];
+            return edited
+              ? edited
+              : {
+                  id,
+                  paid: this.paidIds[id],
+                  edited: false,
+                  name: payment.name,
+                  when: date,
+                  originalPayment: payment,
+                  amount: payment.amount,
+                };
           })
         )
         .slice()

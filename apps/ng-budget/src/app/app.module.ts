@@ -23,6 +23,7 @@ import { SettingsComponent } from './settings/settings.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { PaymentsComponent } from './payments/payments.component';
+import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { DummyDataComponent } from './dummy-data/dummy-data.component';
 import { BudgetComponent } from './budget/budget.component';
 import { PotComponent } from './pot/pot.component';
@@ -32,6 +33,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatListModule, MAT_LIST_CONFIG } from '@angular/material/list';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
@@ -63,7 +65,12 @@ import { AppRouteReuseStrategy } from '../lib/app-route-reuse-strategy';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ErrorHandlerService } from './error-handler.service';
 import { MenuComponent } from './menu/menu.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { BalancePotsDialogComponent } from './balance-pots-dialog/balance-pots-dialog.component';
+import { EditConcretePaymentDialogComponent } from './edit-concrete-payment/edit-concrete-payment.component';
+import { DatePickerComponent } from './date-picker/date-picker.component';
+import { MatNativeDateModule } from '@angular/material/core';
+import { EditPaymentSheetComponent } from './edit-payment-sheet/edit-payment-sheet.component';
 
 @NgModule({
   declarations: [
@@ -84,12 +91,19 @@ import { BalancePotsDialogComponent } from './balance-pots-dialog/balance-pots-d
     SelectComponent,
     MenuComponent,
     BalancePotsDialogComponent,
+    EditConcretePaymentDialogComponent,
+    DatePickerComponent,
+    EditPaymentSheetComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    MatBottomSheetModule,
+    MatTabsModule,
+    MatNativeDateModule,
     ReactiveFormsModule,
+    MatDatepickerModule,
     BrowserAnimationsModule,
     MatToolbarModule,
     MatSnackBarModule,

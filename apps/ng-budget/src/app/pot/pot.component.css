@@ -30,6 +30,7 @@
 
 table td {
   overflow: hidden;
+  white-space: nowrap;
 }
 
 ul {
@@ -39,6 +40,14 @@ ul {
 
 .paid-button:hover {
   color: var(--colour-dark-green);
+}
+
+.pointer-row {
+  cursor: pointer;
+}
+
+.pointer-row:hover {
+  background-color: #f1f1f1;
 }
 
 .paid-row {

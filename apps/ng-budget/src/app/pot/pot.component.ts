@@ -1,5 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { Budget, ConcretePayment, PotPlan } from '@benwainwright/budget-domain';
+import {
+  EditPaymentSheetCompoentData,
+  EditPaymentSheetComponent,
+} from '../edit-payment-sheet/edit-payment-sheet.component';
 import { BudgetService } from '../services/budget.service';
 import { RecurringPaymentsService } from '../services/recurring-payments.service';
 
@@ -21,10 +26,11 @@ export class PotComponent {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   public constructor(
     private budgets: BudgetService,
+    private bottomSheet: MatBottomSheet,
     public paymentsService: RecurringPaymentsService
   ) {}
 
-  public tableColumns: string[] = ['name', 'when', 'amount', 'actions'];
+  public tableColumns: string[] = ['name', 'when', 'amount'];
 
   public get backgroundClass(): string {
     if (!this.pot) {
@@ -49,9 +55,19 @@ export class PotComponent {
     this.paymentsService.openCreateEditDialog(payment.originalPayment);
   }
 
-  public togglePaymentPaidStatus(payment: ConcretePayment) {
+  public editConcretePayment(payment: ConcretePayment) {
     if (this.budget) {
-      this.budgets.togglePaymentPaidStatus(this.budget, payment);
+      this.budgets.editConcretePayment(payment, this.budget);
+    }
+  }
+
+  public openEditSheet(payment: ConcretePayment) {
+    if (this.budget) {
+      const data: EditPaymentSheetCompoentData = {
+        payment,
+        budget: this.budget,
+      };
+      this.bottomSheet.open(EditPaymentSheetComponent, { data });
     }
   }
 

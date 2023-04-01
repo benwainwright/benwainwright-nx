@@ -9,7 +9,10 @@
   </button>
 </h2>
 
-<div class="payments-grid">
+<div
+  class="payments-grid"
+  *ngIf="paymentsSubscription | async as payments; else loading"
+>
   <mat-card *ngFor="let payment of payments">
     <mat-card-header>
       <mat-card-subtitle>Recurring Payment</mat-card-subtitle>
@@ -48,3 +51,6 @@
     </mat-card-actions>
   </mat-card>
 </div>
+<ng-template #loading>
+  <mat-spinner [diameter]="30"></mat-spinner>
+</ng-template>

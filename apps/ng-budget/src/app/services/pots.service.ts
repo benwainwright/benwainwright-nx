@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Pot } from '@benwainwright/budget-domain';
 import { BehaviorSubject, map, Observable, switchMap } from 'rxjs';
 import { MonzoAccountsService } from './monzo-accounts-service.ts.service';

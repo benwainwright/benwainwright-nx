@@ -6,7 +6,14 @@ import {
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, combineLatestWith, of, switchMap, throwError } from 'rxjs';
+import {
+  map,
+  catchError,
+  combineLatestWith,
+  of,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import { AuthService } from './auth.service';
 import { LoggerService } from './logger.service';
@@ -49,6 +56,7 @@ export class ApiService {
         if (!config || !user) {
           return of(void 0);
         }
+
         const normalisedPath = path.startsWith('/') ? path.slice(1) : path;
         const url = `${config?.apiUrl}/${normalisedPath}`;
 

@@ -94,8 +94,7 @@ export class BudgetService {
         })
       );
 
-      console.log(resultingPot);
-
+      this.balance.increaseBalance(pot.adjustmentAmount);
       if (resultingPot) {
         this.potsService.updatePot(resultingPot.data);
       }
@@ -110,8 +109,7 @@ export class BudgetService {
         })
       );
 
-      console.log(resultingPot);
-
+      this.balance.reduceBalance(pot.adjustmentAmount);
       if (resultingPot) {
         this.potsService.updatePot(resultingPot.data);
       }

@@ -86,7 +86,13 @@ export class AuthService {
     const session = auth.getSignInUserSession();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tokenPayload = session.getIdToken().decodePayload() as any;
-    const user = { username, session, groups: tokenPayload['cognito:groups'] };
+
+    const user = {
+      username,
+      session,
+      groups: tokenPayload['cognito:groups'],
+      expires: tokenPayload.exp,
+    };
     this.user.next(user);
   }
 

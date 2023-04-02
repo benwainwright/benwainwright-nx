@@ -13,7 +13,6 @@ export class SettingsService {
     overdraft: 0,
     payCycle: 'last thursday of every month',
     salary: 0,
-    balance: 0,
     username: '',
     id: '',
   };
@@ -34,7 +33,6 @@ export class SettingsService {
           ...value,
           overdraft: value.overdraft && Number(value.overdraft),
           salary: value.salary && Number(value.salary),
-          balance: value.balance && Number(value.balance),
         };
       }),
       map((value) => ({ ...this.settings, ...value }))

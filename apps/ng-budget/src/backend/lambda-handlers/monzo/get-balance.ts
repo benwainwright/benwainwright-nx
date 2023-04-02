@@ -1,19 +1,10 @@
 import { HTTP } from '@benwainwright/constants';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 import { HttpError } from '../../http/http-error';
-import { returnErrorResponse } from '../../http/return-error-response';
-import { returnOkResponse } from '../../http/return-ok-response';
-import { authorise } from '../../monzo/authorise';
+import { monzoResponse } from '../../monzo/monzo-response';
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-  try {
-    const authResult = await authorise(event);
-    if (!authResult.complete) {
-      return authResult.response;
-    }
-
-    const { client } = authResult;
-
+  return monzoResponse(event, async (event, client) => {
     const accountId = event?.pathParameters?.['accountId'];
 
     if (!accountId) {
@@ -23,10 +14,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       );
     }
 
-    const response = await client.balance(accountId as `acc_${string}`);
-
-    return returnOkResponse({ data: response });
-  } catch (error) {
-    return returnErrorResponse(error);
-  }
+    return await client.balance(accountId as `acc_${string}`);
+  });
 };

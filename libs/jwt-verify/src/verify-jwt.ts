@@ -47,9 +47,6 @@ export const verifyJwtToken = async (
     if (claim.iss !== getIssuer()) {
       throw new Error('claim issuer is invalid');
     }
-    // if (claim.tokenUse !== 'access') {
-    //   throw new Error('claim use is not access');
-    // }
 
     const { authorisedGroups } = config;
 

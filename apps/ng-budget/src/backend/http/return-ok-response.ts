@@ -1,14 +1,11 @@
 import { HTTP } from '@benwainwright/constants';
-import { allowHeaders } from './allow-headers';
+import { APIGatewayProxyEventV2 } from 'aws-lambda';
+import { getDefaultHttpResponse } from './get-default-http-response';
 
-export const returnOkResponse = <T>(body: T) => {
+export const returnOkResponse = <T>(event: APIGatewayProxyEventV2, body: T) => {
   return {
     statusCode: HTTP.statusCodes.Ok,
     body: JSON.stringify(body),
-    headers: {
-      [HTTP.headerNames.AccessControlAllowOrigin]: `http://localhost:4200`,
-      [HTTP.headerNames.AccessControlAllowCredentials]: `true`,
-      [HTTP.headerNames.AccessControlAllowHeaders]: allowHeaders.join(', '),
-    },
+    ...getDefaultHttpResponse(event),
   };
 };

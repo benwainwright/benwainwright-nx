@@ -8,11 +8,20 @@ export const COGNITO = {
   },
 };
 
+export const ENVIRONMENT_NAMES = {
+  prod: 'prod',
+};
+
+export const ENV = {
+  ENVIRONMENT_NAME: 'ENVIRONMENT_NAME',
+};
+
 export const HTTP = {
   headerNames: {
     AccessControlAllowOrigin: 'access-control-allow-origin',
     AccessControlAllowCredentials: 'access-control-allow-credentials',
     AccessControlAllowHeaders: 'access-control-allow-headers',
+    Origin: 'origin',
     ContentType: 'Content-Type',
     XAmxDate: 'X-Amz-Date',
     Authorization: 'Authorization',

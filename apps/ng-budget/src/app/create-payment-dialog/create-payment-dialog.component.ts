@@ -48,7 +48,7 @@ export class CreatePaymentDialogComponent {
     this.form.valueChanges.subscribe((value) => {
       this.data.amount = value.amount ?? 0;
       this.data.name = value.name ?? '';
-      this.data.end = value.name ?? '';
+      this.data.end = value.end ?? '';
       this.data.when = value.when ?? '';
       this.data.potId = value.potId ?? '';
     });

@@ -17,6 +17,42 @@ const REGEXES = {
   daySlashMonth: `(?<day>\\d{1,2})\\/(?<month>\\d{1,2})`,
 };
 
+const getStart = (
+  from: Date,
+  month: number,
+  day: number,
+  year: number
+): Date => {
+  const start = new Date(from.valueOf());
+  start.setMonth(month);
+  start.setDate(day);
+  start.setFullYear(year);
+
+  if (start < from) {
+    return getStart(start, month, day + 1, year);
+  }
+  return start;
+};
+
+export const getDays = (
+  from: Date,
+  to: Date,
+  day: number,
+  month: number,
+  year: number | undefined
+): Date[] => {
+  const start = getStart(from, month, day, year ?? from.getFullYear());
+
+  if (start > to) {
+    return [];
+  }
+
+  return [
+    start,
+    ...getDays(start, to, day, month, (year ?? from.getFullYear()) + 1),
+  ];
+};
+
 export const specificDateOfAnyYear = (
   text: string,
   from: Date,
@@ -43,20 +79,14 @@ export const specificDateOfAnyYear = (
 
   const parsedDay = getOrdinalIndex(day, wordNumbers, Number(day));
 
-  const parsedMonth = parseMonth(month, from);
+  const parsedMonth = parseMonth(month, from) ?? 1;
 
   const parsedYear = year ? Number(year) : undefined;
 
   const realYear =
     to ?? new Date(new Date().setFullYear(new Date().getFullYear() + 10));
 
-  const dates = getDaysInBetween(from, realYear).filter((date) => {
-    return (
-      date.getDate() === parsedDay &&
-      (parsedMonth === undefined || date.getMonth() === parsedMonth) &&
-      (parsedYear === undefined || date.getFullYear() === parsedYear)
-    );
-  });
+  const dates = getDays(from, realYear, parsedDay, parsedMonth, parsedYear);
 
   return {
     type: 'SpecificDateOfYear',

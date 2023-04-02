@@ -2,6 +2,7 @@ import { HTTP } from '@benwainwright/constants';
 import { verifyJwtToken } from '@benwainwright/jwt-verify';
 import { MonzoAPI } from '@otters/monzo';
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
+import { getHeader } from '../get-header';
 import { HttpError } from '../http/http-error';
 import { returnOkResponse } from '../http/return-ok-response';
 import { getClient } from './get-client';
@@ -19,9 +20,7 @@ type AuthResponse =
 export const authorise = async (
   event: APIGatewayProxyEventV2
 ): Promise<AuthResponse> => {
-  const token = Object.entries(event.headers).find(
-    ([key]) => key.toLocaleLowerCase() === 'authorization'
-  )?.[1];
+  const token = getHeader(HTTP.headerNames.Authorization, event);
 
   if (!token) {
     throw new HttpError(403, 'Please supply token');
@@ -42,7 +41,7 @@ export const authorise = async (
   if ('redirectUrl' in client) {
     return {
       complete: false,
-      response: returnOkResponse({ redirectUrl: client.redirectUrl }),
+      response: returnOkResponse(event, { redirectUrl: client.redirectUrl }),
     };
   }
   return { complete: true, client };

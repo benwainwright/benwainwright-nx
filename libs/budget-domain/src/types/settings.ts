@@ -6,7 +6,6 @@ export const settingsSchema = z.object({
   payCycle: z.string(),
   salary: z.number(),
   overdraft: z.number(),
-  balance: z.number(),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;

@@ -324,10 +324,6 @@ export class AppStack extends Stack {
           name: 'payments',
           schema: paymentSchema,
         },
-        {
-          name: 'pots',
-          schema: potSchema,
-        },
       ],
     });
 

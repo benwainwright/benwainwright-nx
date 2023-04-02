@@ -1,19 +1,10 @@
 import { HTTP } from '@benwainwright/constants';
 import { APIGatewayProxyHandlerV2 } from 'aws-lambda';
 import { HttpError } from '../../http/http-error';
-import { returnErrorResponse } from '../../http/return-error-response';
-import { returnOkResponse } from '../../http/return-ok-response';
-import { authorise } from '../../monzo/authorise';
+import { monzoResponse } from '../../monzo/monzo-response';
 
 export const handler: APIGatewayProxyHandlerV2 = async (event, context) => {
-  try {
-    const authResult = await authorise(event);
-    if (!authResult.complete) {
-      return authResult.response;
-    }
-
-    const { client } = authResult;
-
+  return monzoResponse(event, async (event, client) => {
     const potId = event?.pathParameters?.['potId'];
 
     const body = JSON.parse(event.body ?? '{}');
@@ -27,14 +18,10 @@ export const handler: APIGatewayProxyHandlerV2 = async (event, context) => {
       );
     }
 
-    const response = await client.depositIntoPot(potId as `pot_${string}`, {
+    return await client.depositIntoPot(potId as `pot_${string}`, {
       amount,
       source_account_id: source as `acc_${string}`,
       dedupe_id: context.awsRequestId,
     });
-
-    return returnOkResponse({ data: response });
-  } catch (error) {
-    return returnErrorResponse(error);
-  }
+  });
 };

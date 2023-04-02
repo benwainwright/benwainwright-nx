@@ -18,12 +18,14 @@ type AuthResponse =
     };
 
 export const authorise = async (
-  event: APIGatewayProxyEventV2
+  event: APIGatewayProxyEventV2,
+  refresh?: boolean
 ): Promise<AuthResponse> => {
+  console.log(event);
   const token = getHeader(HTTP.headerNames.Authorization, event);
 
   if (!token) {
-    throw new HttpError(403, 'Please supply token');
+    throw new HttpError(HTTP.statusCodes.Forbidden, 'Please supply token');
   }
 
   console.log({ token });
@@ -36,7 +38,7 @@ export const authorise = async (
 
   const code = event.queryStringParameters?.['code'];
 
-  const client = await getClient(userName, code);
+  const client = await getClient(userName, code, refresh);
 
   if ('redirectUrl' in client) {
     return {

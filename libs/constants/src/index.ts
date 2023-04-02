@@ -16,6 +16,12 @@ export const ENV = {
   ENVIRONMENT_NAME: 'ENVIRONMENT_NAME',
 };
 
+export const MONZO = {
+  errorCodes: {
+    expiredAccessToken: 'unauthorized.bad_access_token.expired',
+  },
+};
+
 export const HTTP = {
   headerNames: {
     AccessControlAllowOrigin: 'access-control-allow-origin',

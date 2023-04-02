@@ -11,7 +11,11 @@ import { getSecrets } from '../aws/get-secret';
 import { getEnv } from '../utils/get-env';
 import { getInitialApi } from './get-initial-api';
 
-export const getClient = async (username: string, code?: string) => {
+export const getClient = async (
+  username: string,
+  code?: string,
+  refresh?: boolean
+) => {
   const userPoolId = getEnv('USER_POOL_ID');
 
   const clientIdSecretName = getEnv('MONZO_CLIENT_ID_SECRET');
@@ -89,7 +93,8 @@ export const getClient = async (username: string, code?: string) => {
   if (
     code ||
     (typeof expiresAt === 'string' && Date.now() > expires) ||
-    (accessToken && !refreshToken)
+    (accessToken && !refreshToken) ||
+    refresh
   ) {
     const { credentials, api } = await getInitialApi(
       oauth,

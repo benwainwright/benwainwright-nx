@@ -2,18 +2,10 @@ import {
   HttpClient,
   HttpErrorResponse,
   HttpHeaders,
-  HttpParams,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  map,
-  catchError,
-  combineLatestWith,
-  of,
-  switchMap,
-  throwError,
-} from 'rxjs';
+import { catchError, combineLatestWith, of, switchMap, throwError } from 'rxjs';
 import { AppConfigService } from './app-config.service';
 import { AuthService } from './auth.service';
 import { LoggerService } from './logger.service';

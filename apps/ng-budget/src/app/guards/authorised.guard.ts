@@ -12,6 +12,7 @@ export class AuthorisedGuard implements CanActivate {
   canActivate(): Observable<boolean | UrlTree> {
     return this.authService.getUser().pipe(
       map((user) => {
+        console.log({ user, bool: Boolean(user) });
         return Boolean(user);
       }),
       switchMap((loggedIn) =>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { filter, BehaviorSubject, map, mergeMap } from 'rxjs';
+import { filter, BehaviorSubject, map } from 'rxjs';
 import { BackendConfig } from '@benwainwright/types';
 import { AppConfigService } from './app-config.service';
 import { CognitoAuth, CognitoAuthSession } from 'amazon-cognito-auth-js';
@@ -30,7 +30,7 @@ export class AuthService {
       .pipe(map(this.saveConfig.bind(this)))
       .subscribe(async () => {
         await this.loadUserFromUrlCredentials(window.location.href);
-        this.saveUser();
+        await this.updateSavedUser();
         this.logger.debug(`User saved`);
         this.loadedSubject.next(true);
       });
@@ -49,11 +49,48 @@ export class AuthService {
 
   public getUser() {
     return this.loaded().pipe(
-      mergeMap(() => {
-        this.logger.debug(`Loaded`);
-        return this.user;
+      map((loaded) => {
+        const currentUser = this.user.value;
+
+        return currentUser;
       })
     );
+  }
+
+  private async getLatestValidSession() {
+    if (!this.auth) {
+      return;
+    }
+    const { auth } = this;
+    const session = auth.getSignInUserSession();
+    const { exp: expires } = session.getIdToken().decodePayload() as {
+      exp: number;
+    };
+    const now = Math.floor(Date.now() / 1000);
+
+    if (now < expires) {
+      return session;
+    }
+
+    try {
+      auth.refreshSession(session.getRefreshToken().getToken());
+      const refreshPromise = new Promise((accept, reject) => {
+        auth.userhandler = {
+          onSuccess: accept,
+          onFailure: reject,
+        };
+      });
+
+      await refreshPromise;
+      return auth.getSignInUserSession();
+    } catch (error) {
+      return;
+    } finally {
+      if (auth) {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
+        auth.userhandler = { onSuccess: () => {}, onFailure: () => {} };
+      }
+    }
   }
 
   public logout() {
@@ -67,33 +104,34 @@ export class AuthService {
       : this.config.authSignOutUrlForLocal;
   }
 
-  private saveUser() {
+  private async updateSavedUser() {
     const auth = this.auth;
     this.logger.debug(`No auth found`);
     if (!auth) {
       return;
     }
     this.logger.debug(`Auth found`);
+    const session = await this.getLatestValidSession();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tokenPayload = session?.getIdToken().decodePayload() as any;
+
     const username = auth.getUsername();
+
     if (!username) {
       this.logger.debug(`No user to save`);
       return;
     } else {
       this.logger.debug(`Found user`);
     }
+    if (session) {
+      const user = {
+        username,
+        session,
+        groups: tokenPayload['cognito:groups'],
+      };
 
-    // auth.getSession();
-    const session = auth.getSignInUserSession();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tokenPayload = session.getIdToken().decodePayload() as any;
-
-    const user = {
-      username,
-      session,
-      groups: tokenPayload['cognito:groups'],
-      expires: tokenPayload.exp,
-    };
-    this.user.next(user);
+      this.user.next(user);
+    }
   }
 
   private async parseUrl(url: string) {

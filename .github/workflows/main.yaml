@@ -10,29 +10,27 @@ on:
       - main
     paths-ignore:
       - '**.md'
-
 jobs:
-  run-tests:
-    name: Run Test
+  main:
     runs-on: ubuntu-latest
-    container:
-      image: bwainwrighttnm/tnm-deps:main
-
     steps:
-      - name: List Dir
-        shell: 'bash'
-        run: ls
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-      - name: Configure node 16
+      - uses: nrwl/nx-set-shas@v3
+      - run: npm ci
+
+      - name: Configure node 18
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
-
-      - name: List Dir
-        shell: 'bash'
-        run: ls
+          node-version: '18'
 
       - name: Install Dependencies
         shell: 'bash'
         run: yarn install --frozen-lockfile
+
+      - run: npx nx format:check
+      - run: npx nx affected -t lint --parallel=3
+      - run: npx nx affected -t test --parallel=3 --configuration=ci
+      - run: npx nx affected -t build --parallel=3

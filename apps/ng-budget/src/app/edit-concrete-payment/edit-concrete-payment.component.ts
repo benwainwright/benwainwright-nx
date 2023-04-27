@@ -44,7 +44,7 @@ export class EditConcretePaymentDialogComponent {
     });
 
     this.form.valueChanges.subscribe((value) => {
-      this.data.amount = value.amount ?? 0;
+      this.data.amount = Number(value.amount ?? 0);
       this.data.name = value.name ?? '';
       this.data.when = value.when ?? new Date();
     });

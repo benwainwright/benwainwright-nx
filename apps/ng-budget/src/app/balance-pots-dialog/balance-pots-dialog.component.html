@@ -33,15 +33,10 @@
     <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
     <tr mat-row *matRowDef="let myRowData; columns: tableColumns"></tr>
   </table>
-  <div mat-dialog-actions>
-    <button
-      *ngIf="!complete"
-      mat-button
-      color="primary"
-      (click)="balancePots()"
-    >
-      Start
-    </button>
-    <button mat-button (click)="close()">Close</button>
-  </div>
+</div>
+<div mat-dialog-actions>
+  <button *ngIf="!complete" mat-button color="primary" (click)="balancePots()">
+    Start
+  </button>
+  <button mat-button (click)="close()">Close</button>
 </div>

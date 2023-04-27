@@ -1,4 +1,4 @@
-import { parseDates } from '@benwainwright/nl-dates';
+import { parseDates, ParseDatesMode } from '@benwainwright/nl-dates';
 import { freezeDateWithJestFakeTimers } from '@benwainwright/test-helpers';
 import { date } from '@benwainwright/utils';
 import { when } from 'jest-when';
@@ -13,6 +13,7 @@ jest.mock('@benwainwright/nl-dates');
 const setupDateMocks = (from: Date, to: Date) => {
   when(jest.mocked(parseDates))
     .calledWith('on the 3rd of June', {
+      mode: ParseDatesMode.Normal,
       from,
       to,
     })
@@ -25,6 +26,7 @@ const setupDateMocks = (from: Date, to: Date) => {
 
   when(jest.mocked(parseDates))
     .calledWith('6th of June', {
+      mode: ParseDatesMode.Normal,
       from,
       to,
     })
@@ -37,6 +39,7 @@ const setupDateMocks = (from: Date, to: Date) => {
 
   when(jest.mocked(parseDates))
     .calledWith('every week on wednesday', {
+      mode: ParseDatesMode.Normal,
       from,
       to,
     })
@@ -84,6 +87,7 @@ const PAYMENTS: RecurringPayment[] = [
     when: 'on the 3rd of June',
     amount: 100,
     potId: '0',
+    end: '',
   },
   {
     id: '2',
@@ -91,6 +95,7 @@ const PAYMENTS: RecurringPayment[] = [
     when: '6th of June',
     amount: 100,
     potId: '0',
+    end: '',
   },
   {
     id: '3',
@@ -98,6 +103,7 @@ const PAYMENTS: RecurringPayment[] = [
     when: 'every week on wednesday',
     amount: 25,
     potId: '1',
+    end: '',
   },
 ];
 
@@ -438,7 +444,6 @@ describe('budget', () => {
     expect(budget.potPlans[1].adjustmentAmount).toEqual(20);
     expect(budget.potPlans[2].adjustmentAmount).toEqual(-180);
     expect(budget.potPlans[3].adjustmentAmount).toEqual(-405);
-
     expect(budget.surplus).toEqual(1430);
   });
 });

@@ -18,17 +18,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: nrwl/nx-set-shas@v3
-      - run: npm ci
-
       - name: Configure node 18
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-
+      - uses: nrwl/nx-set-shas@v3
       - name: Install Dependencies
         shell: 'bash'
         run: yarn install --frozen-lockfile
+
+
 
       - run: npx nx format:check
       - run: npx nx affected -t lint --parallel=3

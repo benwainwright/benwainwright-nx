@@ -1,8 +1,4 @@
-import {
-  MatDialog,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { bootstrapComponent } from '../../testing-utils/bootstrap-component';
 import {
   CreatePaymentDialogComponent,

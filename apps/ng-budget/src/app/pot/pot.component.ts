@@ -28,7 +28,9 @@ export class PotComponent {
     private budgets: BudgetService,
     private bottomSheet: MatBottomSheet,
     public paymentsService: RecurringPaymentsService
-  ) {}
+  ) {
+    console.log(this.pot);
+  }
 
   public tableColumns: string[] = ['name', 'when', 'amount'];
 

@@ -31,7 +31,7 @@ describe('get next parsed date', () => {
     expect(result).toBeSameDayAs(date(5, 6, 2022));
   });
 
-  it.only('returns a date in the future when passed a specific date that is a while away from now', () => {
+  it('returns a date in the future when passed a specific date that is a while away from now', () => {
     const result = getNextParsedDate(now(), '28th of Jan');
 
     expect(result).toBeSameDayAs(date(28, 1, 2023));

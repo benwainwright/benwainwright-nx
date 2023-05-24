@@ -74,6 +74,8 @@ export class AppDate {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     newDate.date.setDate(dateOrDay!);
 
+    newDate.date.setHours(0);
+
     return newDate;
   }
 }

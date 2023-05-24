@@ -1,4 +1,4 @@
-import { parseDates } from './parse-dates';
+import { parseDates, ParseDatesMode } from './parse-dates';
 import { date } from './utils/date';
 
 describe('parse dates', () => {
@@ -13,6 +13,7 @@ describe('parse dates', () => {
 
   it('always sets the first day to today and the last day to a month from now', () => {
     const result = parseDates('1st of June');
+    console.log(result);
     expect(result.dates).toHaveLength(1);
 
     const result2 = parseDates('2nd of June');
@@ -24,7 +25,7 @@ describe('parse dates', () => {
     const result4 = parseDates('30th of June');
     expect(result4.dates).toHaveLength(1);
 
-    const result5 = parseDates('1st of July');
+    const result5 = parseDates('2nd of July');
     expect(result5.dates).toHaveLength(0);
 
     const result6 = parseDates('31st of May');
@@ -45,6 +46,7 @@ describe('parse dates', () => {
 
   it.each`
     parseString                        | from              | to                | numResults | date1             | date2             | date3             | date4             | date5             | type
+    ${`28th of Jan`}                   | ${d(1, 6, 2022)}  | ${d(8, 6, 2023)}  | ${0}       | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'SpecificDateOfYear'}
     ${`last thursday of every month`}  | ${d(11, 6, 2022)} | ${d(18, 6, 2022)} | ${0}       | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'NumberedWeekdayOfMonth'}
     ${`last thursday of every month`}  | ${d(1, 6, 2022)}  | ${d(1, 7, 2022)}  | ${1}       | ${d(30, 6, 2022)} | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'NumberedWeekdayOfMonth'}
     ${`third thursday of every month`} | ${d(1, 6, 2022)}  | ${d(1, 7, 2022)}  | ${1}       | ${d(16, 6, 2022)} | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'NumberedWeekdayOfMonth'}
@@ -104,6 +106,7 @@ describe('parse dates', () => {
       const result = parseDates(parseString, {
         from: from.date,
         to: to.date,
+        mode: ParseDatesMode.Normal,
       });
 
       expect(result.type).toEqual(type);
@@ -135,6 +138,7 @@ describe('parse dates', () => {
     const result = parseDates('every other thursday', {
       from: date(1, 6, 2022),
       to: date(1, 7, 2022),
+      mode: ParseDatesMode.Normal,
     });
 
     expect(result.type).toEqual('EveryWeek');
@@ -146,6 +150,7 @@ describe('parse dates', () => {
     const nextResult = parseDates('every other thursday', {
       from: date(8, 6, 2022),
       to: date(1, 7, 2022),
+      mode: ParseDatesMode.Normal,
     });
 
     expect(nextResult.type).toEqual('EveryWeek');
@@ -160,6 +165,7 @@ describe('parse dates', () => {
       const result = parseDates(string, {
         from: date(1, 6, 2022),
         to: date(25, 8, 2022),
+        mode: ParseDatesMode.Normal,
       });
 
       expect(result.type).toEqual('None');

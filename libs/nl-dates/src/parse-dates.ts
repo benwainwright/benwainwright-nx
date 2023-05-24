@@ -50,23 +50,17 @@ export const parseDates = (
     const everyWeekResult = everyWeek(text, from, to);
 
     if (everyWeekResult) {
-      console.log('EVERY WEEK');
       return everyWeekResult;
     }
 
     const numberedWeekdayResult = numberedWeekday(text, from, to);
 
     if (numberedWeekdayResult) {
-      console.log('NUMBERED WEEK');
       return numberedWeekdayResult;
     }
   }
 
-  console.log({ from, to });
-
   const specificDateOfAnyYearResult = specificDateOfAnyYear(text, from, to);
-  console.log({ text, from, to, specificDateOfAnyYearResult });
-  console.log({ result: specificDateOfAnyYearResult });
 
   if (specificDateOfAnyYearResult) {
     return specificDateOfAnyYearResult;

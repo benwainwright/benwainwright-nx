@@ -17,6 +17,56 @@ const REGEXES = {
   daySlashMonth: `(?<day>\\d{1,2})\\/(?<month>\\d{1,2})`,
 };
 
+const getDates = (
+  range: Interval,
+  day: number,
+  month: number,
+  year: number | undefined
+) => {
+  if (year) {
+    const theDate = DateTime.fromObject({
+      day,
+      month,
+      year,
+      hour: 0,
+      minute: 0,
+      second: 0,
+    });
+
+    if (range.contains(theDate)) {
+      return [theDate];
+    }
+  } else {
+    const theDate = DateTime.fromObject({
+      day,
+      month,
+      year: range.start?.year,
+      hour: 0,
+      minute: 0,
+      second: 0,
+    });
+
+    if (range.contains(theDate)) {
+      return [theDate];
+    }
+    if (range.start) {
+      const theNextDate = DateTime.fromObject({
+        day,
+        month,
+        year: range.start.year + 1,
+        hour: 0,
+        minute: 0,
+        second: 0,
+      });
+
+      if (range.contains(theNextDate)) {
+        return [theNextDate];
+      }
+    }
+  }
+  return [];
+};
+
 export const specificDateOfAnyYear = (
   text: string,
   from: Date,
@@ -52,20 +102,11 @@ export const specificDateOfAnyYear = (
 
   const range = Interval.fromDateTimes(from, realYear);
 
-  const theDate = DateTime.fromObject({
-    day: parsedDay,
-    month: parsedMonth,
-    year: parsedYear,
-    hour: 0,
-    minute: 0,
-    second: 0,
-  });
-
-  const dates = range.contains(theDate) ? [theDate.toJSDate()] : [];
+  const dates = getDates(range, parsedDay, parsedMonth, parsedYear);
 
   return {
     type: 'SpecificDateOfYear',
-    dates,
+    dates: dates.map((date) => date.toJSDate()),
     day: parsedDay,
     month: parsedMonth,
   };

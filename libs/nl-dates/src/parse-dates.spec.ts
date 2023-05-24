@@ -13,7 +13,6 @@ describe('parse dates', () => {
 
   it('always sets the first day to today and the last day to a month from now', () => {
     const result = parseDates('1st of June');
-    console.log(result);
     expect(result.dates).toHaveLength(1);
 
     const result2 = parseDates('2nd of June');
@@ -46,7 +45,7 @@ describe('parse dates', () => {
 
   it.each`
     parseString                        | from              | to                | numResults | date1             | date2             | date3             | date4             | date5             | type
-    ${`28th of Jan`}                   | ${d(1, 6, 2022)}  | ${d(8, 6, 2023)}  | ${0}       | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'SpecificDateOfYear'}
+    ${`28th of Jan`}                   | ${d(1, 6, 2022)}  | ${d(8, 6, 2023)}  | ${1}       | ${d(28, 1, 2023)} | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'SpecificDateOfYear'}
     ${`last thursday of every month`}  | ${d(11, 6, 2022)} | ${d(18, 6, 2022)} | ${0}       | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'NumberedWeekdayOfMonth'}
     ${`last thursday of every month`}  | ${d(1, 6, 2022)}  | ${d(1, 7, 2022)}  | ${1}       | ${d(30, 6, 2022)} | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'NumberedWeekdayOfMonth'}
     ${`third thursday of every month`} | ${d(1, 6, 2022)}  | ${d(1, 7, 2022)}  | ${1}       | ${d(16, 6, 2022)} | ${d()}            | ${d()}            | ${d()}            | ${d()}            | ${'NumberedWeekdayOfMonth'}

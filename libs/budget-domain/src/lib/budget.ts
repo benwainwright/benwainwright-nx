@@ -156,6 +156,43 @@ export class Budget {
     this.paidIds[payment.id] = !this.paidIds[payment.id];
   }
 
+  private parseDatesFromPayment(payment: RecurringPayment) {
+    const end = payment.end
+      ? parseDates(payment.end, {
+          mode: ParseDatesMode.SingleDateOnly,
+        })
+      : undefined;
+
+    if (end && end.dates.length > 0 && end.dates[0] < this.endDate) {
+      return [];
+    }
+
+    const to =
+      end && end.dates.length > 0 && end.dates[0] < this.endDate
+        ? end.dates[0]
+        : this.endDate;
+
+    return parseDates(payment.when, {
+      from: this.startDate,
+      to,
+      mode: ParseDatesMode.Normal,
+    }).dates.map((date, index) => {
+      const id = `${payment.id}-${index}`;
+      const edited = this.editedConcretePayments[id];
+      return edited
+        ? edited
+        : {
+            id,
+            paid: this.paidIds[id],
+            edited: false,
+            name: payment.name,
+            when: date,
+            originalPayment: payment,
+            amount: payment.amount,
+          };
+    });
+  }
+
   private distributePayments(
     pots: Pot[],
     payments: RecurringPayment[],
@@ -167,42 +204,7 @@ export class Budget {
       name: pot.name,
       payments: payments
         .filter((payment) => payment.potId === pot.id)
-        .flatMap((payment) => {
-          const end = payment.end
-            ? parseDates(payment.end, {
-                mode: ParseDatesMode.SingleDateOnly,
-              })
-            : undefined;
-
-          if (end && end.dates.length > 0 && end.dates[0] < this.endDate) {
-            return [];
-          }
-
-          const to =
-            end && end.dates.length > 0 && end.dates[0] < this.endDate
-              ? end.dates[0]
-              : this.endDate;
-
-          return parseDates(payment.when, {
-            from: this.startDate,
-            to,
-            mode: ParseDatesMode.Normal,
-          }).dates.map((date, index) => {
-            const id = `${payment.id}-${index}`;
-            const edited = this.editedConcretePayments[id];
-            return edited
-              ? edited
-              : {
-                  id,
-                  paid: this.paidIds[id],
-                  edited: false,
-                  name: payment.name,
-                  when: date,
-                  originalPayment: payment,
-                  amount: payment.amount,
-                };
-          });
-        })
+        .flatMap((payment) => this.parseDatesFromPayment(payment))
         .slice()
         .sort((a, b) => (a.when > b.when ? 1 : -1)),
     }));

@@ -193,6 +193,29 @@ export class Budget {
     });
   }
 
+  private getCacheString(
+    pots: Pot[],
+    payments: RecurringPayment[],
+    isCurrent: boolean
+  ) {
+    const potsString = pots.reduce(
+      (accum, pot) => `${accum}${pot.id}${pot.balance}`,
+      ``
+    );
+
+    const paymentsString = payments.reduce(
+      (accum, payment) =>
+        `${accum}${payment.id}${payment.end}${payment.when}${payment.potId}${payment.amount}`,
+      ``
+    );
+
+    return `${potsString}${paymentsString}${isCurrent}`;
+  }
+
+  private cachedPotPlan: PotPlan[] | undefined;
+
+  private cacheString: string | undefined;
+
   private distributePayments(
     pots: Pot[],
     payments: RecurringPayment[],
@@ -211,12 +234,25 @@ export class Budget {
   }
 
   public get potPlans(): PotPlan[] {
+    const pots = this.pots;
+    const payments = this.payments;
+
+    const cacheString = this.getCacheString(pots, payments, this.isCurrent());
+
+    if (this.cacheString === cacheString && this.cachedPotPlan) {
+      return this.cachedPotPlan;
+    }
+
     const values = this.distributePayments(
       this.pots,
       this.payments,
       this.isCurrent()
     );
-    return this.hydratePotplanAdjustments(values);
+
+    const potPlan = this.hydratePotplanAdjustments(values);
+    this.cachedPotPlan = potPlan;
+    this.cacheString = cacheString;
+    return potPlan;
   }
 
   public get pots(): Pot[] {

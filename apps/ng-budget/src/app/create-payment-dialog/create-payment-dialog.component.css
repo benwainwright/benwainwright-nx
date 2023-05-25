@@ -1,6 +1,7 @@
 .create-payment-dialog {
   display: flex;
   flex-direction: column;
+  width: 30rem;
 }
 
 @media screen and (max-width: 599px) {

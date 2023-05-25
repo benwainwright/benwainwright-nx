@@ -15,8 +15,10 @@
     <mat-list *ngIf="budgetObservable | async as budget; else loadingStats">
       <mat-list-item>
         <mat-icon matListItemIcon>info</mat-icon>
-        <h2 matListItemTitle>From</h2>
-        <p matListItemLine>{{ budget?.startDate | date: 'mediumDate' }}</p>
+        <span matListItemTitle>From</span>
+        <span matListItemLine>{{
+          budget?.startDate | date: 'mediumDate'
+        }}</span>
       </mat-list-item>
 
       <mat-list-item>

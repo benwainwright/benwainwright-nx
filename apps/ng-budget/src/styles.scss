@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 @use '@angular/material' as mat;
+@include mat.core();
 
 body {
   margin: 0;
@@ -19,8 +20,6 @@ form {
   width: 100%;
 }
 
-@include mat.core();
-
 $my-primary: mat.define-palette(mat.$indigo-palette, 500);
 $my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
 
@@ -33,19 +32,32 @@ $my-theme: mat.define-light-theme(
   )
 );
 
+.mat-mdc-list-base {
+  --mdc-list-list-item-label-text-font: Roboto, sans-serif;
+  --mdc-list-list-item-label-text-line-height: 24px;
+  --mdc-list-list-item-label-text-size: 16px;
+  --mdc-list-list-item-label-text-tracking: 0.03125em;
+  --mdc-list-list-item-label-text-weight: 400;
+  --mdc-list-list-item-supporting-text-font: Roboto, sans-serif;
+  --mdc-list-list-item-supporting-text-line-height: 20px;
+  --mdc-list-list-item-supporting-text-size: 14px;
+  --mdc-list-list-item-supporting-text-tracking: 0.0178571429em;
+  --mdc-list-list-item-supporting-text-weight: 400;
+  --mdc-list-list-item-trailing-supporting-text-font: Roboto, sans-serif;
+  --mdc-list-list-item-trailing-supporting-text-line-height: 20px;
+  --mdc-list-list-item-trailing-supporting-text-size: 12px;
+  --mdc-list-list-item-trailing-supporting-text-tracking: 0.0333333333em;
+  --mdc-list-list-item-trailing-supporting-text-weight: 400;
+}
+
 @include mat.all-component-themes($my-theme);
-@include mat.core();
-
-$my-typography: mat.define-typography-config();
-
-// h2 {
-//   @include mat.typography-level($my-typography, 'headline');
-// }
 
 body,
 html {
+  font-family: Roboto;
   height: 100%;
-  @include mat.typography-level($my-typography, 'body-1');
+
+  // @include mat.typography-level($my-typography, 'body-1');
 }
 
 html {
